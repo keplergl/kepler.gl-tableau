@@ -1,0 +1,60 @@
+html {
+  overflow: scroll;
+  overflow-x: hidden;
+}
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar {
+  width: 0px;  /* remove scrollbar space */
+  background: transparent;  /* optional: just make scrollbar invisible */
+}
+
+.App {
+  /*text-align: center;*/
+  position: fixed;
+}
+
+.tick-line, .axis-baseline {
+  stroke: #AAAAAA;
+  stroke-width: 1px;
+}
+
+.tick-line {
+  stroke-dasharray: 4;
+}
+
+.axis-label, .ordinal-labels {
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 200;
+  font-style: normal;
+  color: #cccccc;
+  -webkit-font-smoothing: antialiased;
+}
+
+.tooltip-content {
+  background: white;
+  border: 1px solid black;
+  color: black;
+  padding: 10px;
+  z-index: 999999;
+  min-width: 120px;
+}
+
+.tooltip-content:before {
+  background: inherit;
+  content: "";
+  padding: 0px;
+  transform: rotate(45deg);
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  z-index: 99;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
