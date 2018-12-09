@@ -40,6 +40,7 @@ import {
 } from './variables';
 import { 
   convertRowToObject,
+  convertToKepler,
   log
 } from './utils';
 
@@ -119,7 +120,7 @@ class App extends Component {
   }
 
   onNextStep() {
-    if ( this.state.stepIndex === 4 ) {
+    if ( this.state.stepIndex === 2 ) {
       this.customCallBack('configuration');
     } else {
       this.setState((previousState, currentProps) => {
@@ -345,6 +346,8 @@ class App extends Component {
       let col_names_N = [];
       let col_indexes = {};
       let data = [];
+      let keplerFields = [];
+      let keplerData = [];
   
       //write column names to array
       for (let k = 0; k < t.columns.length; k++) {
@@ -366,12 +369,19 @@ class App extends Component {
           else if (t.columns[k].dataType === 'float') {
             col_names_N.push(t.columns[k].fieldName);
           }
+
+        keplerFields.push({
+          format: "",
+          name: t.columns[k].fieldName,
+          tableFieldIndex: k,
+          type: t.columns[k].dataType === "float" ? "real" : t.columns[k].dataType === "int" ? "integer" : "string",
+          tableauType: t.columns[k].dataType
+        })
       }
       // log('columns', col_names, col_indexes);
   
       for (let j = 0, len = t.data.length; j < len; j++) {
-        data.push(convertRowToObject(t.data[j], col_indexes, col_types));
-        // log('converted data', data[j]);
+        keplerData.push(convertToKepler(t.data[j], col_indexes, col_types));
       }
     
       // log flat data for testing
@@ -386,7 +396,7 @@ class App extends Component {
             [fieldName + 'Columns']: col_names,
             [fieldName + 'StringColumns']: col_names_S,
             [fieldName + 'NumberColumns']: col_names_N,
-            [fieldName + 'Data']: data,
+            [fieldName + 'Data']: {fields: keplerFields, rows: keplerData}, //data, we need something more like tableau for kepler
             tableauSettings: settings,
             isMissingData: false,
           });
@@ -401,7 +411,7 @@ class App extends Component {
             [fieldName + 'Columns']: col_names,
             [fieldName + 'StringColumns']: col_names_S,
             [fieldName + 'NumberColumns']: col_names_N,
-            [fieldName + 'Data']: data,
+            [fieldName + 'Data']: {fields: keplerFields, rows: keplerData}, //data, we need something more like tableau for kepler
             tableauSettings: tableauExt.settings.getAll()
           });
         });
@@ -702,17 +712,17 @@ render() {
   }
 
   // left off here config should be good, now we need to get component working from new config
-  return (
+    return (
       <KeplerGlComponent
-        className={'tableau-kepler-gl'}
-        width={this.state.width * .925}
-        height={this.state.height * .925}
-        data={this.state.ConfigSheetData}
-        tableauSettings={tableauSettingsState}
+          className={'tableau-kepler-gl'}
+          width={this.state.width}
+          height={this.state.height}
+          data={this.state.ConfigSheetData}
+          tableauSettings={tableauSettingsState}
 
-        // interactivity
-        clickCallBack={this.clickCallBack}
-        hoverCallBack={this.hoverCallBack}
+          // interactivity
+          clickCallBack={this.clickCallBack}
+          hoverCallBack={this.hoverCallBack}
       />
     );
   }

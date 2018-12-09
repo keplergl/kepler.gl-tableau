@@ -23,6 +23,16 @@ export const getColumnIndexes = (table, required_keys) => {
     return o;
   };
   
+  export const convertToKepler = (row, attrs_map, attrs_types) => {
+    let o = [];
+    let name = "";
+    for (name in attrs_map) {
+      let id = attrs_map[name];
+      o[id] = row[id].value === "%null%" ? null : attrs_types[attrs_map[name]] === "int" ? parseInt(row[id].value) : attrs_types[attrs_map[name]] === "float" ? parseFloat(row[id].value) : row[id].value;
+    }
+    return o;
+  };
+
   export const log = (...msgs) => {
     if (process.env.NODE_ENV === 'development') console.log(...msgs)
   }
