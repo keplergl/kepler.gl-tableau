@@ -2,38 +2,20 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './App.css';
 
-//semiotic
-import { ResponsiveOrdinalFrame } from 'semiotic';
-
-//lodash
-import _ from 'lodash';
-
 // Custom config components
 import SplashScreen from './components/SplashScreen';
 import { 
-  PickType, 
   PickSheets, 
   CustomizeViolin, 
   Stepper, 
   StepButtons,
 } from './components/Configuration'
 
-// drag and drop 
-import DragNDrop from './components/DragNDrop/DragNDrop';
-import initialData from './components/DragNDrop/initial-data';
-
-// import CustomizeOptions from './components/CustomizeOptions';
-import { ConfigScreen, CustomScreen } from './components/Configuration';
-
 // Viz components
 import LoadingIndicatorComponent from './components/LoadingIndicatorComponent';
-import SemioticViolin from './components/SemioticViolin';
+import KeplerGlComponent from './components/KeplerGL';
 
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import classNames from 'classnames';
 
 // Tableau Styles and Tableau
 import './assets/tableau/vendor/slick.js/slick/slick.css';
@@ -61,14 +43,10 @@ import {
   log
 } from './utils';
 
-// icons
-import Save from '@material-ui/icons/Save';
-import Delete from '@material-ui/icons/Delete';
-
 //logos
 import dbLogo from './assets/dblogo.png';
 import ssLogo from './assets/sslogo.jpg';
-import semLogo from './assets/semiotic_logo_horizontal.png'
+import kepLogo from './assets/kepler.gl-logo.png';
 
 
 // begin constants to move to another file later
@@ -645,79 +623,11 @@ render() {
 
   // config screen jsx
   if (this.state.isConfig) {
-    let stepNames = ["Select Graph Type", "Select Sheet", "Drag & Drop Measures", "Customize the Graph"]
+    let stepNames = ["Select Sheet", "Customize Kepler.gl"]
     
     log(this.state.stepIndex)
 
     if (this.state.stepIndex === 1) {
-      const type = semioticTypes[this.state.demoType];
-      log('configType', semioticTypes[this.state.demoType], tableauSettingsState.ConfigType, or_data);
-
-      const semioticHelp = 
-      <div style={{ fontFamily: "arial", fontSize: "small", paddingTop: 20, height: 350*.95, width: 350*.95, float: 'none', margin: '0 auto' }}>
-          <ResponsiveOrdinalFrame
-            responsiveWidth
-            responsiveHeight
-            data={or_data}
-            axis={{}}
-            // rExtent={{
-            //   onChange: d => {
-            //     this.setState({ rExtent: d })
-            //   }
-            // }}
-            // oExtent={{
-            //   onChange: d => {
-            //     this.setState({ oExtent: d })
-            //   }
-            // }}
-            projection={'vertical'}
-            type={'swarm'}
-            summaryType={type}
-            summaryStyle={d => {return { fill: d.color, fillOpacity: type === "contour" ? .1 : .35, stroke: d.color, strokeOpacity: 1 }}}
-            
-            oLabel={true}
-            oPadding={20}
-            oAccessor={d => d.color}
-            rAccessor={'value'}
-            
-            style={(d, type) => {return { fill: d.color, fillOpacity: type === "contour" ? .6 : .6, stroke: d.color, strokeOpacity: 1 }}}
-            hoverAnnotation={true}
-            
-            margin={{ left: 35, top: 10, bottom: 25, right: 10 }}
-          />
-        </div>
-        ;
-
-      // Placeholder sheet names. TODO: Bind to worksheet data
-      return (
-        <React.Fragment>
-          <Stepper 
-            stepIndex={this.state.stepIndex} 
-            steps={stepNames}
-          />
-          <PickType
-              title = {"Select a summary data visualization"}
-              sheetNames = {["Violin", "Heatmap", "Contour", "Ridgeline", "Histogram", "Boxplot", "Swarm Only"]}
-              selectSheet = {this.configCallBack}
-              customChange = {this.demoChange}
-              field="ConfigType"
-              listTitle = "Select a graph type"
-              selectedValue={this.state.demoType || ""}
-              helpJSX={semioticHelp}
-          />
-          <StepButtons
-            onNextClick={this.onNextStep}
-            onPrevClick={this.onPrevStep}
-            stepIndex={this.state.stepIndex}
-            maxStepCount={stepNames.length}
-            nextText={this.state.stepIndex !== stepNames.length ? 'Next' : 'Save'}
-            backText="Back"
-          />
-        </React.Fragment>
-      );
-    }
-
-    if (this.state.stepIndex === 2) {
       // Placeholder sheet names. TODO: Bind to worksheet data
       return (
         <React.Fragment>
@@ -743,83 +653,7 @@ render() {
       );
     }
     
-    if (this.state.stepIndex === 3) {
-      initialData.columns.measures.measures = this.state.ConfigSheetColumns || [];
-
-      if ( this.state.ConfigSheetColumns ) {
-        configMeasuresObject = this.state.ConfigSheetColumns.map((column) => {
-          return {id: column, content: column, sheet: 'config'};
-        });
-      }
-
-      let tmpMeasures = Object.assign({}, initialData, {"measures": configMeasuresObject});
-
-      // Get stored fields
-      let selectedFields = {
-        ConfigOrdinalField: tableauSettingsState.ConfigOrdinalField,
-        ConfigValueField: tableauSettingsState.ConfigValueField,
-        ConfigColorField: tableauSettingsState.ConfigColorField,
-      }
-
-      // Assign selected fields to tmpMeasures
-      Object.keys(selectedFields).forEach(fieldName => {
-        if (selectedFields[fieldName]) {
-          tmpMeasures.drop_area[fieldName].measureId = selectedFields[fieldName];
-        } else if (selectedFields[fieldName] === undefined) {
-          tmpMeasures.drop_area[fieldName].measureId = null;
-        }
-      });
-
-      const requiredFieldTextStyle = {
-        border: "2px solid rgba(70, 130, 180, 0.6)", 
-        borderRadius: "2px",
-        color: "rgba(70, 130, 180, 1)",
-        paddingLeft: "6px",
-        paddingRight: "6px",
-        fontSize: "13px",
-        float: "right",
-        marginTop: "8px"
-      }
-      const optionalFieldTextStyle = {
-        border: "2px dashed lightgrey", 
-        borderRadius: "2px",
-        color: "grey",
-        paddingLeft: "6px",
-        paddingRight: "6px",
-        fontSize: "13px",
-        float: "right",
-        marginRight: "6%",
-        marginLeft: "8px",
-        marginTop: "8px"
-      }
-
-      return (
-        <React.Fragment>
-          <Stepper 
-            stepIndex={this.state.stepIndex} 
-            steps={stepNames}
-          />
-          <DragNDrop
-            title={"Drag fields onto the marks shelves to map data to your visualization"}
-            initialData={tmpMeasures}
-            configCallBack={this.configCallBack}
-            eraseCallBack={this.eraseCallBack}
-          />
-          <span style={optionalFieldTextStyle} className="text--benton-light">*optional</span>
-          <span style={requiredFieldTextStyle} className="text--benton-light">*required</span>
-        <StepButtons
-            onNextClick={this.onNextStep}
-            onPrevClick={this.onPrevStep}
-            stepIndex={this.state.stepIndex}
-            maxStepCount={stepNames.length}
-            nextText={this.state.stepIndex !== stepNames.length ? 'Next' : 'Save'}
-            backText="Back"
-          />
-        </React.Fragment>
-      ); 
-    }
-
-    if (this.state.stepIndex === 4) {
+    if (this.state.stepIndex === 2) {
       return (
         <React.Fragment>
           <Stepper 
@@ -851,15 +685,15 @@ render() {
       <div className="splashScreen" style={{padding : 5 }}>
         <SplashScreen 
           configure={this.configure} 
-          title="Semiotic Swarm and Summary Charts in Tableau"
-          desc="Leverage the brilliance of Semiotic's ordinal swarm and summary chart library, directly within Tableau!"
+          title="Kepler.gl within Tableau"
+          desc="Leverage the brilliance of Kepler.gl functionality, directly within Tableau!"
           ctaText="Configure"
           poweredBy={
             <React.Fragment>
               <p className="info">Brought to you by: </p>
               <a href="http://www.datablick.com/" target="_blank"><img src={dbLogo} /></a> <a href="https://starschema.com/" target="_blank"><img src={ssLogo} /></a>
               <p className="info">Powered by: </p>
-              <a href="https://emeeks.github.io/semiotic/#/" target="_blank"><img src={semLogo} /></a>
+              <a href="https://github.com/uber/kepler.gl" target="_blank"><img src={kepLogo} /></a>
           </React.Fragment>
         }
         />
@@ -867,69 +701,16 @@ render() {
     );
   }
 
-  // configuration for hover annotation
-  let hoverJSXProps = {};
-  if ( tableauSettingsState.hoverAnnotation === "hoverAnnotation" ) {
-    hoverJSXProps = {
-      hoverAnnotation: true, 
-      summaryHoverAnnotation: false,
-      pieceHoverAnnotation: false,
-    };
-  } else if ( tableauSettingsState.hoverAnnotation === "summaryHoverAnnotation" ) {
-    hoverJSXProps = {
-      hoverAnnotation: false, 
-      summaryHoverAnnotation: true,
-      pieceHoverAnnotation: false,
-    };
-  } else if ( tableauSettingsState.hoverAnnotation === "pieceHoverAnnotation" ) {
-    hoverJSXProps = {
-      hoverAnnotation: false, 
-      summaryHoverAnnotation: false,
-      pieceHoverAnnotation: true,
-    };
-  } else {
-    hoverJSXProps = {
-      hoverAnnotation: false, 
-      summaryHoverAnnotation: false,
-      pieceHoverAnnotation: false,
-    };
-  }
-
-
   // left off here config should be good, now we need to get component working from new config
   return (
-      <SemioticViolin
-        className={'semiotic-network-chart'}
+      <KeplerGlComponent
+        className={'tableau-kepler-gl'}
         width={this.state.width * .925}
         height={this.state.height * .925}
         data={this.state.ConfigSheetData}
         tableauSettings={tableauSettingsState}
 
-        networkProjection={tableauSettingsState.networkProjection}
-
-        // color props
-        nodeColorConfig={tableauSettingsState.nodeColorConfig}
-        nodeFillColor={tableauSettingsState.nodeColor}
-
-        //point props
-        showPoints={tableauSettingsState.showPoints}
-        nodeRender={tableauSettingsState.nodeRender}
-        nodeFillOpacity={tableauSettingsState.nodeFillOpacity || .35}
-        nodeStrokeColor={tableauSettingsState.nodeColor}
-        nodeStrokeOpacity={tableauSettingsState.nodeStrokeOpacity || .5}
-        nodeSize={tableauSettingsState.nodeSize}
-
-        //summary props
-        summaryType={semioticTypes[tableauSettingsState.ConfigType]}
-        sumCurve={d3Curves[tableauSettingsState.sumCurve]}
-        sumRender={tableauSettingsState.sumRender}
-        sumFillOpacity={tableauSettingsState.sumFillOpacity || .35}
-        sumStrokeOpacity={tableauSettingsState.sumStrokeOpacity || .5}
-
-      //interactivity props
-        highlightOn={this.state.highlightOn}
-        // hoverAnnotation={tableauSettingsState.hoverAnnotation === "true"}
-        {...hoverJSXProps}
+        // interactivity
         clickCallBack={this.clickCallBack}
         hoverCallBack={this.hoverCallBack}
       />
