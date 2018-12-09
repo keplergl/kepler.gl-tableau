@@ -719,6 +719,7 @@ render() {
           height={this.state.height}
           data={this.state.ConfigSheetData}
           tableauSettings={tableauSettingsState}
+          readOnly={false}
 
           // interactivity
           clickCallBack={this.clickCallBack}

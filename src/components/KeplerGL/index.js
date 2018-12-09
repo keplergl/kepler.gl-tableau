@@ -59,7 +59,8 @@ class KeplerGlComponent extends React.Component {
             height,
             width,
             data,
-            tableauSettings,        
+            tableauSettings,
+            readOnly
         } = this.props;
 
         // pull in memoized stuff for use in render function
@@ -91,6 +92,7 @@ class KeplerGlComponent extends React.Component {
                             height={height}
                             width={width}
                             data={keplerData}
+                            readOnly={readOnly}
 
                             tooltipContent={d => popOver(d)}
                             customClickBehavior={(d) => this.props.clickCallBack(d)}

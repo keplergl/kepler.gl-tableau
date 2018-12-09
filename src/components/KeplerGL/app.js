@@ -56,7 +56,7 @@ class App extends Component {
     };
     // addDataToMap action to inject dataset into kepler.gl instance
     // this.props.dispatch(addDataToMap({datasets: dataset, config: keplerConfig}));
-    this.props.dispatch(addDataToMap({datasets: dataset, config: keplerConfig}));
+    this.props.dispatch(addDataToMap({datasets: dataset, options: {readOnly: this.props.readOnly}, config: keplerConfig}));
   }
 
 
@@ -99,7 +99,7 @@ class App extends Component {
     const config = this.getMapConfig();
 
     // addDataToMap action to inject dataset into kepler.gl instance
-    this.props.dispatch(addDataToMap({datasets: dataset, config}));
+    this.props.dispatch(addDataToMap({datasets: dataset, options: {readOnly: this.props.readOnly}, config: config}));
   };
 
   render() {

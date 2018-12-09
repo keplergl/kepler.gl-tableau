@@ -25,7 +25,7 @@ import keplerGlReducer from 'kepler.gl/reducers';
 
 // INITIAL_APP_STATE
 const initialAppState = {
-  appName: 'example',
+  appName: 'tableau-kepler-gl',
   loaded: false
 };
 
