@@ -1,7 +1,6 @@
 const defaultSettings = {
   defaults: {
-    ConfigType: "Violin",
-    networkProjection: "vertical",
+    readOnly: "false",
     hoverAnnotation: "none",
     highlightAnnotation: false,
     showPoints: true,
@@ -18,8 +17,7 @@ const defaultSettings = {
     sumStrokeOpacity: .5,
   },
   defaultKeys: [ 
-    'ConfigType',
-    'networkProjection',
+    'readOnly',
     'hoverAnnotation',
     'highlightAnnotation',
     'showPoints',

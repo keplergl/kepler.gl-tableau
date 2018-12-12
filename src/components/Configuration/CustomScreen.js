@@ -63,17 +63,16 @@ class CustomScreen extends React.Component {
             <OptionTitle>{this.props.configTitle}</OptionTitle>
             <FormControl className={classes.formControl}>
               <InputLabelWithTooltip 
-                    title="Viz Layout"
-                    tooltipText="Select the layout for your viz (vertical, horizontal or radial"
+                    title="Hide Side Config Panel"
+                    tooltipText="Toggle whether or not to hide the config panel on the side"
                   />
               <Select
-                value={tableauSettings.networkProjection || "vertical"}
+                value={tableauSettings.readOnly === "true"}
                 onChange={handleChange}
-                input={<Input name="networkProjection" id="networkProjection-helper" />}
+                input={<Input name="readOnly" id="readOnly-helper" />}
               >
-                 <MenuItem value={"vertical"}>Vertical</MenuItem>
-                 <MenuItem value={"horizontal"}>Horizontal</MenuItem>
-                 <MenuItem value={"radial"}>Radial</MenuItem>
+                 <MenuItem value={true}>True</MenuItem>
+                 <MenuItem value={false}>False</MenuItem>
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>

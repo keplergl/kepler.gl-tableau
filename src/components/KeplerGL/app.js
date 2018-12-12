@@ -56,7 +56,15 @@ class App extends Component {
     };
     // addDataToMap action to inject dataset into kepler.gl instance
     // this.props.dispatch(addDataToMap({datasets: dataset, config: keplerConfig}));
-    this.props.dispatch(addDataToMap({datasets: dataset, options: {readOnly: this.props.readOnly}, config: keplerConfig}));
+    this.props.dispatch(addDataToMap({datasets: dataset, options: {readOnly: this.props.readOnly}, config: this.props.keplerConfig ? JSON.parse(this.props.keplerConfig) : keplerConfig}));
+  }
+
+  // this method is used to persist state into tableau settings
+  setKeplerConfig = () => {
+    const map = this.getMapConfig();
+
+    console.log('saving the kepler gl settings', map);
+    this.props.configCallBack('keplerConfig', map);
   }
 
 
@@ -99,13 +107,18 @@ class App extends Component {
     const config = this.getMapConfig();
 
     // addDataToMap action to inject dataset into kepler.gl instance
-    this.props.dispatch(addDataToMap({datasets: dataset, options: {readOnly: this.props.readOnly}, config: config}));
+    this.props.dispatch(addDataToMap({datasets: dataset, options: {readOnly: this.props.readOnly}, config: this.props.keplerConfig ? JSON.parse(this.props.keplerConfig) : config}));
   };
 
   render() {
+    let buttonJSX;
+    if (!this.props.readOnly) {
+      buttonJSX = <Button onClick={this.setKeplerConfig}>Save Config</Button>
+    }
+
     return (
       <div style={{position: 'absolute', width: '100%', height: '100%', minHeight: '70vh'}}>
-        {/* <Button onClick={this.replaceData}>Replace Data</Button> */}
+          {buttonJSX}
           <KeplerGl
             mapboxApiAccessToken={MAPBOX_TOKEN}
             id="map"

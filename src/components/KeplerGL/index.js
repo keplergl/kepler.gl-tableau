@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import {Provider} from 'react-redux';
 import store from './store';
 import App from './app';
+// import './styles/superfine.css';
 
 //lodash
 import _ from 'lodash';
@@ -60,7 +61,8 @@ class KeplerGlComponent extends React.Component {
             width,
             data,
             tableauSettings,
-            readOnly
+            readOnly, 
+            keplerConfig
         } = this.props;
 
         // pull in memoized stuff for use in render function
@@ -93,6 +95,9 @@ class KeplerGlComponent extends React.Component {
                             width={width}
                             data={keplerData}
                             readOnly={readOnly}
+                            keplerConfig={keplerConfig}
+
+                            configCallBack={this.props.configCallBack}
 
                             tooltipContent={d => popOver(d)}
                             customClickBehavior={(d) => this.props.clickCallBack(d)}

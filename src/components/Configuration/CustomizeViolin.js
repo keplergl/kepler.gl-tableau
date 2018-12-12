@@ -10,7 +10,7 @@ const CustomizeViolin = (props) => (
       <div className="clearfix">
         <OptionColumn className="grid--6">
           <CustomScreen 
-            configTitle={"Customize your swarm and summary chart"}
+            configTitle={"Customize how to render kepler.gl in Tableau"}
             handleChange={props.handleChange}
             customCallBack={props.customCallBack}
             field={props.field}

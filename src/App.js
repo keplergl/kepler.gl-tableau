@@ -204,6 +204,11 @@ class App extends Component {
   configCallBack (field, columnName) {
     // field = ChoroSheet, sheet = Data
     log('configCallBack', field, columnName);
+
+    let columnName2 = columnName;
+    if (field === "keplerConfig") {
+      columnName2 = JSON.stringify(columnName);
+    }
   
     // if we are in config call back from a sheet selection, go get the data
     // this only works in the #true instance, must use update lifecycle method to catch both
@@ -214,7 +219,7 @@ class App extends Component {
     if (TableauSettings.ShouldUse) {
       TableauSettings.updateAndSave({
         // ['is' + field]: true,
-        [field]: columnName,
+        [field]: columnName2,
       }, settings => {
         this.setState({
           // ['is' + field]: true,
@@ -224,7 +229,7 @@ class App extends Component {
   
     } else {
       //tableauExt.settings.set('is' + field, true);
-      tableauExt.settings.set(field, columnName);
+      tableauExt.settings.set(field, columnName2);
       tableauExt.settings.saveAsync().then(() => {
         this.setState({
           // ['is' + field]: true,
@@ -719,7 +724,11 @@ render() {
           height={this.state.height}
           data={this.state.ConfigSheetData}
           tableauSettings={tableauSettingsState}
-          readOnly={false}
+          readOnly={tableauSettingsState.readOnly === "true"}
+          keplerConfig={tableauSettingsState.keplerConfig}
+
+          // persist state to tableau
+          configCallBack={this.configCallBack}
 
           // interactivity
           clickCallBack={this.clickCallBack}
