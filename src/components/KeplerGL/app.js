@@ -120,7 +120,7 @@ class App extends Component {
       <div style={{position: 'absolute', width: '100%', height: '100%', minHeight: '70vh'}}>
           {buttonJSX}
           <KeplerGl
-            mapboxApiAccessToken={MAPBOX_TOKEN}
+            mapboxApiAccessToken={this.props.mapboxAPIKey || MAPBOX_TOKEN}
             id="map"
             width={this.props.width}
             height={this.props.height}

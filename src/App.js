@@ -384,7 +384,8 @@ class App extends Component {
         })
       }
       // log('columns', col_names, col_indexes);
-  
+
+      console.log('zzz do we see data', t.data.length, t.data);
       for (let j = 0, len = t.data.length; j < len; j++) {
         keplerData.push(convertToKepler(t.data[j], col_indexes, col_types));
       }
@@ -536,8 +537,8 @@ class App extends Component {
   
     // default tableau settings on initial entry into the extension
     // we know if we haven't done anything yet when tableauSettings state = []
-    log("did mount", tableauExt.settings.get("ConfigType"));
-    if ( tableauExt.settings.get("ConfigType") === undefined ) {
+    log("did mount", tableauExt.settings.get("mapboxAPIKey"));
+    if ( tableauExt.settings.get("mapboxAPIKey") === "" ) {
       log('defaultSettings triggered', defaultSettings.length, defaultSettings);
       defaultSettings.defaultKeys.map((defaultSetting, index) => {
         log('defaultSetting', index, defaultSetting, defaultSettings.defaults[defaultSetting]);
@@ -726,6 +727,7 @@ render() {
           tableauSettings={tableauSettingsState}
           readOnly={tableauSettingsState.readOnly === "true"}
           keplerConfig={tableauSettingsState.keplerConfig}
+          mapboxAPIKey={tableauSettingsState.mapboxAPIKey}
 
           // persist state to tableau
           configCallBack={this.configCallBack}

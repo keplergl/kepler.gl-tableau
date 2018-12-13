@@ -62,7 +62,8 @@ class KeplerGlComponent extends React.Component {
             data,
             tableauSettings,
             readOnly, 
-            keplerConfig
+            keplerConfig,
+            mapboxAPIKey
         } = this.props;
 
         // pull in memoized stuff for use in render function
@@ -96,6 +97,7 @@ class KeplerGlComponent extends React.Component {
                             data={keplerData}
                             readOnly={readOnly}
                             keplerConfig={keplerConfig}
+                            mapboxAPIKey={mapboxAPIKey}
 
                             configCallBack={this.props.configCallBack}
 

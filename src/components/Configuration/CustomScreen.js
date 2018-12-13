@@ -63,8 +63,24 @@ class CustomScreen extends React.Component {
             <OptionTitle>{this.props.configTitle}</OptionTitle>
             <FormControl className={classes.formControl}>
               <InputLabelWithTooltip 
-                    title="Hide Side Config Panel"
-                    tooltipText="Toggle whether or not to hide the config panel on the side"
+                title="Mapbox API Key"
+                tooltipText="Your unique API key for utilizing mapbox"
+              />
+              <TextField  
+                id="mapboxAPIKey-helper"
+                name="mapboxAPIKey"
+                label="Mapbox API Key"
+                placeholder="pk.12345..."
+                className={classes.textField}
+                value={tableauSettings.mapboxAPIKey}
+                onChange={handleChange}
+                margin="normal"
+              />
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip 
+                    title="Read only mode?"
+                    tooltipText="Toggle whether or not to hide the config panel on the side (e.g., read only)"
                   />
               <Select
                 value={tableauSettings.readOnly === "true"}
@@ -75,7 +91,7 @@ class CustomScreen extends React.Component {
                  <MenuItem value={false}>False</MenuItem>
               </Select>
             </FormControl>
-            <FormControl className={classes.formControl}>
+            {/* <FormControl className={classes.formControl}>
               <InputLabelWithTooltip 
                   title="Hover Configuration"
                   tooltipText="Toggle whether to show the tooltip, and at which level"
@@ -309,7 +325,7 @@ class CustomScreen extends React.Component {
                 onChange={handleChange}
                 margin="normal"
               />
-            </FormControl>
+            </FormControl> */}
           </div>
         </OptionWrapper>
       </div>

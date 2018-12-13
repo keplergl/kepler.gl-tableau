@@ -29,7 +29,7 @@
       "isSplit": false
     },
     "mapStyle": {
-      "styleType": "0.s5uyujjkon",
+      "styleType": "light",
       "topLayerGroups": {},
       "visibleLayerGroups": {
         "label": false,
@@ -48,15 +48,7 @@
         "isVisible": false,
         "opacity": 0.7
       },
-      "mapStyles": {
-        "0.s5uyujjkon": {
-          "accessToken": "pk.eyJ1IjoiZGVtYXJ0c2MiLCJhIjoiY2o4bjd4aG40MTZudTJ3bXo5aDU3dmFpMSJ9.O72JlexJ3-xy030RqsoSgA",
-          "custom": true,
-          "id": "0.s5uyujjkon",
-          "label": "Mapbox Dark",
-          "url": "mapbox://styles/mapbox/dark-v9"
-        }
-      }
+      "mapStyles": {}
     }
   }
 }
