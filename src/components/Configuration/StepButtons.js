@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '@tableau/tableau-ui';
 
 import './../../styles/StepButtons.css';
 
@@ -8,13 +9,9 @@ const StepButtons = (props) => {
       {
         props.stepIndex !== 1 
         &&
-        <a class="cta cta--secondary cta--dark prev" onClick={props.onPrevClick}>
-          { props.backText }
-        </a>
+        <Button className={"newCta"} kind={"outline"} onClick={ props.onPrevClick }>{ props.backText }</Button>
       }
-      <a class="cta cta--secondary cta--arrow next" href="#" onClick={props.onNextClick}>
-        { props.nextText }
-      </a>
+      <Button className={"newCta next"} kind={"filledGreen"} onClick={props.onNextClick}> { props.nextText } </Button>
     </div>
   );
 }

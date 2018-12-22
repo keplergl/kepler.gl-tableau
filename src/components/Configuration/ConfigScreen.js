@@ -40,7 +40,7 @@ function ConfigScreen(props) {
 
           <Grid item xs={12} >
             <Typography
-              variant="display1"
+              variant="Title"
               align="left" >
               {configTitle}
             </Typography>

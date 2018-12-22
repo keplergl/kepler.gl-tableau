@@ -29,12 +29,12 @@ export const OptionColumn = styled.div`
   border-radius: 2px;
 `;
 
-export const TextField = styled.input`
-  border: none;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.41);
-  padding-top: 6px;
-  padding-bottom: 6px;
-`;
+// export const TextField = styled.input`
+//   border: none;
+//   border-bottom: 1px solid rgba(0, 0, 0, 0.41);
+//   padding-top: 6px;
+//   padding-bottom: 6px;
+// `;
 
 export const SearchInput = styled.input`
   border: 1px solid rgba(0, 0, 0, 0.41);

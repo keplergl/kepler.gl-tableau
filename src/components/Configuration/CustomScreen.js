@@ -9,7 +9,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
-import { InputLabelWithTooltip, OptionWrapper, OptionTitle, TextField } from './CustomizeUIElements';
+
+//tableau ui
+import { TextField } from '@tableau/tableau-ui';
+
+import { InputLabelWithTooltip, OptionWrapper, OptionTitle } from './CustomizeUIElements';
 
 const styles = theme => ({
   formControl: {
@@ -67,14 +71,15 @@ class CustomScreen extends React.Component {
                 tooltipText="Your unique API key for utilizing mapbox"
               />
               <TextField  
+                // className={classes.textField}
                 id="mapboxAPIKey-helper"
+                kind="line"
                 name="mapboxAPIKey"
                 label="Mapbox API Key"
                 placeholder="pk.12345..."
-                className={classes.textField}
                 value={tableauSettings.mapboxAPIKey}
                 onChange={handleChange}
-                margin="normal"
+                // margin="normal"
               />
             </FormControl>
             <FormControl className={classes.formControl}>

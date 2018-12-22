@@ -9,7 +9,7 @@
   background: white;
 }
 
-.StepButtons a.cta {
+.StepButtons Button.newCta {
   margin-left: 24px;
   margin-right: 24px;
   margin-top: 12px;
@@ -17,6 +17,6 @@
   display: inline-block;
 }
 
-.StepButtons a.cta.next {
+.StepButtons Button.newCta.next {
   float: right;
 }

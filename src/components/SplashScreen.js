@@ -1,20 +1,24 @@
 import React from 'react';
+import { Button } from '@tableau/tableau-ui';
+import Typography from '@material-ui/core/Typography';
 
 import './../styles/SplashScreen.css';
 
 const SplashScreen = (props) => (
   <div className="gallery-grid" id="splashScreen">
     <div className="gallery-grid__item">
-      <h2>{props.title}</h2>
+      <Typography variant={"display2"} style={{color: "#000"}}>{props.title}</Typography>
     </div>
     <div className="gallery-grid__item">
-      <p>{props.desc}</p>
+      <Typography variant={"subheading"} >{props.desc}</Typography>
     </div>
+    <br />
     <div className="gallery-grid__item">
       <div className="clearfix">
-        <button className="cta" onClick={props.configure}>{props.ctaText}</button>
+        <Button kind={"filledGreen"} key={"configButton"} onClick={props.configure}>{props.ctaText}</Button>
       </div>
     </div>
+    <br />
     <div className="gallery-grid__item">
       <p className="info">{props.infoText}</p>
     </div>

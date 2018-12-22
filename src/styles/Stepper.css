@@ -1,3 +1,14 @@
+#Stepper {
+  font-size: 16px;
+  line-height: 2.15;
+  font-family: "Avenir";
+  font-weight: 400;
+  font-style: normal;
+  color: #333;
+  -webkit-font-smoothing: antialiased;
+
+}
+
 #Stepper.step-grid {
   display: block;
   margin-bottom: 32px;
@@ -8,7 +19,7 @@
   display: inline-block;
   width: 25%;
   text-align: center;
-  color: rgb(120, 120, 120);
+  color: rgb(203, 203, 203);
   vertical-align: top;
 }
 
@@ -17,7 +28,7 @@
 }
 
 #Stepper.step-grid .step-item .step-count {
-  border: 1px solid rgb(120, 120, 120);
+  border: 1px solid rgb(203, 203, 203);
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -42,12 +53,12 @@
 }
 
 #Stepper.step-grid .step-item.active .step-count {
-  background: rgb(232, 118, 44);
-  border: 1px solid rgb(232, 118, 44);
+  background: rgb(45, 204, 151);
+  border: 1px solid rgb(45, 204, 151);
 }
 
 #Stepper.step-grid .step-item .step-count span {
-  color: rgb(120, 120, 120);
+  color: rgb(203, 203, 203);
   margin: auto;
   margin-top: -5px;
 }

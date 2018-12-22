@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Radio from '@material-ui/core/Radio';
+// import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -9,6 +9,8 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
 import classNames from 'classnames';
+
+import { Radio } from '@tableau/tableau-ui';
 
 // icons
 import Save from '@material-ui/icons/Save';
@@ -83,37 +85,17 @@ class RadioButtonsGroup extends React.Component {
     return (
       <div className={classes.root}>
         <div>
-          <FormControl component="fieldset" required className={classes.formControl}>
-            <FormLabel component="legend">{title}</FormLabel>
-            <RadioGroup
-              className={classes.group}
-              value={this.state.value}
-              onChange={this.handleClick}
-            >
-            {sheets.map(sheetName => (
-              <FormControlLabel
+          {sheets.map(sheetName => (
+              <Radio 
                 key={sheetName}
                 value={sheetName}
-                control={<Radio color="primary" classes={{root: classes.radio, checked: classes.checked}} />}
-                label={sheetName}
-              />
-            ))}
-            </RadioGroup>
-            {/* <FormHelperText>You can display an error</FormHelperText> */}
-          </FormControl>
+                checked={this.state.value === sheetName}
+                onChange={this.handleClick}
+              >
+              {sheetName}
+              </Radio>
+          ))}
         </div>
-      {/* <div>
-        <Button
-          variant="outlined"
-          color="primary"
-          size="large"
-          className={classes.button}
-          onClick={this.handleClick}
-        >
-          <Save className={classNames(classes.leftIcon, classes.iconSmall)} />
-          Save
-        </Button>
-      </div> */}
     </div>
     );
   }

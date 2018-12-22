@@ -18,8 +18,8 @@ import KeplerGlComponent from './components/KeplerGL';
 import { withStyles } from '@material-ui/core/styles';
 
 // Tableau Styles and Tableau
-import './assets/tableau/vendor/slick.js/slick/slick.css';
-import './assets/tableau/css/style.min.css';
+// import './assets/tableau/vendor/slick.js/slick/slick.css';
+// import './assets/tableau/css/style.min.css';
 import { tableau } from './tableau-extensions-1.latest';
 
 // tableau settings handler
