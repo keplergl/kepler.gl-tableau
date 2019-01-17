@@ -380,6 +380,7 @@ var ErrorHelpers = /** @class */ (function () {
      */
     /*tslint:disable-next-line */
     ErrorHelpers.verifyEnumValue = function (enumValue, enumType) {
+        console.log('we are in verifyEnumValue', enumValue, enumType);
         var isValid = false;
         Object.keys(enumType).forEach(function (enumKey) {
             if (enumType[enumKey] === enumValue.toString()) {
@@ -687,12 +688,16 @@ var ServiceImplBase = /** @class */ (function () {
         this._dispatcher = _dispatcher;
     }
     ServiceImplBase.prototype.execute = function (verb, params) {
+        console.log('what are these', verb, params);
         return this._dispatcher.execute(verb, params).catch(function (error) {
             // Any internal error that comes from the dispatcher should be converted
             // to an external error using the enum mapper for error codes.
-            var internalError = error;
-            var externalErrorCode = InternalToExternalEnumMappings_1.InternalToExternalEnumMappings.errorCode.convert(internalError.errorCode);
-            throw new TableauError_1.TableauError(externalErrorCode, internalError.message);
+            // if ( error.errorCode !== undefined ) {
+                console.log('we are in the error enum area', error !== "Error: ExecuteCommand failed, with result: null(…)", error, error.errorCode === undefined, error.message);
+                var internalError = error;
+                var externalErrorCode = InternalToExternalEnumMappings_1.InternalToExternalEnumMappings.errorCode.convert(internalError.errorCode);
+                throw new TableauError_1.TableauError(externalErrorCode, internalError.message);
+            // }
         });
     };
     return ServiceImplBase;

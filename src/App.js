@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './App.css';
+import {whyDidYouUpdate} from 'why-did-you-update';
 
 // Custom config components
 import SplashScreen from './components/SplashScreen';
@@ -49,6 +50,7 @@ import dbLogo from './assets/dblogo.png';
 import ssLogo from './assets/sslogo.jpg';
 import kepLogo from './assets/kepler.gl-logo.png';
 
+whyDidYouUpdate(React);
 
 // begin constants to move to another file later
 // material ui styles

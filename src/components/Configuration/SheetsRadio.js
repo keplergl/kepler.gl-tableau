@@ -86,6 +86,7 @@ class RadioButtonsGroup extends React.Component {
       <div className={classes.root}>
         <div>
           {sheets.map(sheetName => (
+            <React.Fragment>
               <Radio 
                 key={sheetName}
                 value={sheetName}
@@ -94,6 +95,8 @@ class RadioButtonsGroup extends React.Component {
               >
               {sheetName}
               </Radio>
+              <br/>
+            </React.Fragment>
           ))}
         </div>
     </div>
