@@ -4,10 +4,10 @@ import './App.css';
 
 // Custom config components
 import SplashScreen from './components/SplashScreen';
-import { 
-  PickSheets, 
-  CustomizeViolin, 
-  Stepper, 
+import {
+  PickSheets,
+  CustomizeViolin,
+  Stepper,
   StepButtons,
 } from './components/Configuration'
 
@@ -15,12 +15,12 @@ import {
 import LoadingIndicatorComponent from './components/LoadingIndicatorComponent';
 import KeplerGlComponent from './components/KeplerGL';
 
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 
 // Tableau Styles and Tableau
 // import './assets/tableau/vendor/slick.js/slick/slick.css';
 // import './assets/tableau/css/style.min.css';
-import { tableau } from './tableau-extensions-1.latest';
+import {tableau} from './tableau-extensions-1.latest';
 
 // tableau settings handler
 import * as TableauSettings from './TableauSettings';
@@ -29,18 +29,18 @@ import * as TableauSettings from './TableauSettings';
 import defaultSettings from './components/Configuration/defaultSettings';
 
 // utils and variables
-import { 
-  defaultColor, 
+import {
+  defaultColor,
   DataBlick,
-  semioticTypes, 
-  dematrixifiedEdges, 
+  semioticTypes,
+  dematrixifiedEdges,
   dematrixifiedNodes,
   or_data,
   d3Curves,
 } from './variables';
-import { 
-  convertRowToObject,
-  convertToKepler,
+import {
+  columnToKeplerField,
+  dataToKeplerRow,
   log
 } from './utils';
 
@@ -74,9 +74,9 @@ const tableauExt = window.tableau.extensions;
 
 //tableau get summary data options
 const options = {
-         ignoreAliases: false,
-         ignoreSelection: true,
-         maxRows: 0
+  ignoreAliases: false,
+  ignoreSelection: true,
+  maxRows: 0
 };
 
 // end constants to move to another file later
@@ -106,7 +106,6 @@ class App extends Component {
     this.clickCallBack = this.clickCallBack.bind(this);
     this.hoverCallBack = this.hoverCallBack.bind(this);
     this.filterChanged = this.filterChanged.bind(this);
-    this.getSummaryData = this.getSummaryData.bind(this);
     this.configCallBack = this.configCallBack.bind(this);
     this.eraseCallBack = this.eraseCallBack.bind(this);
     this.customCallBack = this.customCallBack.bind(this);
@@ -128,7 +127,7 @@ class App extends Component {
       });
     }
   }
-  
+
   onPrevStep() {
     this.setState((previousState, currentProps) => {
       return {stepIndex: previousState.stepIndex - 1}
@@ -144,7 +143,7 @@ class App extends Component {
         // filter
         // if ( worksheet.name !== tableauExt.settings.get("ConfigSheet") ) {
         //   worksheet.applyFilterAsync(
-        //     tableauExt.settings.get("ConfigChildField"), 
+        //     tableauExt.settings.get("ConfigChildField"),
         //     [d.id],
         //     window.tableau.FilterUpdateType.Replace
         //   ).then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
@@ -152,14 +151,14 @@ class App extends Component {
       });
     }
   }
-  
+
   hoverCallBack = d => {
     log('in on hover callback', d);
       // go through each worksheet and select marks
     if ( d ) {
       tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
       log(`hovered ${d.id}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
-      
+
       // select marks
       // worksheet.selectMarksByValueAsync(
       //   [{
@@ -180,7 +179,7 @@ class App extends Component {
   handleChange (event) {
     log('event', event);
     if (TableauSettings.ShouldUse) {
-  
+
       // create a single k/v pair
       let kv = {};
       kv[event.target.name] = event.target.value;
@@ -190,7 +189,7 @@ class App extends Component {
           tableauSettings: settings,
         });
       });
-  
+
     } else {
       tableauExt.settings.set(event.target.name, event.target.value);
       tableauExt.settings.saveAsync().then(() => {
@@ -199,7 +198,7 @@ class App extends Component {
         });
       });
     }
-  }; 
+  };
 
   configCallBack (field, columnName) {
     // field = ChoroSheet, sheet = Data
@@ -209,13 +208,13 @@ class App extends Component {
     if (field === "keplerConfig") {
       columnName2 = JSON.stringify(columnName);
     }
-  
+
     // if we are in config call back from a sheet selection, go get the data
     // this only works in the #true instance, must use update lifecycle method to catch both
     // if (field.indexOf("Sheet") >= 0) {
     //   this.getSummaryData(columnName, field);
     // }
-  
+
     if (TableauSettings.ShouldUse) {
       TableauSettings.updateAndSave({
         // ['is' + field]: true,
@@ -226,7 +225,7 @@ class App extends Component {
           tableauSettings: settings,
         });
       });
-  
+
     } else {
       //tableauExt.settings.set('is' + field, true);
       tableauExt.settings.set(field, columnName2);
@@ -238,11 +237,11 @@ class App extends Component {
       });
     }
   }
-  
+
   eraseCallBack (field) {
     log("triggered erase", field);
     if (TableauSettings.ShouldUse) {
-  
+
       TableauSettings.eraseAndSave([
         field,
       ], settings => {
@@ -250,11 +249,11 @@ class App extends Component {
           tableauSettings: settings,
         });
       });
-  
+
     } else {
       // erase all the settings, there has got be a better way.
       tableauExt.settings.erase(field);
-  
+
       // save async the erased settings
       // wip - should be able to get rid of state as this is all captured in tableu settings (written to state)
       tableauExt.settings.saveAsync().then(() => {
@@ -264,24 +263,24 @@ class App extends Component {
       });
     }
   };
-  
+
   customCallBack (confSetting) {
     log('in custom call back', confSetting);
     if (TableauSettings.ShouldUse) {
       TableauSettings.updateAndSave({
         [confSetting]: true
       }, settings => {
-  
+
         this.setState({
           [confSetting]: true,
           tableauSettings: settings,
         });
-  
+
         if (confSetting === "configuration" ) {
           tableauExt.ui.closeDialog("false");
         }
       })
-  
+
     } else {
       tableauExt.settings.set(confSetting, true);
       tableauExt.settings.saveAsync().then(() => {
@@ -306,20 +305,24 @@ class App extends Component {
       this.getSummaryData(selectedSheet, "ConfigSheet");
     } //get field3 from Settings
   }
-  
-  getSummaryData (selectedSheet, fieldName) {
+
+  getSummaryData = (selectedSheet, fieldName) => {
     //clean up event listeners (taken from tableau expample)
     if (this.unregisterEventFn) {
       this.unregisterEventFn();
     }
-  
+
     log(selectedSheet, fieldName, "in getData");
-  
+
     // get sheet information this.state.selectedSheet should be syncronized with settings
     // can possibly remove the || in the sheetName part
-    let sheetName = selectedSheet;
-    let sheetObject = tableauExt.dashboardContent.dashboard.worksheets.find(worksheet => worksheet.name === sheetName);
-  
+
+    const sheetName = selectedSheet;
+    const sheetObject = tableauExt.dashboardContent.dashboard.worksheets
+      .find(worksheet => worksheet.name === sheetName);
+
+      log(sheetObject)
+
     if (TableauSettings.ShouldUse) {
       TableauSettings.updateAndSave({
         isLoading: true
@@ -329,7 +332,7 @@ class App extends Component {
           tableauSettings: settings,
         })
       });
-  
+
     } else {
       this.setState({ isLoading: true });
       tableauExt.settings.set('isLoading', true);
@@ -339,12 +342,12 @@ class App extends Component {
         });
       });
     }
-    
+
     //working here on pulling out summmary data
     //may want to limit to a single row when getting column names
     sheetObject.getSummaryDataAsync(options).then((t) => {
-      log('in getData()', t, this.state);
-  
+      log('in getData().getSummaryDataAsync', t, this.state);
+
       let col_names = [];
       let col_types = [];
       let col_names_S = [];
@@ -352,12 +355,11 @@ class App extends Component {
       let col_indexes = {};
       let data = [];
       let keplerFields = [];
-      let keplerData = [];
-  
+
       //write column names to array
       for (let k = 0; k < t.columns.length; k++) {
           col_indexes[t.columns[k].fieldName] = k;
-  
+
           // write named array
           col_names.push(t.columns[k].fieldName);
 
@@ -375,72 +377,62 @@ class App extends Component {
             col_names_N.push(t.columns[k].fieldName);
           }
 
-        keplerFields.push({
-          format: "",
-          name: t.columns[k].fieldName,
-          tableFieldIndex: k,
-          type: t.columns[k].dataType === "float" ? "real" : t.columns[k].dataType === "int" ? "integer" : "string",
-          tableauType: t.columns[k].dataType
-        })
+        keplerFields.push(columnToKeplerField(t.columns[k], k));
       }
-      // log('columns', col_names, col_indexes);
 
       console.log('zzz do we see data', t.data.length, t.data);
-      for (let j = 0, len = t.data.length; j < len; j++) {
-        keplerData.push(convertToKepler(t.data[j], col_indexes, col_types));
-      }
-    
+      const keplerData = dataToKeplerRow(t.data, keplerFields);
+
       // log flat data for testing
       log('flat data', data, col_names, fieldName);
-  
+      const newDataState = {
+        isLoading: false,
+        [fieldName + 'Columns']: col_names,
+        [fieldName + 'StringColumns']: col_names_S,
+        [fieldName + 'NumberColumns']: col_names_N,
+        [fieldName + 'Data']: {fields: keplerFields, rows: keplerData}, //data, we need something more like tableau for kepler
+      };
+
       if (TableauSettings.ShouldUse) {
         TableauSettings.updateAndSave({
           isLoading: false
         }, settings => {
           this.setState({
-            isLoading: false,
-            [fieldName + 'Columns']: col_names,
-            [fieldName + 'StringColumns']: col_names_S,
-            [fieldName + 'NumberColumns']: col_names_N,
-            [fieldName + 'Data']: {fields: keplerFields, rows: keplerData}, //data, we need something more like tableau for kepler
+            ...newDataState,
             tableauSettings: settings,
             isMissingData: false,
           });
         }, true);
-  
+
       } else {
-        this.setState({ isLoading: false });
+        this.setState({isLoading: false});
         tableauExt.settings.set('isLoading', false);
         tableauExt.settings.saveAsync().then(() => {
           this.setState({
-            isLoading: false,
-            [fieldName + 'Columns']: col_names,
-            [fieldName + 'StringColumns']: col_names_S,
-            [fieldName + 'NumberColumns']: col_names_N,
-            [fieldName + 'Data']: {fields: keplerFields, rows: keplerData}, //data, we need something more like tableau for kepler
+            ...newDataState,
             tableauSettings: tableauExt.settings.getAll()
           });
         });
       }
       log('getData() state', this.state);
     });
-    
+
     this.unregisterEventFn = sheetObject.addEventListener(
       window.tableau.TableauEventType.FilterChanged,
       this.filterChanged
     );
 
-    // Bug - Adding this event listener causes the viz to continuously re-render. 
+    // Bug - Adding this event listener causes the viz to continuously re-render.
     // this.unregisterEventFn = sheetObject.addEventListener(
     //   window.tableau.TableauEventType.MarkSelectionChanged,
     //   this.marksSelected
     // );
   }
-  
+
   clearSheet () {
     log("triggered erase");
     if (TableauSettings.ShouldUse) {
-  
+
       TableauSettings.eraseAndSave([
         'isLoading',
         'configuration',
@@ -451,12 +443,12 @@ class App extends Component {
           isSplash: true,
         });
       });
-  
+
     } else {
       // erase all the settings, there has got be a better way.
       tableauExt.settings.erase('isLoading');
       tableauExt.settings.erase('configuration');
-  
+
       // save async the erased settings
       // wip - should be able to get rid of state as this is all captured in tableu settings (written to state)
       tableauExt.settings.saveAsync().then(() => {
@@ -468,13 +460,13 @@ class App extends Component {
       });
     }
   };
-  
+
   clearSplash () {
     this.setState({
       isSplash: false
     });
   };
-    
+
   configure () {
     this.clearSheet();
     const popUpUrl = window.location.href + '#true';
@@ -482,7 +474,7 @@ class App extends Component {
       height: 625,
       width: 720,
     };
-  
+
     tableauExt.ui.displayDialogAsync(popUpUrl, "", popUpOptions).then((closePayload) => {
       log('configuring', closePayload, tableauExt.settings.getAll());
       if (closePayload === 'false') {
@@ -503,10 +495,10 @@ class App extends Component {
           console.error(error.message);
       }
     });
-  };  
+  };
 
   componentWillUnmount() {
-    let _this = this;
+    const _this = this;
     window.removeEventListener('resize', function() {
       const thisWidth = window.innerWidth;
       const thisHeight = window.innerHeight;
@@ -521,8 +513,8 @@ class App extends Component {
     const thisHeight = window.innerHeight;
     const thisWidth = window.innerWidth;
     //log("size", thisHeight, thisWidth);
-  
-    let _this = this;
+
+    const _this = this;
     window.addEventListener('resize', function() {
       const thisWidth = window.innerWidth;
       const thisHeight = window.innerHeight;
@@ -534,7 +526,7 @@ class App extends Component {
 
     tableauExt.initializeAsync({'configure': this.configure}).then(() => {
       let unregisterHandlerFunctions = [];
-  
+
     // default tableau settings on initial entry into the extension
     // we know if we haven't done anything yet when tableauSettings state = []
     log("did mount", tableauExt.settings.get("mapboxAPIKey"));
@@ -548,18 +540,18 @@ class App extends Component {
 
     // this is where the majority of the code is going to go for this extension I think
       log("will mount", tableauExt.settings.getAll());
-  
+
       //get sheetNames and dashboard name from workbook
       const dashboardName = tableauExt.dashboardContent.dashboard.name;
       const sheetNames = tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => worksheet.name);
-  
+
       // Whenever we restore the filters table, remove all save handling functions,
       // since we add them back later in this function.
       // provided by tableau extension samples
       unregisterHandlerFunctions.forEach(function (unregisterHandlerFunction) {
         unregisterHandlerFunction();
       });
-  
+
       //add filter change event listener with callback to re-query data after change
       // go through each worksheet and then add a filter change event listner
       // need to check whether this is being applied more than once
@@ -574,9 +566,9 @@ class App extends Component {
         unregisterHandlerFunctions.push(unregisterHandlerFunction);
         log(unregisterHandlerFunctions);
       });
-  
+
       log('checking field in getAll()', tableauExt.settings.getAll());
-  
+
       // Initialize the current saved settings global
       TableauSettings.init();
 
@@ -589,21 +581,21 @@ class App extends Component {
         demoType: tableauExt.settings.get("ConfigType") || "violin",
         tableauSettings: tableauExt.settings.getAll()
       });
-  
+
       if (this.state.tableauSettings.configuration && this.state.tableauSettings.configuration === "true") {
         this.setState({
           isSplash: false,
           isConfig: false,
         });
       }
-  
+
     });
   }
-  
+
   componentWillUpdate(nextProps, nextState) {
     // console log settings to check current status
     log("will update", this.state, nextState, tableauExt.settings.getAll());
-  
+
     //get selectedSheet from Settings
     //hardcoding this for now because I know i have two possibilities
     let selectedSheet = tableauExt.settings.get('ConfigSheet');
@@ -626,7 +618,7 @@ render() {
   let configMeasuresObject = {};
 
   //short cut this cause we use it ALOT
-  const tableauSettingsState = this.state.tableauSettings; 
+  const tableauSettingsState = this.state.tableauSettings;
 
   // log some stuff to see what is going on
   log('in render', this.state.width, this.state.height, this.state.configuration, tableauSettingsState,  this.state);
@@ -640,15 +632,15 @@ render() {
   // config screen jsx
   if (this.state.isConfig) {
     let stepNames = ["Select Sheet", "Customize Kepler.gl"]
-    
+
     log(this.state.stepIndex)
 
     if (this.state.stepIndex === 1) {
       // Placeholder sheet names. TODO: Bind to worksheet data
       return (
         <React.Fragment>
-          <Stepper 
-            stepIndex={this.state.stepIndex} 
+          <Stepper
+            stepIndex={this.state.stepIndex}
             steps={stepNames}
           />
           <PickSheets
@@ -668,12 +660,12 @@ render() {
         </React.Fragment>
       );
     }
-    
+
     if (this.state.stepIndex === 2) {
       return (
         <React.Fragment>
-          <Stepper 
-            stepIndex={this.state.stepIndex} 
+          <Stepper
+            stepIndex={this.state.stepIndex}
             steps={stepNames}
           />
           <CustomizeViolin
@@ -691,7 +683,7 @@ render() {
             backText="Back"
           />
         </React.Fragment>
-      ); 
+      );
     }
   }
 
@@ -699,8 +691,8 @@ render() {
   if (this.state.isSplash) {
     return (
       <div className="splashScreen" style={{padding : 5 }}>
-        <SplashScreen 
-          configure={this.configure} 
+        <SplashScreen
+          configure={this.configure}
           title="Kepler.gl within Tableau"
           desc="Leverage the brilliance of Kepler.gl functionality, directly within Tableau!"
           ctaText="Configure"
@@ -719,23 +711,23 @@ render() {
 
   // left off here config should be good, now we need to get component working from new config
     return (
-      <KeplerGlComponent
-          className={'tableau-kepler-gl'}
-          width={this.state.width}
-          height={this.state.height}
-          data={this.state.ConfigSheetData}
-          tableauSettings={tableauSettingsState}
-          readOnly={tableauSettingsState.readOnly === "true"}
-          keplerConfig={tableauSettingsState.keplerConfig}
-          mapboxAPIKey={tableauSettingsState.mapboxAPIKey}
+        <KeplerGlComponent
+            className={'tableau-kepler-gl'}
+            width={this.state.width}
+            height={this.state.height}
+            data={this.state.ConfigSheetData}
+            tableauSettings={tableauSettingsState}
+            readOnly={tableauSettingsState.readOnly === "true"}
+            keplerConfig={tableauSettingsState.keplerConfig}
+            mapboxAPIKey={tableauSettingsState.mapboxAPIKey}
 
-          // persist state to tableau
-          configCallBack={this.configCallBack}
+            // persist state to tableau
+            configCallBack={this.configCallBack}
 
-          // interactivity
-          clickCallBack={this.clickCallBack}
-          hoverCallBack={this.hoverCallBack}
-      />
+            // interactivity
+            clickCallBack={this.clickCallBack}
+            hoverCallBack={this.hoverCallBack}
+        />
     );
   }
 }

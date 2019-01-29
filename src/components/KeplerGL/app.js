@@ -56,7 +56,10 @@ class App extends Component {
     };
     // addDataToMap action to inject dataset into kepler.gl instance
     // this.props.dispatch(addDataToMap({datasets: dataset, config: keplerConfig}));
-    this.props.dispatch(addDataToMap({datasets: dataset, options: {readOnly: this.props.readOnly}, config: this.props.keplerConfig ? JSON.parse(this.props.keplerConfig) : keplerConfig}));
+    this.props.dispatch(addDataToMap({
+      datasets: dataset,
+      options: {readOnly: this.props.readOnly},
+      config: this.props.keplerConfig ? JSON.parse(this.props.keplerConfig) : keplerConfig}));
   }
 
   // this method is used to persist state into tableau settings
