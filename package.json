@@ -10,7 +10,7 @@
     "@tableau/tableau-ui": "^2.1.0",
     "core-js": "^2.6.0",
     "gh-pages": "^2.0.1",
-    "kepler.gl": "^0.2.1-beta.0",
+    "kepler.gl": "^0.2.1-beta.1",
     "react": "^16.3.2",
     "react-beautiful-dnd": "^9.0.2",
     "react-bootstrap": "^0.32.1",
