@@ -35,7 +35,7 @@ import downloadJsonFile from "./file-download";
 
 // Sample data
 import nycTrips from './data/nyc-trips.csv.js';
-import keplerConfig from './data/kepler-config';
+// import keplerConfig from './data/kepler-config';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZGVtYXJ0c2MiLCJhIjoiY2o4bjd4aG40MTZudTJ3bXo5aDU3dmFpMSJ9.O72JlexJ3-xy030RqsoSgA' // process.env.MapboxAccessToken; // eslint-disable-line
 
@@ -44,7 +44,7 @@ class App extends Component {
     // Use processCsvData helper to convert csv file into kepler.gl structure {fields, rows}
     // const data1 = Processors.processCsvData(nycTrips);
     const data = this.props.data;
-    console.log('checking data on mount', data, keplerConfig);
+    console.log('checking data on mount', data);
     // Create dataset structure
     const dataset = {
       data,
@@ -56,7 +56,7 @@ class App extends Component {
     };
     // addDataToMap action to inject dataset into kepler.gl instance
     // this.props.dispatch(addDataToMap({datasets: dataset, config: keplerConfig}));
-    this.props.dispatch(addDataToMap({datasets: dataset, options: {readOnly: this.props.readOnly}, config: this.props.keplerConfig ? JSON.parse(this.props.keplerConfig) : keplerConfig}));
+    this.props.dispatch(addDataToMap({datasets: dataset, options: {readOnly: this.props.readOnly}, config: this.props.keplerConfig ? JSON.parse(this.props.keplerConfig) : undefined }));
   }
 
   // this method is used to persist state into tableau settings
