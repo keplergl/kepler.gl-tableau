@@ -19,15 +19,6 @@
       "layerBlending": "normal",
       "splitMaps": []
     },
-    "mapState": {
-      "bearing": 0,
-      "dragRotate": false,
-      "latitude": 1.7149550842451283e-11,
-      "longitude": 4.595290220672096,
-      "pitch": 0,
-      "zoom": 0.49385533587363817,
-      "isSplit": false
-    },
     "mapStyle": {
       "styleType": "0.1sbqk1529e",
       "topLayerGroups": {},

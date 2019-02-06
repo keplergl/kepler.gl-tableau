@@ -1,38 +1,56 @@
+import {ALL_FIELD_TYPES as KeplerFieldTypes} from 'kepler.gl/constants';
+
 export const getColumnIndexes = (table, required_keys) => {
-    let colIdxMaps = {};
-    let ref = table.columns;
-    for (let j = 0; j < ref.length; j++) {
-      let c = ref[j];
-      let fn = c.fieldName;
-      for (let x = 0; x < required_keys.length; x++) {
-        if (required_keys[x] === fn) {
-          colIdxMaps[fn] = c.index;
-        }
+  let colIdxMaps = {};
+  let ref = table.columns;
+  for (let j = 0; j < ref.length; j++) {
+    let c = ref[j];
+    let fn = c.fieldName;
+    for (let x = 0; x < required_keys.length; x++) {
+      if (required_keys[x] === fn) {
+        colIdxMaps[fn] = c.index;
       }
     }
-    return colIdxMaps;
-  };
-  
-  export const convertRowToObject = (row, attrs_map, attrs_types) => {
-    let o = {};
-    let name = "";
-    for (name in attrs_map) {
-      let id = attrs_map[name];
-      o[name] = row[id].value === "%null%" ? null : attrs_types[attrs_map[name]] === "int" ? parseInt(row[id].value) : attrs_types[attrs_map[name]] === "float" ? parseFloat(row[id].value) : row[id].value;
-    }
-    return o;
-  };
-  
-  export const convertToKepler = (row, attrs_map, attrs_types) => {
-    let o = [];
-    let name = "";
-    for (name in attrs_map) {
-      let id = attrs_map[name];
-      o[id] = row[id].value === "%null%" ? null : attrs_types[attrs_map[name]] === "int" ? parseInt(row[id].value) : attrs_types[attrs_map[name]] === "float" ? parseFloat(row[id].value) : row[id].value;
-    }
-    return o;
-  };
-
-  export const log = (...msgs) => {
-    if (process.env.NODE_ENV === 'development') console.log(...msgs)
   }
+  return colIdxMaps;
+};
+
+export const dataToKeplerRow = (data, fields) => data.map(row =>
+  row.map((d, i) => d.value === "%null%" ? null : StringToValueByType[fields[i].type](d.value))
+);
+
+export const log = (...msgs) => {
+  if (process.env.NODE_ENV === 'development') console.log(...msgs)
+}
+
+export const columnToKeplerField = (col, i) => ({
+  // TODO: generate time format here
+  format: '',
+  name: col.fieldName,
+  type: DataTypeMap[col.dataType],
+  tableauType: col.dataType
+});
+
+// https://tableau.github.io/extensions-api/docs/enums/datatype.html
+export const DataTypeMap = {
+  // TODO: Shan: figure out how to parse boolean format
+  bool:  KeplerFieldTypes.boolean,
+  date: KeplerFieldTypes.date,
+  // TODO: Shan: figure out how to parse date-time format
+  'date-time': KeplerFieldTypes.timestamp,
+  float: KeplerFieldTypes.real,
+  int: KeplerFieldTypes.integer,
+  // TODO: Shan: figure out how to handle spatial data format
+  spatial: KeplerFieldTypes.geojson,
+  string: KeplerFieldTypes.string
+};
+
+export const StringToValueByType = {
+  [KeplerFieldTypes.boolean]: d => typeof d === 'string' && d.toLowerCase() === 'true' || d === '1' || d.toLowerCase() === 'yes',
+  [KeplerFieldTypes.date]: d => d,
+  [KeplerFieldTypes.timestamp]: d => d,
+  [KeplerFieldTypes.real]: d => parseFloat(d),
+  [KeplerFieldTypes.integer]: d => parseInt(d),
+  [KeplerFieldTypes.geojson]: d => d,
+  [KeplerFieldTypes.string]: d => d
+};
