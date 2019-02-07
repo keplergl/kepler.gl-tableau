@@ -525,72 +525,77 @@ class App extends Component {
     }, true);
 
     tableauExt.initializeAsync({'configure': this.configure}).then(() => {
-      let unregisterHandlerFunctions = [];
+      return fetch("https://mapsconfig.tableau.com/v1/config.json");
+      }).then((response) => {
+        return response.json();
+      }).then((configJson) => {
+        let unregisterHandlerFunctions = [];
+        // console.log('tableau config', configJson);    
 
-    // default tableau settings on initial entry into the extension
-    // we know if we haven't done anything yet when tableauSettings state = []
-    log("did mount", tableauExt.settings.get("mapboxAPIKey"));
-    if ( tableauExt.settings.get("mapboxAPIKey") === "" ) {
-      log('defaultSettings triggered', defaultSettings.length, defaultSettings);
-      defaultSettings.defaultKeys.map((defaultSetting, index) => {
-        log('defaultSetting', index, defaultSetting, defaultSettings.defaults[defaultSetting]);
-        this.configCallBack(defaultSetting, defaultSettings.defaults[defaultSetting]);
-      })
-    }
+        // default tableau settings on initial entry into the extension
+        // we know if we haven't done anything yet when tableauSettings state = []
+        log("did mount", tableauExt.settings.get("mapboxAPIKey"));
+        if ( tableauExt.settings.get("mapboxAPIKey") === "" ) {
+          log('defaultSettings triggered', defaultSettings.length, defaultSettings);
+          defaultSettings.defaultKeys.map((defaultSetting, index) => {
+            log('defaultSetting', index, defaultSetting, defaultSettings.defaults[defaultSetting]);
+            this.configCallBack(defaultSetting, defaultSettings.defaults[defaultSetting]);
+          })
+        }
 
-    // this is where the majority of the code is going to go for this extension I think
-      log("will mount", tableauExt.settings.getAll());
+        // this is where the majority of the code is going to go for this extension I think
+        log("will mount", tableauExt.settings.getAll());
 
-      //get sheetNames and dashboard name from workbook
-      const dashboardName = tableauExt.dashboardContent.dashboard.name;
-      const sheetNames = tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => worksheet.name);
+        //get sheetNames and dashboard name from workbook
+        const dashboardName = tableauExt.dashboardContent.dashboard.name;
+        const sheetNames = tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => worksheet.name);
 
-      // Whenever we restore the filters table, remove all save handling functions,
-      // since we add them back later in this function.
-      // provided by tableau extension samples
-      unregisterHandlerFunctions.forEach(function (unregisterHandlerFunction) {
-        unregisterHandlerFunction();
-      });
-
-      //add filter change event listener with callback to re-query data after change
-      // go through each worksheet and then add a filter change event listner
-      // need to check whether this is being applied more than once
-      tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
-        log("in sheet loop", worksheet.name, worksheet);
-        // add event listner
-        let unregisterHandlerFunction = worksheet.addEventListener(
-            window.tableau.TableauEventType.FilterChanged,
-            this.filterChanged
-        );
-        // provided by tableau extension samples, may need to push this to state for react
-        unregisterHandlerFunctions.push(unregisterHandlerFunction);
-        log(unregisterHandlerFunctions);
-      });
-
-      log('checking field in getAll()', tableauExt.settings.getAll());
-
-      // Initialize the current saved settings global
-      TableauSettings.init();
-
-      this.setState({
-        isLoading: false,
-        height: thisHeight,
-        width: thisWidth,
-        sheetNames: sheetNames,
-        dashboardName: dashboardName,
-        demoType: tableauExt.settings.get("ConfigType") || "violin",
-        tableauSettings: tableauExt.settings.getAll()
-      });
-
-      if (this.state.tableauSettings.configuration && this.state.tableauSettings.configuration === "true") {
-        this.setState({
-          isSplash: false,
-          isConfig: false,
+        // Whenever we restore the filters table, remove all save handling functions,
+        // since we add them back later in this function.
+        // provided by tableau extension samples
+        unregisterHandlerFunctions.forEach(function (unregisterHandlerFunction) {
+          unregisterHandlerFunction();
         });
-      }
 
-    });
-  }
+        //add filter change event listener with callback to re-query data after change
+        // go through each worksheet and then add a filter change event listner
+        // need to check whether this is being applied more than once
+        tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
+          log("in sheet loop", worksheet.name, worksheet);
+          // add event listner
+          let unregisterHandlerFunction = worksheet.addEventListener(
+              window.tableau.TableauEventType.FilterChanged,
+              this.filterChanged
+          );
+          // provided by tableau extension samples, may need to push this to state for react
+          unregisterHandlerFunctions.push(unregisterHandlerFunction);
+          log(unregisterHandlerFunctions);
+        });
+
+        log('checking field in getAll()', tableauExt.settings.getAll());
+
+        // Initialize the current saved settings global
+        TableauSettings.init();
+
+        this.setState({
+          tableauKey: (configJson.access_token || {}).token,
+          isLoading: false,
+          height: thisHeight,
+          width: thisWidth,
+          sheetNames: sheetNames,
+          dashboardName: dashboardName,
+          demoType: tableauExt.settings.get("ConfigType") || "violin",
+          tableauSettings: tableauExt.settings.getAll()
+        });
+
+        if (this.state.tableauSettings.configuration && this.state.tableauSettings.configuration === "true") {
+          this.setState({
+            isSplash: false,
+            isConfig: false,
+          });
+        }
+      });
+    }
 
   componentWillUpdate(nextProps, nextState) {
     // console log settings to check current status
@@ -612,11 +617,6 @@ componentDidUpdate() {
 
 
 render() {
-  const { classes } = this.props;
-
-  // create these variables so they are blank if not populated by user
-  let configMeasuresObject = {};
-
   //short cut this cause we use it ALOT
   const tableauSettingsState = this.state.tableauSettings;
 
@@ -709,31 +709,28 @@ render() {
     );
   }
 
-  // left off here config should be good, now we need to get component working from new config
-    return (
-        <KeplerGlComponent
-            className={'tableau-kepler-gl'}
-            width={this.state.width}
-            height={this.state.height}
-            data={this.state.ConfigSheetData}
-            tableauSettings={tableauSettingsState}
-            readOnly={tableauSettingsState.readOnly === "true"}
-            keplerConfig={tableauSettingsState.keplerConfig}
-            mapboxAPIKey={tableauSettingsState.mapboxAPIKey}
+  return (
+    <KeplerGlComponent
+      className={'tableau-kepler-gl'}
+      width={this.state.width}
+      height={this.state.height}
+      data={this.state.ConfigSheetData}
+      tableauSettings={tableauSettingsState}
+      readOnly={tableauSettingsState.readOnly === "true"}
+      keplerConfig={tableauSettingsState.keplerConfig}
+      mapboxAPIKey={tableauSettingsState.mapboxAPIKey ? tableauSettingsState.mapboxAPIKey : this.state.tableauKey}
 
-            // persist state to tableau
-            configCallBack={this.configCallBack}
+      // persist state to tableau
+      configCallBack={this.configCallBack}
 
-            // interactivity
-            clickCallBack={this.clickCallBack}
-            hoverCallBack={this.hoverCallBack}
-        />
-    );
+      // interactivity
+      clickCallBack={this.clickCallBack}
+      hoverCallBack={this.hoverCallBack}
+    />
+  );
   }
 }
 
-App.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
+App.propTypes = {};
 
 export default withStyles(styles)(App);

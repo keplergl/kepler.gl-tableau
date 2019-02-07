@@ -37,14 +37,12 @@ import downloadJsonFile from "./file-download";
 import nycTrips from './data/nyc-trips.csv.js';
 // import keplerConfig from './data/kepler-config';
 
-const MAPBOX_TOKEN = 'pk.eyJ1IjoiZGVtYXJ0c2MiLCJhIjoiY2o4bjd4aG40MTZudTJ3bXo5aDU3dmFpMSJ9.O72JlexJ3-xy030RqsoSgA' // process.env.MapboxAccessToken; // eslint-disable-line
-
 class App extends Component {
   componentDidMount() {
     // Use processCsvData helper to convert csv file into kepler.gl structure {fields, rows}
     // const data1 = Processors.processCsvData(nycTrips);
     const data = this.props.data;
-    console.log('checking data on mount', data);
+    console.log('checking data on mount', data, this.props);
     // Create dataset structure
     const dataset = {
       data,
@@ -123,7 +121,7 @@ class App extends Component {
       <div style={{position: 'absolute', width: '100%', height: '100%', minHeight: '70vh'}}>
           {buttonJSX}
           <KeplerGl
-            mapboxApiAccessToken={this.props.mapboxAPIKey || MAPBOX_TOKEN}
+            mapboxApiAccessToken={this.props.mapboxAPIKey}
             id="map"
             width={this.props.width}
             height={this.props.height}
