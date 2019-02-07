@@ -30,15 +30,6 @@ import defaultSettings from './components/Configuration/defaultSettings';
 
 // utils and variables
 import {
-  defaultColor,
-  DataBlick,
-  semioticTypes,
-  dematrixifiedEdges,
-  dematrixifiedNodes,
-  or_data,
-  d3Curves,
-} from './variables';
-import {
   columnToKeplerField,
   dataToKeplerRow,
   log
@@ -512,7 +503,6 @@ class App extends Component {
   componentDidMount () {
     const thisHeight = window.innerHeight;
     const thisWidth = window.innerWidth;
-    //log("size", thisHeight, thisWidth);
 
     const _this = this;
     window.addEventListener('resize', function() {
