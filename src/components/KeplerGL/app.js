@@ -33,10 +33,6 @@ import KeplerGlSchema from 'kepler.gl/schemas';
 import Button from './button';
 import downloadJsonFile from "./file-download";
 
-// Sample data
-import nycTrips from './data/nyc-trips.csv.js';
-// import keplerConfig from './data/kepler-config';
-
 class App extends Component {
   componentDidMount() {
     // Use processCsvData helper to convert csv file into kepler.gl structure {fields, rows}
