@@ -129,7 +129,6 @@ class App extends Component {
     if (!this.props.readOnly) {
       buttonJSX = <Button onClick={this.setKeplerConfig}>Save Config</Button>
     }
-    console.log('width: ', this.props.width, 'height:', this.props.height)
     return (
       <div style={{position: 'absolute', width: '100%', height: '100%', minHeight: '70vh'}}>
           {buttonJSX}
