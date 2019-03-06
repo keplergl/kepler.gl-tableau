@@ -20,11 +20,19 @@
 
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import KeplerGl from 'kepler.gl';
 
 // Kepler.gl actions
 import {addDataToMap} from 'kepler.gl/actions';
-import Processors from 'kepler.gl/processors';
+import {
+  SidebarFactory,
+  AddDataButtonFactory,
+  ExportConfigModalFactory,
+  PanelHeaderFactory,
+  injectComponents
+} from 'kepler.gl/components';
+
+import CustomPanelHeaderFactory from './components/panel-header';
+import CustomSidebarFactory from './components/side-bar';
 
 // Kepler.gl Schema APIs
 import KeplerGlSchema from 'kepler.gl/schemas';
@@ -33,10 +41,19 @@ import KeplerGlSchema from 'kepler.gl/schemas';
 import Button from './button';
 import downloadJsonFile from "./file-download";
 
+const CustomAddDataButtonFactory = () => () => (
+  <div/>
+)
+// CustomComponents
+const KeplerGl = injectComponents([
+  [AddDataButtonFactory, CustomAddDataButtonFactory],
+  [SidebarFactory, CustomSidebarFactory],
+  [PanelHeaderFactory, CustomPanelHeaderFactory]
+]);
+
 class App extends Component {
   componentDidMount() {
     // Use processCsvData helper to convert csv file into kepler.gl structure {fields, rows}
-    // const data1 = Processors.processCsvData(nycTrips);
     const data = this.props.data;
     console.log('checking data on mount', data, this.props);
     // Create dataset structure
@@ -112,13 +129,15 @@ class App extends Component {
     if (!this.props.readOnly) {
       buttonJSX = <Button onClick={this.setKeplerConfig}>Save Config</Button>
     }
-
+    console.log('width: ', this.props.width, 'height:', this.props.height)
     return (
       <div style={{position: 'absolute', width: '100%', height: '100%', minHeight: '70vh'}}>
           {buttonJSX}
           <KeplerGl
             mapboxApiAccessToken={this.props.mapboxAPIKey}
             id="map"
+            appName="Kepler.gl Tableau"
+            version="v0.1"
             width={this.props.width}
             height={this.props.height}
           />

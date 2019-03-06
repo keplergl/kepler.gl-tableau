@@ -14,7 +14,7 @@ html, body {
 
 .App {
   /*text-align: center;*/
-  position: fixed;
+  /* position: fixed; */
 }
 
 .tick-line, .axis-baseline {

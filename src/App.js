@@ -107,6 +107,7 @@ class App extends Component {
     this.configure = this.configure.bind(this);
     this.onNextStep = this.onNextStep.bind(this);
     this.onPrevStep = this.onPrevStep.bind(this);
+    this.resize = this.resize.bind(this);
   }
 
   onNextStep() {
@@ -489,30 +490,20 @@ class App extends Component {
   };
 
   componentWillUnmount() {
-    const _this = this;
-    window.removeEventListener('resize', function() {
-      const thisWidth = window.innerWidth;
-      const thisHeight = window.innerHeight;
-      _this.setState({
-        width: thisWidth,
-        height: thisHeight
-      });
-    }, true);
+    window.removeEventListener('resize', this.resize, true);
+  }
+
+  resize() {
+    this.setState({
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
   }
 
   componentDidMount () {
-    const thisHeight = window.innerHeight;
-    const thisWidth = window.innerWidth;
-
     const _this = this;
-    window.addEventListener('resize', function() {
-      const thisWidth = window.innerWidth;
-      const thisHeight = window.innerHeight;
-      _this.setState({
-        width: thisWidth,
-        height: thisHeight
-      });
-    }, true);
+    window.addEventListener('resize', this.resize, true);
+    this.resize();
 
     tableauExt.initializeAsync({'configure': this.configure}).then(() => {
       return fetch("https://mapsconfig.tableau.com/v1/config.json");
@@ -520,7 +511,7 @@ class App extends Component {
         return response.json();
       }).then((configJson) => {
         let unregisterHandlerFunctions = [];
-        // console.log('tableau config', configJson);    
+        // console.log('tableau config', configJson);
 
         // default tableau settings on initial entry into the extension
         // we know if we haven't done anything yet when tableauSettings state = []
@@ -570,8 +561,8 @@ class App extends Component {
         this.setState({
           tableauKey: (configJson.access_token || {}).token,
           isLoading: false,
-          height: thisHeight,
-          width: thisWidth,
+          height: window.innerHeight,
+          width: window.innerWidth,
           sheetNames: sheetNames,
           dashboardName: dashboardName,
           demoType: tableauExt.settings.get("ConfigType") || "violin",
@@ -589,20 +580,28 @@ class App extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     // console log settings to check current status
-    log("will update", this.state, nextState, tableauExt.settings.getAll());
+    if (tableauExt.settings) {
+      log("will update", this.state, nextState, tableauExt.settings.getAll());
 
-    //get selectedSheet from Settings
-    //hardcoding this for now because I know i have two possibilities
-    let selectedSheet = tableauExt.settings.get('ConfigSheet');
-    if (selectedSheet && this.state.tableauSettings.ConfigSheet !== nextState.tableauSettings.ConfigSheet) {
-      log('calling summary data sheet');
-      this.getSummaryData(selectedSheet, "ConfigSheet");
-    } //get field3 from Settings
+      //get selectedSheet from Settings
+      //hardcoding this for now because I know i have two possibilities
+      let selectedSheet = tableauExt.settings.get('ConfigSheet');
+      if (selectedSheet && this.state.tableauSettings.ConfigSheet !== nextState.tableauSettings.ConfigSheet) {
+        log('calling summary data sheet');
+        this.getSummaryData(selectedSheet, "ConfigSheet");
+      } //get field3 from Settings
+    } else {
+      log("will update", this.state, nextState, 'tableauExt.settings not ready yet');
+    }
   }
 
 // just logging this for now, may be able to remove later
 componentDidUpdate() {
-  log('did update', this.state, tableauExt.settings.getAll());
+  if (tableauExt.settings) {
+    log('did update', this.state, tableauExt.settings.getAll());
+  } else {
+    log("did update", this.state, 'tableauExt.settings not ready yet');
+  }
 }
 
 
