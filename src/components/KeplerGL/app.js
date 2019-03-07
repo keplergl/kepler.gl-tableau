@@ -108,7 +108,7 @@ class App extends Component {
   // Use processCsvData helper to convert csv file into kepler.gl structure {fields, rows}
     const data = this.props.data;
     // Create dataset structure
-    const dataset = {
+    const datasets = {
       data,
       info: {
         // this is used to match the dataId defined in nyc-config.json. For more details see API documentation.
@@ -121,7 +121,7 @@ class App extends Component {
     const config = this.getMapConfig();
 
     // addDataToMap action to inject dataset into kepler.gl instance
-    this.props.dispatch(addDataToMap({datasets: dataset, options: {readOnly: this.props.readOnly}, config: this.props.keplerConfig ? JSON.parse(this.props.keplerConfig) : config}));
+    this.props.dispatch(addDataToMap({datasets, options: {readOnly: this.props.readOnly}, config: this.props.keplerConfig ? JSON.parse(this.props.keplerConfig) : config}));
   };
 
   render() {
