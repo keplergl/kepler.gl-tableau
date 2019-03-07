@@ -26,7 +26,6 @@ import {addDataToMap} from 'kepler.gl/actions';
 import {
   SidebarFactory,
   AddDataButtonFactory,
-  ExportConfigModalFactory,
   PanelHeaderFactory,
   injectComponents
 } from 'kepler.gl/components';
@@ -52,6 +51,7 @@ const KeplerGl = injectComponents([
 ]);
 
 class App extends Component {
+  preValue = null;
   componentDidMount() {
     // Use processCsvData helper to convert csv file into kepler.gl structure {fields, rows}
     const data = this.props.data;
@@ -73,14 +73,23 @@ class App extends Component {
       config: this.props.keplerConfig ? JSON.parse(this.props.keplerConfig) : undefined}));
   }
 
-  // this method is used to persist state into tableau settings
-  setKeplerConfig = () => {
-    const map = this.getMapConfig();
+  /**
+   * Listen on state change to update serialized map config
+   */
+  componentDidUpdate() {
+    const currentState = this.getMapConfig();
+    if (!currentState) {
+      return;
+    }
 
-    console.log('saving the kepler gl settings', map);
-    this.props.configCallBack('keplerConfig', map);
+    const serializedState = JSON.stringify(currentState);
+
+    if (this.preValue !== serializedState) {
+      // keplerGl State has changed
+      this.props.configCallBack('keplerConfig', serializedState);
+      this.preValue = serializedState;
+    }
   }
-
 
   // This method is used as reference to show how to export the current kepler.gl instance configuration
   // Once exported the configuration can be imported using parseSavedConfig or load method from KeplerGlSchema
@@ -94,44 +103,9 @@ class App extends Component {
     return KeplerGlSchema.getConfigToSave(map);
   }
 
-  // This method is used as reference to show how to export the current kepler.gl instance configuration
-  // Once exported the configuration can be imported using parseSavedConfig or load method from KeplerGlSchema
-  exportMapConfig = () => {
-    // create the config object
-    const mapConfig = this.getMapConfig();
-    // save it as a json file
-    downloadJsonFile(mapConfig, 'kepler.gl.json');
-  };
-
-  // Created to show how to replace dataset with new data and keeping the same configuration
-  replaceData = () => {
-  // Use processCsvData helper to convert csv file into kepler.gl structure {fields, rows}
-    const data = this.props.data;
-    // Create dataset structure
-    const datasets = {
-      data,
-      info: {
-        // this is used to match the dataId defined in nyc-config.json. For more details see API documentation.
-        // It is paramount that this id mathces your configuration otherwise the configuration file will be ignored.
-        id: 'my_data'
-      }
-    };
-
-    // read the current configuration
-    const config = this.getMapConfig();
-
-    // addDataToMap action to inject dataset into kepler.gl instance
-    this.props.dispatch(addDataToMap({datasets, options: {readOnly: this.props.readOnly}, config: this.props.keplerConfig ? JSON.parse(this.props.keplerConfig) : config}));
-  };
-
   render() {
-    let buttonJSX;
-    if (!this.props.readOnly) {
-      buttonJSX = <Button onClick={this.setKeplerConfig}>Save Config</Button>
-    }
     return (
       <div style={{position: 'absolute', width: '100%', height: '100%', minHeight: '70vh'}}>
-          {buttonJSX}
           <KeplerGl
             mapboxApiAccessToken={this.props.mapboxAPIKey}
             id="map"

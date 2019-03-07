@@ -25,6 +25,7 @@ import {taskMiddleware} from 'react-palm/tasks';
 import {routerMiddleware} from 'react-router-redux';
 import {hashHistory} from 'react-router';
 import reducers from './reducers';
+import KeplerGlSchema from 'kepler.gl/schemas';
 
 export const middlewares = [
   taskMiddleware,
@@ -35,11 +36,10 @@ export const enhancers = [applyMiddleware(...middlewares)];
 
 const initialState = {};
 
-// add redux devtools
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
-export default createStore(
+const store = createStore(
   reducers,
   initialState,
-  composeEnhancers(...enhancers)
+  compose(...enhancers)
 );
+
+export default store;

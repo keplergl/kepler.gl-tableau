@@ -9,7 +9,7 @@ import App from './app';
 
 //lodash
 import _ from 'lodash';
-  
+
 //material ui
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
@@ -35,7 +35,7 @@ class KeplerGlComponent extends React.Component {
       super(props);
       this.state = {
         keplerData: undefined,
-      }  
+      }
     }
     preprocessData() {
         const {
@@ -43,17 +43,14 @@ class KeplerGlComponent extends React.Component {
             tableauSettings,
         } = this.props;
 
-        let keplerData = memoized.buildKeplerData(data);
 
-        return ({
-            keplerData: keplerData
-        });
+        return {keplerData: memoized.buildKeplerData(data)};
     }
 
     componentDidMount() {
         console.log('in kepler component mount', this.props.data);
     }
-  
+
     render() {
         console.log('kepler component render', this.props);
         const {
@@ -61,14 +58,14 @@ class KeplerGlComponent extends React.Component {
             width,
             data,
             tableauSettings,
-            readOnly, 
+            readOnly,
             keplerConfig,
             mapboxAPIKey
         } = this.props;
 
         // pull in memoized stuff for use in render function
         let {
-            keplerData, 
+            keplerData,
         } = this.preprocessData();
 
         console.log('kepler Data in sub component', data, keplerData); //, JSON.stringify(data));
@@ -91,7 +88,7 @@ class KeplerGlComponent extends React.Component {
             return (
                 // <div className="kepler-gl" style={{ padding: '1%', height: height, width: width, float: 'none', margin: '0 auto' }}>
                     <Provider store={store}>
-                        <App 
+                        <App
                             height={height}
                             width={width}
                             data={keplerData}
@@ -115,6 +112,5 @@ class KeplerGlComponent extends React.Component {
 // KeplerGlComponent.propTypes = {
 //     classes: PropTypes.object.isRequired,
 // };
-  
+
 export default KeplerGlComponent;
-  

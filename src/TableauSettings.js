@@ -12,7 +12,7 @@ export const ShouldUse = true;
  * Switches the callbacks of the transactional `updateAndSave` and `eraseAndSave`
  * to be called AFTER the change has been saved instead of dispatching them immediately.
  *
- * The value can be overriden for each call.
+ * The value can be overidden for each call.
  */
 export const DeferCallbacks = true;
 
