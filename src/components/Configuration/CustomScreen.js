@@ -64,7 +64,7 @@ class CustomScreen extends React.Component {
       <div className="sheetScreen">
         <OptionWrapper>
           <div class="content-container">
-            <OptionTitle>{this.props.configTitle}</OptionTitle>
+            <OptionTitle style={{paddingLeft: "8px"}}>{this.props.configTitle}</OptionTitle>
             <FormControl className={classes.formControl}>
               <InputLabelWithTooltip 
                 title="Mapbox API Key"
@@ -75,7 +75,7 @@ class CustomScreen extends React.Component {
                 id="mapboxAPIKey-helper"
                 kind="line"
                 name="mapboxAPIKey"
-                label="Mapbox API Key"
+                // label="Mapbox API Key"
                 placeholder="pk.12345..."
                 value={tableauSettings.mapboxAPIKey}
                 onChange={handleChange}
