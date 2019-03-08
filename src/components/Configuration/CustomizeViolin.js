@@ -8,7 +8,7 @@ const CustomizeViolin = (props) => (
     <div class="content-container">
       <h4 style={{color: "#BDBDBD"}}>{props.title}</h4>
       <div className="clearfix">
-        <OptionColumn className="grid--6">
+        <OptionColumn className="grid--6" style={{margin: "10px"}}>
           <CustomScreen 
             configTitle={"Customize how to render kepler.gl in Tableau"}
             handleChange={props.handleChange}

@@ -18,28 +18,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import {createStore, applyMiddleware, compose} from 'redux';
+import React from 'react';
+import {SidebarFactory, CollapseButtonFactory} from 'kepler.gl/components';
+import styled from 'kepler.gl/node_modules/styled-components';
 
-import window from 'global/window';
-import {taskMiddleware} from 'react-palm/tasks';
-import {routerMiddleware} from 'react-router-redux';
-import {hashHistory} from 'react-router';
-import reducers from './reducers';
-import KeplerGlSchema from 'kepler.gl/schemas';
+const StyledSideBarContainer = styled.div`
+  .side-panel--container {
+    transform:scale(0.85);
+    transform-origin: top left;
+    height: 117.64%;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
 
-export const middlewares = [
-  taskMiddleware,
-  routerMiddleware(hashHistory)
-];
+    .side-bar {
+      height: 100%;
+    }
+    .side-bar__close {
+      right: -30px;
+      top: 14px;
+    }
+  }
+`;
 
-export const enhancers = [applyMiddleware(...middlewares)];
+// Custom sidebar will render kepler.gl default side bar
+// adding a wrapper component to edit its style
+function CustomSidebarFactory() {
+  const CloseButton = CollapseButtonFactory();
+  const Sidebar = SidebarFactory(CloseButton);
+  const CustomSidebar = (props) => (
+    <StyledSideBarContainer>
+      <Sidebar {...props}/>
+    </StyledSideBarContainer>
+  );
+  return CustomSidebar;
+}
 
-const initialState = {};
-
-const store = createStore(
-  reducers,
-  initialState,
-  compose(...enhancers)
-);
-
-export default store;
+export default CustomSidebarFactory;

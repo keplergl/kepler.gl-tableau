@@ -18,28 +18,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import {createStore, applyMiddleware, compose} from 'redux';
+import {PanelHeaderFactory, Icons} from 'kepler.gl/components';
 
-import window from 'global/window';
-import {taskMiddleware} from 'react-palm/tasks';
-import {routerMiddleware} from 'react-router-redux';
-import {hashHistory} from 'react-router';
-import reducers from './reducers';
-import KeplerGlSchema from 'kepler.gl/schemas';
+const KEPLER_DOC = 'https://github.com/uber/kepler.gl/blob/master/docs/user-guides/a-introduction.md';
 
-export const middlewares = [
-  taskMiddleware,
-  routerMiddleware(hashHistory)
-];
+export function CustomPanelHeaderFactory() {
+  const PanelHeader = PanelHeaderFactory();
 
-export const enhancers = [applyMiddleware(...middlewares)];
+  PanelHeader.defaultProps = {
+    ...PanelHeader.defaultProps,
+    actionItems: [
+      {
+        id: 'docs',
+        label: 'Docs',
+        iconComponent: Icons.Docs,
+        href: KEPLER_DOC,
+        blank: true,
+        tooltip: 'Documentation',
+        onClick: () => {}
+      }
+    ]
+  };
+  return PanelHeader;
+}
 
-const initialState = {};
-
-const store = createStore(
-  reducers,
-  initialState,
-  compose(...enhancers)
-);
-
-export default store;
+export default CustomPanelHeaderFactory;

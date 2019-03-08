@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import '../../styles/Tooltip.css';
+
 const InputTitle = styled.span`
   font-size: 11px;
 `;
@@ -8,7 +10,7 @@ const InputTitle = styled.span`
 const Tooltip = styled.a`
   display: inline !important;
   cursor: pointer;
-  color: rgb(232, 118, 44);
+  color: rgb(45, 204, 151);
   font-weight: 700;
   margin-left: 8px;
 `;
