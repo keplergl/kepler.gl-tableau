@@ -24,7 +24,7 @@ yarn --ignore-engines
 
 ##### 3. Start local app session
 ```sh
-yarn run start
+yarn start
 ```
 
 ### Setup local extension in Tableau Desktop
