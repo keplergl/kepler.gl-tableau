@@ -1,7 +1,7 @@
 {
-  "name": "tableau-kepler-gl",
+  "name": "kepler.gl-tableau",
   "version": "0.1.0",
-  "homepage": "https://demartsc.github.io/tableau-kepler-gl",
+  "homepage": "https://uber.github.io/kepler.gl-tableau",
   "private": true,
   "dependencies": {
     "@atlaskit/css-reset": "^3.0.2",

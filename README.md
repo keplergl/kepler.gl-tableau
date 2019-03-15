@@ -10,11 +10,15 @@ This is the kepler.gl tableau extension. It will load a kepler.gl map visualizat
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 ## Local Development
+Install [node](https://nodejs.org/en/download/package-manager/) (`> 6`), [yarn](https://yarnpkg.com/en/docs/install).
 
-### Start node app
+Use Node v6 and above, older node versions have not been tested.
+For best management of Node versions, use [nvm](https://github.com/creationix/nvm) `nvm install`.
+
+### Start Node app
 ##### 1. Clone repo
 ```sh
-git clone <>
+git clone git@github.com:uber/kepler.gl-tableau.git
 ```
 
 ##### 2. Install
@@ -25,6 +29,8 @@ yarn --ignore-engines
 ##### 3. Start local app session
 ```sh
 yarn start
+# or
+npm start
 ```
 
 ### Setup local extension in Tableau Desktop
@@ -49,4 +55,8 @@ A debug session will be available in browser http://localhost:8696
 - More information on Tableau Extension API about [Get Started with Dashboard Extensions
 ](https://tableau.github.io/extensions-api/docs/trex_getstarted.html)
 
-
+### Deploy
+Deploy local app to uber.github.io, this will be the app that Tableau extension loads from
+```sh
+npm run deploy
+```
