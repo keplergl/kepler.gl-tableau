@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/tableau-kepler-gl/precache-manifest.8ef5244169ffbaadcb90b05666814d2e.js"
+  "/tableau-kepler-gl/precache-manifest.bdad7a1aa91df5e474d88d44d2dfb446.js"
 );
 
 workbox.clientsClaim();
