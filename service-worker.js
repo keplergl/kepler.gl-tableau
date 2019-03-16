@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/tableau-kepler-gl/precache-manifest.bdad7a1aa91df5e474d88d44d2dfb446.js"
+  "/kepler.gl-tableau/precache-manifest.889869833556e81bbcbdefe5e066c0b9.js"
 );
 
 workbox.clientsClaim();
@@ -28,7 +28,7 @@ self.__precacheManifest = [].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
-workbox.routing.registerNavigationRoute("/tableau-kepler-gl/index.html", {
+workbox.routing.registerNavigationRoute("/kepler.gl-tableau/index.html", {
   
   blacklist: [/^\/_/,/\/[^\/]+\.[^\/]+$/],
 });
