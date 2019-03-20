@@ -50,6 +50,21 @@ const KeplerGl = injectComponents([
   [PanelHeaderFactory, CustomPanelHeaderFactory]
 ]);
 
+
+function getHoverInfo(info) {
+  const objectHovered = info ? info.object : null;
+  if (!objectHovered) {
+    // if nothing hovered
+    return null;
+  }
+
+  return objectHovered.data ?
+  // if hovered is a single object
+  objectHovered.data :
+  // if hovered is a hexbbin, or grid, kepler.gl can return all the points inside that hexagon / grid
+  objectHovered.points;
+}
+
 class App extends Component {
   preValue = null;
   componentDidMount() {
@@ -76,7 +91,30 @@ class App extends Component {
   /**
    * Listen on state change to update serialized map config
    */
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
+    this.handleConfigChange();
+    this.handleInteractionEvent(prevProps);
+  }
+
+  handleInteractionEvent(prevProps) {
+    const {keplerGl} = this.props;
+    if (!keplerGl || !keplerGl.map || !prevProps.keplerGl || !prevProps.keplerGl.map) {
+      // component hasn't mount yet
+      return;
+    }
+
+    if (prevProps.keplerGl.map.visState.hoverInfo !== keplerGl.map.visState.hoverInfo) {
+      // hovered object has changed
+      this.props.customHoverBehavior(getHoverInfo(keplerGl.map.visState.hoverInfo));
+    }
+
+    if (prevProps.keplerGl.map.visState.clicked !== keplerGl.map.visState.clicked) {
+      // clicked object has changed
+      this.props.customClickBehavior(getHoverInfo(keplerGl.map.visState.clicked));
+    }
+  }
+
+  handleConfigChange() {
     const currentState = this.getMapConfig();
     if (!currentState) {
       return;
@@ -90,7 +128,6 @@ class App extends Component {
       this.preValue = serializedState;
     }
   }
-
   // This method is used as reference to show how to export the current kepler.gl instance configuration
   // Once exported the configuration can be imported using parseSavedConfig or load method from KeplerGlSchema
   getMapConfig() {

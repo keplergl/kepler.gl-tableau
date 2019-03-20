@@ -130,6 +130,8 @@ class App extends Component {
     log('in on click callback', d);
       // go through each worksheet and select marks
     if ( d ) {
+      // if clicked is a single object, d is an array of all column values of that object
+      // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
       tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
         log(`clicked ${d.id}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
         // filter
@@ -148,6 +150,8 @@ class App extends Component {
     log('in on hover callback', d);
       // go through each worksheet and select marks
     if ( d ) {
+      // if clicked is a single object, d is an array of all column values of that object
+      // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
       tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
       log(`hovered ${d.id}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
 

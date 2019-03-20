@@ -52,7 +52,6 @@ class KeplerGlComponent extends React.Component {
     }
 
     render() {
-        console.log('kepler component render', this.props);
         const {
             height,
             width,
@@ -68,7 +67,6 @@ class KeplerGlComponent extends React.Component {
             keplerData,
         } = this.preprocessData();
 
-        console.log('kepler Data in sub component', data, keplerData); //, JSON.stringify(data));
 
         // need to see if we can enable both summary and point hover on this
         // coding for summary only below
@@ -81,29 +79,25 @@ class KeplerGlComponent extends React.Component {
             );
         }
 
-        console.log('kepler call', keplerData, data, tableauSettings);
         if ( !keplerData ) {
             return null;
         } else {
             return (
-                // <div className="kepler-gl" style={{ padding: '1%', height: height, width: width, float: 'none', margin: '0 auto' }}>
-                    <Provider store={store}>
-                        <App
-                            height={height}
-                            width={width}
-                            data={keplerData}
-                            readOnly={readOnly}
-                            keplerConfig={keplerConfig}
-                            mapboxAPIKey={mapboxAPIKey}
+                <Provider store={store}>
+                    <App
+                        height={height}
+                        width={width}
+                        data={keplerData}
+                        readOnly={readOnly}
+                        keplerConfig={keplerConfig}
+                        mapboxAPIKey={mapboxAPIKey}
 
-                            configCallBack={this.props.configCallBack}
-
-                            tooltipContent={d => popOver(d)}
-                            customClickBehavior={(d) => this.props.clickCallBack(d)}
-                            customHoverBehavior={(d) => this.props.hoverCallBack(d)}
-                        />
-                    </Provider>
-                // </div>
+                        configCallBack={this.props.configCallBack}
+                        tooltipContent={popOver}
+                        customClickBehavior={this.props.clickCallBack}
+                        customHoverBehavior={this.props.hoverCallBack}
+                    />
+                </Provider>
             );
         }
     }
