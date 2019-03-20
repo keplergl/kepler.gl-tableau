@@ -147,22 +147,31 @@ class App extends Component {
   }
 
   hoverCallBack = d => {
-    log('in on hover callback', d);
+    log('in on hover callback', d, this.state.ConfigSheetColumns.indexOf("RecordID"));
       // go through each worksheet and select marks
     if ( d ) {
       // if clicked is a single object, d is an array of all column values of that object
       // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
       tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
-      log(`hovered ${d.id}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
+      log(`hovered ${typeof d[0] === 'object'} and ${d.map(childD => childD[this.state.ConfigSheetColumns.indexOf("RecordID")])}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
 
-      // select marks
-      // worksheet.selectMarksByValueAsync(
-      //   [{
-      //     'fieldName': tableauExt.settings.get("ConfigChildField"),
-      //     'value': [d.id],
-      //   }],
-      //   window.tableau.SelectionUpdateType.Replace
-      // ).then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
+      if ( typeof d[0] === 'object' ) {
+        worksheet.selectMarksByValueAsync(
+          [{
+            'fieldName': 'RecordID',
+            'value': d.map(childD => childD[this.state.ConfigSheetColumns.indexOf("RecordID")]),
+          }],
+          window.tableau.SelectionUpdateType.Replace
+        ).then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
+      } else {
+        worksheet.selectMarksByValueAsync(
+          [{
+            'fieldName': 'RecordID',
+            'value': d[this.state.ConfigSheetColumns.indexOf("RecordID")],
+          }],
+          window.tableau.SelectionUpdateType.Replace
+          ).then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
+      }
       });
     }
   }
