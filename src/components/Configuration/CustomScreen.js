@@ -57,7 +57,8 @@ class CustomScreen extends React.Component {
       edgeColor,
       padAngle,
       hoverAnnotation, 
-      tableauSettings } = this.props;
+      tableauSettings, 
+      configSheetColumns } = this.props;
 
     console.log('we are in custom', this.props);
     return (
@@ -109,6 +110,24 @@ class CustomScreen extends React.Component {
                  <MenuItem value={"No Action"}>No Action</MenuItem>
                  <MenuItem value={"Highlight"}>Highlight</MenuItem>
                  <MenuItem value={"Filter"}>Filter</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip 
+                    title="Hover Identifying Field"
+                    tooltipText="Select which field to take action on"
+                  />
+              <Select
+                value={tableauSettings.hoverField || "None"}
+                onChange={handleChange}
+                input={<Input name="hoverField" id="hoverField-helper" />}
+              >
+                 <MenuItem value={"None"}>None</MenuItem>
+                 {
+                  configSheetColumns.map(fieldName => (
+                    <MenuItem value={fieldName}>{fieldName}</MenuItem>
+                  ))
+                };
               </Select>
             </FormControl>
             {/* <FormControl className={classes.formControl}>

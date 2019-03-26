@@ -147,30 +147,30 @@ class App extends Component {
   }
 
   hoverCallBack = d => {
-    log('in on hover callback', d, this.state.ConfigSheetColumns.indexOf("RecordID"), this.state.tableauSettings.hoverAction);
+    log('in on hover callback', d, this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.hoverField), this.state.tableauSettings.hoverAction);
 
     // check which action we are supposed to take
-    if ((this.state.tableauSettings.hoverAction || "No Action") === "Highlight") {
+    if ((this.state.tableauSettings.hoverAction || "No Action") === "Highlight" && (this.state.tableauSettings.hoverField || "None") !== "None") {
       if ( d ) {
         // if clicked is a single object, d is an array of all column values of that object
         // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
         tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
         if ( worksheet.name !== this.state.tableauSettings.ConfigSheet) {
-          log(`hovered ${typeof d[0] === 'object'} and ${d.map(childD => childD[this.state.ConfigSheetColumns.indexOf("RecordID")])}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
+          log(`hovered ${typeof d[0] === 'object'} and ${d.map(childD => childD[this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.hoverField)])}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
     
             if ( typeof d[0] === 'object' ) {
               worksheet.selectMarksByValueAsync(
                 [{
-                  'fieldName': 'RecordID',
-                  'value': d.map(childD => childD[this.state.ConfigSheetColumns.indexOf("RecordID")]),
+                  'fieldName': this.state.tableauSettings.hoverField,
+                  'value': d.map(childD => childD[this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.hoverField)]),
                 }],
                 window.tableau.SelectionUpdateType.Replace
               ).then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
             } else {
               worksheet.selectMarksByValueAsync(
                 [{
-                  'fieldName': 'RecordID',
-                  'value': d[this.state.ConfigSheetColumns.indexOf("RecordID")],
+                  'fieldName': this.state.tableauSettings.hoverField,
+                  'value': d[this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.hoverField)],
                 }],
                 window.tableau.SelectionUpdateType.Replace
                 ).then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
@@ -178,25 +178,25 @@ class App extends Component {
           }
         });
       }  
-    } else if ((this.state.tableauSettings.hoverAction || "No Action") === "Filter") {
+    } else if ((this.state.tableauSettings.hoverAction || "No Action") === "Filter" && (this.state.tableauSettings.hoverField || "None") !== "None") {
       if ( d ) {
         // if clicked is a single object, d is an array of all column values of that object
         // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
         tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
           if ( worksheet.name !== this.state.tableauSettings.ConfigSheet) {
-            log(`hovered ${typeof d[0] === 'object'} and ${d.map(childD => childD[this.state.ConfigSheetColumns.indexOf("RecordID")])}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
+            log(`hovered ${typeof d[0] === 'object'} and ${d.map(childD => childD[this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.hoverField)])}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
       
             if ( typeof d[0] === 'object' ) {
               worksheet.applyFilterAsync(
-                "RecordID", 
-                d.map(childD => childD[this.state.ConfigSheetColumns.indexOf("RecordID")]),
+                this.state.tableauSettings.hoverField, 
+                d.map(childD => childD[this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.hoverField)]),
                 window.tableau.FilterUpdateType.Replace
               ).then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
             } else {
               worksheet.applyFilterAsync(
                 [{
-                  'fieldName': "RecordID", 
-                  'value': d[this.state.ConfigSheetColumns.indexOf("RecordID")],
+                  'fieldName': this.state.tableauSettings.hoverField, 
+                  'value': d[this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.hoverField)],
                 }],
                 window.tableau.FilterUpdateType.Replace
               ).then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
@@ -704,6 +704,7 @@ render() {
             customCallBack={this.customCallBack}
             field={'configuration'}
             tableauSettings={tableauSettingsState}
+            configSheetColumns={this.state.ConfigSheetColumns}
           />
           <StepButtons
             onNextClick={this.onNextStep}
