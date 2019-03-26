@@ -147,33 +147,66 @@ class App extends Component {
   }
 
   hoverCallBack = d => {
-    log('in on hover callback', d, this.state.ConfigSheetColumns.indexOf("RecordID"));
-      // go through each worksheet and select marks
-    if ( d ) {
-      // if clicked is a single object, d is an array of all column values of that object
-      // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
-      tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
-      log(`hovered ${typeof d[0] === 'object'} and ${d.map(childD => childD[this.state.ConfigSheetColumns.indexOf("RecordID")])}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
+    log('in on hover callback', d, this.state.ConfigSheetColumns.indexOf("RecordID"), this.state.tableauSettings.hoverAction);
 
-      if ( typeof d[0] === 'object' ) {
-        worksheet.selectMarksByValueAsync(
-          [{
-            'fieldName': 'RecordID',
-            'value': d.map(childD => childD[this.state.ConfigSheetColumns.indexOf("RecordID")]),
-          }],
-          window.tableau.SelectionUpdateType.Replace
-        ).then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
-      } else {
-        worksheet.selectMarksByValueAsync(
-          [{
-            'fieldName': 'RecordID',
-            'value': d[this.state.ConfigSheetColumns.indexOf("RecordID")],
-          }],
-          window.tableau.SelectionUpdateType.Replace
-          ).then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
-      }
-      });
+    // check which action we are supposed to take
+    if ((this.state.tableauSettings.hoverAction || "No Action") === "Highlight") {
+      if ( d ) {
+        // if clicked is a single object, d is an array of all column values of that object
+        // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
+        tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
+        if ( worksheet.name !== this.state.tableauSettings.ConfigSheet) {
+          log(`hovered ${typeof d[0] === 'object'} and ${d.map(childD => childD[this.state.ConfigSheetColumns.indexOf("RecordID")])}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
+    
+            if ( typeof d[0] === 'object' ) {
+              worksheet.selectMarksByValueAsync(
+                [{
+                  'fieldName': 'RecordID',
+                  'value': d.map(childD => childD[this.state.ConfigSheetColumns.indexOf("RecordID")]),
+                }],
+                window.tableau.SelectionUpdateType.Replace
+              ).then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
+            } else {
+              worksheet.selectMarksByValueAsync(
+                [{
+                  'fieldName': 'RecordID',
+                  'value': d[this.state.ConfigSheetColumns.indexOf("RecordID")],
+                }],
+                window.tableau.SelectionUpdateType.Replace
+                ).then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
+            }
+          }
+        });
+      }  
+    } else if ((this.state.tableauSettings.hoverAction || "No Action") === "Filter") {
+      if ( d ) {
+        // if clicked is a single object, d is an array of all column values of that object
+        // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
+        tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
+          if ( worksheet.name !== this.state.tableauSettings.ConfigSheet) {
+            log(`hovered ${typeof d[0] === 'object'} and ${d.map(childD => childD[this.state.ConfigSheetColumns.indexOf("RecordID")])}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
+      
+            if ( typeof d[0] === 'object' ) {
+              worksheet.applyFilterAsync(
+                "RecordID", 
+                d.map(childD => childD[this.state.ConfigSheetColumns.indexOf("RecordID")]),
+                window.tableau.FilterUpdateType.Replace
+              ).then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
+            } else {
+              worksheet.applyFilterAsync(
+                [{
+                  'fieldName': "RecordID", 
+                  'value': d[this.state.ConfigSheetColumns.indexOf("RecordID")],
+                }],
+                window.tableau.FilterUpdateType.Replace
+              ).then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
+            }
+          }
+        });
+      }  
     }
+
+    // go through each worksheet and select marks
   }
 
   demoChange = event => {

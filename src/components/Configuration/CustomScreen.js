@@ -96,6 +96,21 @@ class CustomScreen extends React.Component {
                  <MenuItem value={false}>False</MenuItem>
               </Select>
             </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip 
+                    title="Hover Action"
+                    tooltipText="Toggle and select which action to take on hover"
+                  />
+              <Select
+                value={tableauSettings.hoverAction || "No Action"}
+                onChange={handleChange}
+                input={<Input name="hoverAction" id="hoverAction-helper" />}
+              >
+                 <MenuItem value={"No Action"}>No Action</MenuItem>
+                 <MenuItem value={"Highlight"}>Highlight</MenuItem>
+                 <MenuItem value={"Filter"}>Filter</MenuItem>
+              </Select>
+            </FormControl>
             {/* <FormControl className={classes.formControl}>
               <InputLabelWithTooltip 
                   title="Hover Configuration"
