@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { parse, stringify } from 'flatted/esm';
 import './App.css';
 
 // Custom config components
@@ -10,6 +11,12 @@ import {
   Stepper,
   StepButtons,
 } from './components/Configuration'
+
+// Web Worker components for background data pull
+import {
+  Worker,
+  WebWorker,
+} from './components/Worker';
 
 // Viz components
 import LoadingIndicatorComponent from './components/LoadingIndicatorComponent';
@@ -67,7 +74,7 @@ const tableauExt = window.tableau.extensions;
 const options = {
   ignoreAliases: false,
   ignoreSelection: true,
-  maxRows: 0
+  maxRows: 1
 };
 
 // end constants to move to another file later
@@ -340,6 +347,29 @@ class App extends Component {
     } //get field3 from Settings
   }
 
+  // https://www.fullstackreact.com/articles/introduction-to-web-Workers-with-react/
+  // this will trigger the WebWorker to pull the summary data requested
+	fetchWebWorker = (sheet, fieldName, options) => {
+    const workerMessage = {
+      sheet,
+      fieldName, 
+      options, 
+      columnToKeplerField, 
+      dataToKeplerRow, 
+      tableauExt
+    }
+
+    console.log('workerMessage', parse(stringify(workerMessage)));
+
+		this.Worker.postMessage(parse(stringify(workerMessage)));
+
+		this.Worker.addEventListener('message', event => {
+			this.setState({
+				count: event.data.length
+			})
+		});
+  }
+
   getSummaryData = (selectedSheet, fieldName) => {
     //clean up event listeners (taken from tableau expample)
     if (this.unregisterEventFn) {
@@ -426,6 +456,8 @@ class App extends Component {
         [fieldName + 'NumberColumns']: col_names_N,
         [fieldName + 'Data']: {fields: keplerFields, rows: keplerData}, //data, we need something more like tableau for kepler
       };
+
+      this.fetchWebWorker(sheetName, fieldName, {...options, maxRows: 0});
 
       if (TableauSettings.ShouldUse) {
         TableauSettings.updateAndSave({
@@ -545,6 +577,8 @@ class App extends Component {
   componentDidMount () {
     const _this = this;
     window.addEventListener('resize', this.resize, true);
+
+    this.Worker = new WebWorker(Worker);
     this.resize();
 
     tableauExt.initializeAsync({'configure': this.configure}).then(() => {

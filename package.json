@@ -9,6 +9,7 @@
     "@material-ui/icons": "^1.0.0",
     "@tableau/tableau-ui": "^2.1.0",
     "core-js": "^2.6.0",
+    "flatted": "^2.0.0",
     "gh-pages": "^2.0.1",
     "kepler.gl": "^0.2.4",
     "react": "^16.3.2",
