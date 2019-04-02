@@ -57,7 +57,8 @@ class CustomScreen extends React.Component {
       edgeColor,
       padAngle,
       hoverAnnotation, 
-      tableauSettings } = this.props;
+      tableauSettings, 
+      configSheetColumns } = this.props;
 
     console.log('we are in custom', this.props);
     return (
@@ -94,6 +95,72 @@ class CustomScreen extends React.Component {
               >
                  <MenuItem value={true}>True</MenuItem>
                  <MenuItem value={false}>False</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip 
+                    title="Hover Action"
+                    tooltipText="Toggle and select which action to take on hover"
+                  />
+              <Select
+                value={tableauSettings.hoverAction || "No Action"}
+                onChange={handleChange}
+                input={<Input name="hoverAction" id="hoverAction-helper" />}
+              >
+                 <MenuItem value={"No Action"}>No Action</MenuItem>
+                 <MenuItem value={"Highlight"}>Highlight</MenuItem>
+                 <MenuItem value={"Filter"}>Filter</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip 
+                    title="Hover Identifying Field"
+                    tooltipText="Select which field to take action on"
+                  />
+              <Select
+                value={tableauSettings.hoverField || "None"}
+                onChange={handleChange}
+                input={<Input name="hoverField" id="hoverField-helper" />}
+              >
+                 <MenuItem value={"None"}>None</MenuItem>
+                 {
+                  configSheetColumns.map(fieldName => (
+                    <MenuItem value={fieldName}>{fieldName}</MenuItem>
+                  ))
+                };
+              </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip 
+                    title="Click Action"
+                    tooltipText="Toggle and select which action to take on click"
+                  />
+              <Select
+                value={tableauSettings.clickAction || "No Action"}
+                onChange={handleChange}
+                input={<Input name="clickAction" id="clickAction-helper" />}
+              >
+                 <MenuItem value={"No Action"}>No Action</MenuItem>
+                 <MenuItem value={"Highlight"}>Highlight</MenuItem>
+                 <MenuItem value={"Filter"}>Filter</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip 
+                    title="Click Identifying Field"
+                    tooltipText="Select which field to take action on"
+                  />
+              <Select
+                value={tableauSettings.clickField || "None"}
+                onChange={handleChange}
+                input={<Input name="clickField" id="clickField-helper" />}
+              >
+                 <MenuItem value={"None"}>None</MenuItem>
+                 {
+                  configSheetColumns.map(fieldName => (
+                    <MenuItem value={fieldName}>{fieldName}</MenuItem>
+                  ))
+                };
               </Select>
             </FormControl>
             {/* <FormControl className={classes.formControl}>

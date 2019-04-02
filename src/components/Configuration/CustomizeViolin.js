@@ -18,6 +18,7 @@ const CustomizeViolin = (props) => (
             projectionName={props.projectionName}
             color={props.color}
             tableauSettings={props.tableauSettings}
+            configSheetColumns={props.configSheetColumns}
           />
         </OptionColumn>
       </div>
