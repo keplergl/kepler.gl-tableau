@@ -130,6 +130,39 @@ class CustomScreen extends React.Component {
                 };
               </Select>
             </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip 
+                    title="Click Action"
+                    tooltipText="Toggle and select which action to take on click"
+                  />
+              <Select
+                value={tableauSettings.clickAction || "No Action"}
+                onChange={handleChange}
+                input={<Input name="clickAction" id="clickAction-helper" />}
+              >
+                 <MenuItem value={"No Action"}>No Action</MenuItem>
+                 <MenuItem value={"Highlight"}>Highlight</MenuItem>
+                 <MenuItem value={"Filter"}>Filter</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip 
+                    title="Click Identifying Field"
+                    tooltipText="Select which field to take action on"
+                  />
+              <Select
+                value={tableauSettings.clickField || "None"}
+                onChange={handleChange}
+                input={<Input name="clickField" id="clickField-helper" />}
+              >
+                 <MenuItem value={"None"}>None</MenuItem>
+                 {
+                  configSheetColumns.map(fieldName => (
+                    <MenuItem value={fieldName}>{fieldName}</MenuItem>
+                  ))
+                };
+              </Select>
+            </FormControl>
             {/* <FormControl className={classes.formControl}>
               <InputLabelWithTooltip 
                   title="Hover Configuration"

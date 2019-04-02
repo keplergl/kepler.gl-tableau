@@ -127,23 +127,71 @@ class App extends Component {
   }
 
   clickCallBack = d => {
-    log('in on click callback', d);
-      // go through each worksheet and select marks
-    if ( d ) {
-      // if clicked is a single object, d is an array of all column values of that object
-      // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
-      tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
-        log(`clicked ${d.id}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
-        // filter
-        // if ( worksheet.name !== tableauExt.settings.get("ConfigSheet") ) {
-        //   worksheet.applyFilterAsync(
-        //     tableauExt.settings.get("ConfigChildField"),
-        //     [d.id],
-        //     window.tableau.FilterUpdateType.Replace
-        //   ).then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
-        // }
-      });
+    log('in on click callback', d, this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.clickField), this.state.tableauSettings.clickAction);
+
+    // check which action we are supposed to take
+    if ((this.state.tableauSettings.clickAction || "No Action") === "Highlight" && (this.state.tableauSettings.clickField || "None") !== "None") {
+      if ( d ) {
+        // if clicked is a single object, d is an array of all column values of that object
+        // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
+        tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
+        if ( worksheet.name !== this.state.tableauSettings.ConfigSheet) {
+          log(`clicked ${typeof d[0] === 'object'} and ${d.map(childD => childD[this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.clickField)])}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
+    
+            if ( typeof d[0] === 'object' ) {
+              worksheet.selectMarksByValueAsync(
+                [{
+                  'fieldName': this.state.tableauSettings.clickField,
+                  'value': d.map(childD => childD[this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.clickField)]),
+                }],
+                window.tableau.SelectionUpdateType.Replace
+              ).then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
+            } else {
+              worksheet.selectMarksByValueAsync(
+                [{
+                  'fieldName': this.state.tableauSettings.clickField,
+                  'value': d[this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.clickField)],
+                }],
+                window.tableau.SelectionUpdateType.Replace
+                ).then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
+            }
+          }
+        });
+      }  
+    } else if ((this.state.tableauSettings.clickAction || "No Action") === "Filter" && (this.state.tableauSettings.clickField || "None") !== "None") {
+      if ( d ) {
+        // if clicked is a single object, d is an array of all column values of that object
+        // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
+        tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
+          if ( worksheet.name !== this.state.tableauSettings.ConfigSheet) {
+            log(`clicked ${typeof d[0] === 'object'} and ${d.map(childD => childD[this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.clickField)])}: in sheet loop`, worksheet.name, worksheet, tableauExt.settings.get("ConfigChildField") );
+      
+            if ( typeof d[0] === 'object' ) {
+              worksheet.applyFilterAsync(
+                this.state.tableauSettings.clickField, 
+                d.map(childD => childD[this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.clickField)]),
+                window.tableau.FilterUpdateType.Replace
+              ).then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
+            } else {
+              worksheet.applyFilterAsync(
+                [{
+                  'fieldName': this.state.tableauSettings.clickField, 
+                  'value': d[this.state.ConfigSheetColumns.indexOf(this.state.tableauSettings.clickField)],
+                }],
+                window.tableau.FilterUpdateType.Replace
+              ).then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
+            }
+          }
+        });
+      } else {
+        tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
+          if ( worksheet.name !== this.state.tableauSettings.ConfigSheet) {
+            worksheet.clearFilterAsync(this.state.tableauSettings.clickField);
+          }
+        });
+      }
     }
+    // go through each worksheet and select marks
   }
 
   hoverCallBack = d => {
@@ -203,9 +251,14 @@ class App extends Component {
             }
           }
         });
-      }  
+      } else {
+        tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
+          if ( worksheet.name !== this.state.tableauSettings.ConfigSheet) {
+            worksheet.clearFilterAsync(this.state.tableauSettings.clickField);
+          }
+        });
+      }
     }
-
     // go through each worksheet and select marks
   }
 
