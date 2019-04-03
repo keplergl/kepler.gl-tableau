@@ -15,6 +15,16 @@ export const getColumnIndexes = (table, required_keys) => {
   return colIdxMaps;
 };
 
+export const convertRowToObject = (row, attrs_map) => {
+  let o = {};
+  let name = "";
+  for (name in attrs_map) {
+    let id = attrs_map[name];
+    o[name] = row[id].value === "%null%" ? null : row[id].value;
+  }
+  return o;
+};
+
 export const dataToKeplerRow = (data, fields) => data.map(row =>
   row.map((d, i) => d.value === "%null%" ? null : StringToValueByType[fields[i].type](d.value))
 );

@@ -32,6 +32,7 @@ import defaultSettings from './components/Configuration/defaultSettings';
 import {
   columnToKeplerField,
   dataToKeplerRow,
+  convertRowToObject,
   log
 } from './utils';
 
@@ -97,6 +98,7 @@ class App extends Component {
     this.clickCallBack = this.clickCallBack.bind(this);
     this.hoverCallBack = this.hoverCallBack.bind(this);
     this.filterChanged = this.filterChanged.bind(this);
+    this.marksSelected = this.marksSelected.bind(this);
     this.configCallBack = this.configCallBack.bind(this);
     this.eraseCallBack = this.eraseCallBack.bind(this);
     this.customCallBack = this.customCallBack.bind(this);
@@ -393,6 +395,32 @@ class App extends Component {
     } //get field3 from Settings
   }
 
+  marksSelected (e) {
+    log('mark selected event', e);
+    e.getMarksAsync().then(marks => {
+      
+      // loop through marks table and adjust the class for opacity
+      let marksDataTable = marks.data[0];
+      let col_indexes = {};
+      let data = [];
+    
+      //write column names to array
+      for (let k = 0; k < marksDataTable.columns.length; k++) {
+          col_indexes[marksDataTable.columns[k].fieldName] = k;
+      }
+  
+      for (let j = 0, len = marksDataTable.data.length; j < len; j++) {
+        //log(this.convertRowToObject(tableauData[j], col_indexes));
+        data.push(convertRowToObject(marksDataTable.data[j], col_indexes));
+      }
+  
+      //console the select marks table
+      log('marks', marksDataTable, col_indexes, data, this.state.tableauSettings.hoverField, this.state.tableauSettings.clickField);
+
+    });
+      // here we can add code to highlight this mark in kepler
+  }
+
   getSummaryData = (selectedSheet, fieldName) => {
     //clean up event listeners (taken from tableau expample)
     if (this.unregisterEventFn) {
@@ -503,17 +531,6 @@ class App extends Component {
       }
       log('getData() state', this.state);
     });
-
-    this.unregisterEventFn = sheetObject.addEventListener(
-      window.tableau.TableauEventType.FilterChanged,
-      this.filterChanged
-    );
-
-    // Bug - Adding this event listener causes the viz to continuously re-render.
-    // this.unregisterEventFn = sheetObject.addEventListener(
-    //   window.tableau.TableauEventType.MarkSelectionChanged,
-    //   this.marksSelected
-    // );
   }
 
   clearSheet () {
@@ -645,6 +662,15 @@ class App extends Component {
           );
           // provided by tableau extension samples, may need to push this to state for react
           unregisterHandlerFunctions.push(unregisterHandlerFunction);
+
+          unregisterHandlerFunction = worksheet.addEventListener(
+            window.tableau.TableauEventType.MarkSelectionChanged,
+            this.marksSelected
+          );
+
+          // provided by tableau extension samples, may need to push this to state for react
+          unregisterHandlerFunctions.push(unregisterHandlerFunction);
+    
           log(unregisterHandlerFunctions);
         });
 
