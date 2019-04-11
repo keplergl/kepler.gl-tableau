@@ -1,10 +1,21 @@
 import './polyfills.js';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import document from 'global/document';
+import {render} from 'react-dom';
+import {Provider} from 'react-redux';
+import store from './store';
 import './index.css';
-import AppWrapper from './AppWrapper';
 import registerServiceWorker from './registerServiceWorker';
-import "typeface-roboto";
+import 'typeface-roboto';
 
-ReactDOM.render(<AppWrapper />, document.getElementById('root'));
+// render(<AppWrapper />, document.getElementById('root'));
+import AppWrapper from './AppWrapper';
+
+const Root = () => (
+  <Provider store={store}>
+    <AppWrapper/>
+  </Provider>
+);
+
+render(<Root />, document.getElementById('root'));
 registerServiceWorker();

@@ -20,6 +20,7 @@
 
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import _ from 'lodash';
 
 // Kepler.gl actions
 import {addDataToMap} from 'kepler.gl/actions';
@@ -38,18 +39,15 @@ import KeplerGlSchema from 'kepler.gl/schemas';
 
 // Component and helpers
 import Button from './button';
-import downloadJsonFile from "./file-download";
+import downloadJsonFile from './file-download';
 
-const CustomAddDataButtonFactory = () => () => (
-  <div/>
-)
+const CustomAddDataButtonFactory = () => () => <div />;
 // CustomComponents
 const KeplerGl = injectComponents([
   [AddDataButtonFactory, CustomAddDataButtonFactory],
   [SidebarFactory, CustomSidebarFactory],
   [PanelHeaderFactory, CustomPanelHeaderFactory]
 ]);
-
 
 function getHoverInfo(info) {
   const objectHovered = info ? info.object : null;
@@ -58,35 +56,15 @@ function getHoverInfo(info) {
     return null;
   }
 
-  return objectHovered.data ?
-  // if hovered is a single object
-  objectHovered.data :
-  // if hovered is a hexbbin, or grid, kepler.gl can return all the points inside that hexagon / grid
-  objectHovered.points;
+  return objectHovered.data
+    ? // if hovered is a single object
+      objectHovered.data
+    : // if hovered is a hexbbin, or grid, kepler.gl can return all the points inside that hexagon / grid
+      objectHovered.points;
 }
 
 class App extends Component {
   preValue = null;
-  componentDidMount() {
-    // Use processCsvData helper to convert csv file into kepler.gl structure {fields, rows}
-    const data = this.props.data;
-    console.log('checking data on mount', data, this.props);
-    // Create dataset structure
-    const dataset = {
-      data,
-      info: {
-        // this is used to match the dataId defined in nyc-config.json. For more details see API documentation.
-        // It is paramount that this id matches your configuration otherwise the configuration file will be ignored.
-        id: 'my_data'
-      }
-    };
-    // addDataToMap action to inject dataset into kepler.gl instance
-    // this.props.dispatch(addDataToMap({datasets: dataset, config: keplerConfig}));
-    this.props.dispatch(addDataToMap({
-      datasets: dataset,
-      options: {readOnly: this.props.readOnly},
-      config: this.props.keplerConfig ? JSON.parse(this.props.keplerConfig) : undefined}));
-  }
 
   /**
    * Listen on state change to update serialized map config
@@ -98,19 +76,33 @@ class App extends Component {
 
   handleInteractionEvent(prevProps) {
     const {keplerGl} = this.props;
-    if (!keplerGl || !keplerGl.map || !prevProps.keplerGl || !prevProps.keplerGl.map) {
+    if (
+      !keplerGl ||
+      !keplerGl.map ||
+      !prevProps.keplerGl ||
+      !prevProps.keplerGl.map
+    ) {
       // component hasn't mount yet
       return;
     }
 
-    if (prevProps.keplerGl.map.visState.hoverInfo !== keplerGl.map.visState.hoverInfo) {
+    if (
+      prevProps.keplerGl.map.visState.hoverInfo !==
+      keplerGl.map.visState.hoverInfo
+    ) {
       // hovered object has changed
-      this.props.customHoverBehavior(getHoverInfo(keplerGl.map.visState.hoverInfo));
+      this.props.customHoverBehavior(
+        getHoverInfo(keplerGl.map.visState.hoverInfo)
+      );
     }
 
-    if (prevProps.keplerGl.map.visState.clicked !== keplerGl.map.visState.clicked) {
+    if (
+      prevProps.keplerGl.map.visState.clicked !== keplerGl.map.visState.clicked
+    ) {
       // clicked object has changed
-      this.props.customClickBehavior(getHoverInfo(keplerGl.map.visState.clicked));
+      this.props.customClickBehavior(
+        getHoverInfo(keplerGl.map.visState.clicked)
+      );
     }
   }
 
@@ -142,15 +134,22 @@ class App extends Component {
 
   render() {
     return (
-      <div style={{position: 'absolute', width: '100%', height: '100%', minHeight: '70vh'}}>
-          <KeplerGl
-            mapboxApiAccessToken={this.props.mapboxAPIKey}
-            id="map"
-            appName="Kepler.gl in Tableau!"
-            version="v0.1"
-            width={this.props.width}
-            height={this.props.height}
-          />
+      <div
+        style={{
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          minHeight: '70vh'
+        }}
+      >
+        <KeplerGl
+          mapboxApiAccessToken={this.props.mapboxAPIKey}
+          id="map"
+          appName="Kepler.gl in Tableau!"
+          version="v0.1"
+          width={this.props.width}
+          height={this.props.height}
+        />
       </div>
     );
   }
@@ -159,5 +158,7 @@ class App extends Component {
 const mapStateToProps = state => state;
 const dispatchToProps = dispatch => ({dispatch});
 
-export default connect(mapStateToProps, dispatchToProps)(App);
-// export default App;
+export default connect(
+  mapStateToProps,
+  dispatchToProps
+)(App);
