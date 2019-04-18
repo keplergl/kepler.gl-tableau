@@ -559,7 +559,8 @@ class App extends Component {
   filterChanged = e => {
     const selectedSheet = tableauExt.settings.get('ConfigSheet');
     if (selectedSheet && selectedSheet === e.worksheet.name) {
-      log('%c ==============App filter has changed', 'background: #777; color: red')
+      console.log('%c ==============App filter has changed on target sheet', 'background: #777; color: red');
+      console.log(e);
       this.getConfigSheetSummaryData(selectedSheet);
     }
   }
