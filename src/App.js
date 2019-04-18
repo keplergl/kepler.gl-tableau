@@ -397,6 +397,7 @@ class App extends Component {
 
   marksSelected (e) {
     log('mark selected event', e);
+    // disable listener
     e.getMarksAsync().then(marks => {
       
       // loop through marks table and adjust the class for opacity
@@ -413,11 +414,14 @@ class App extends Component {
         //log(this.convertRowToObject(tableauData[j], col_indexes));
         data.push(convertRowToObject(marksDataTable.data[j], col_indexes));
       }
+
+      // set state filterData and pass to Kepler
   
       //console the select marks table
       log('marks', marksDataTable, col_indexes, data, this.state.tableauSettings.hoverField, this.state.tableauSettings.clickField);
 
     });
+    // add .then to reenable
       // here we can add code to highlight this mark in kepler
   }
 
