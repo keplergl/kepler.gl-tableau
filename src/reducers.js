@@ -31,10 +31,18 @@ const initialAppState = {
 
 const reducers = combineReducers({
   // mount keplerGl reducer
-  keplerGl: keplerGlReducer,
-  app: handleActions({
-    // empty
-  }, initialAppState),
+  keplerGl: keplerGlReducer.initialState({
+    uiState: {
+      currentModal: null,
+      activeSidePanel: null
+    }
+  }),
+  app: handleActions(
+    {
+      // empty
+    },
+    initialAppState
+  ),
   routing: routerReducer
 });
 
