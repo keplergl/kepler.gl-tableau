@@ -113,11 +113,14 @@ class App extends Component {
     }
 
     const serializedState = JSON.stringify(currentState);
+    console.log('kepler handle config change', serializedState);
 
     if (this.preValue !== serializedState) {
       // keplerGl State has changed
       this.props.configCallBack('keplerConfig', serializedState);
       this.preValue = serializedState;
+    } else {
+      console.log('config looks the same');
     }
   }
   // This method is used as reference to show how to export the current kepler.gl instance configuration

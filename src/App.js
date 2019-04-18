@@ -125,7 +125,7 @@ class App extends Component {
     log(
       'in on click callback',
       d,
-      this.state.ConfigSheetColumns.indexOf(
+      (this.state.ConfigSheetColumns || []).indexOf(
         this.state.tableauSettings.clickField
       ),
       this.state.tableauSettings.clickAction
@@ -145,7 +145,7 @@ class App extends Component {
               `clicked ${typeof d[0] === 'object'} and ${d.map(
                 childD =>
                   childD[
-                    this.state.ConfigSheetColumns.indexOf(
+                    (this.state.ConfigSheetColumns || []).indexOf(
                       this.state.tableauSettings.clickField
                     )
                   ]
@@ -164,7 +164,7 @@ class App extends Component {
                       value: d.map(
                         childD =>
                           childD[
-                            this.state.ConfigSheetColumns.indexOf(
+                            (this.state.ConfigSheetColumns || []).indexOf(
                               this.state.tableauSettings.clickField
                             )
                           ]
@@ -182,7 +182,7 @@ class App extends Component {
                       fieldName: this.state.tableauSettings.clickField,
                       value:
                         d[
-                          this.state.ConfigSheetColumns.indexOf(
+                          (this.state.ConfigSheetColumns || []).indexOf(
                             this.state.tableauSettings.clickField
                           )
                         ]
@@ -208,7 +208,7 @@ class App extends Component {
               `clicked ${typeof d[0] === 'object'} and ${d.map(
                 childD =>
                   childD[
-                    this.state.ConfigSheetColumns.indexOf(
+                    (this.state.ConfigSheetColumns || []).indexOf(
                       this.state.tableauSettings.clickField
                     )
                   ]
@@ -225,7 +225,7 @@ class App extends Component {
                   d.map(
                     childD =>
                       childD[
-                        this.state.ConfigSheetColumns.indexOf(
+                        (this.state.ConfigSheetColumns || []).indexOf(
                           this.state.tableauSettings.clickField
                         )
                       ]
@@ -241,7 +241,7 @@ class App extends Component {
                       fieldName: this.state.tableauSettings.clickField,
                       value:
                         d[
-                          this.state.ConfigSheetColumns.indexOf(
+                          (this.state.ConfigSheetColumns || []).indexOf(
                             this.state.tableauSettings.clickField
                           )
                         ]
@@ -268,7 +268,7 @@ class App extends Component {
     log(
       'in on hover callback',
       d,
-      this.state.ConfigSheetColumns.indexOf(
+      (this.state.ConfigSheetColumns || []).indexOf(
         this.state.tableauSettings.hoverField
       ),
       this.state.tableauSettings.hoverAction
@@ -288,7 +288,7 @@ class App extends Component {
               `hovered ${typeof d[0] === 'object'} and ${d.map(
                 childD =>
                   childD[
-                    this.state.ConfigSheetColumns.indexOf(
+                    (this.state.ConfigSheetColumns || []).indexOf(
                       this.state.tableauSettings.hoverField
                     )
                   ]
@@ -307,7 +307,7 @@ class App extends Component {
                       value: d.map(
                         childD =>
                           childD[
-                            this.state.ConfigSheetColumns.indexOf(
+                            (this.state.ConfigSheetColumns || []).indexOf(
                               this.state.tableauSettings.hoverField
                             )
                           ]
@@ -325,7 +325,7 @@ class App extends Component {
                       fieldName: this.state.tableauSettings.hoverField,
                       value:
                         d[
-                          this.state.ConfigSheetColumns.indexOf(
+                          (this.state.ConfigSheetColumns || []).indexOf(
                             this.state.tableauSettings.hoverField
                           )
                         ]
@@ -351,7 +351,7 @@ class App extends Component {
               `hovered ${typeof d[0] === 'object'} and ${d.map(
                 childD =>
                   childD[
-                    this.state.ConfigSheetColumns.indexOf(
+                    (this.state.ConfigSheetColumns || []).indexOf(
                       this.state.tableauSettings.hoverField
                     )
                   ]
@@ -368,7 +368,7 @@ class App extends Component {
                   d.map(
                     childD =>
                       childD[
-                        this.state.ConfigSheetColumns.indexOf(
+                        (this.state.ConfigSheetColumns || []).indexOf(
                           this.state.tableauSettings.hoverField
                         )
                       ]
@@ -384,7 +384,7 @@ class App extends Component {
                       fieldName: this.state.tableauSettings.hoverField,
                       value:
                         d[
-                          this.state.ConfigSheetColumns.indexOf(
+                          (this.state.ConfigSheetColumns || []).indexOf(
                             this.state.tableauSettings.hoverField
                           )
                         ]
@@ -436,7 +436,7 @@ class App extends Component {
 
   configCallBack(field, columnName) {
     // field = ChoroSheet, sheet = Data
-    log('configCallBack', field);
+    console.log('configCallBack', field);
 
     // if we are in config call back from a sheet selection, go get the data
     // this only works in the #true instance, must use update lifecycle method to catch both
@@ -828,7 +828,7 @@ class App extends Component {
         TableauSettings.init();
 
         this.setState({
-          tableauKey: (configJson.access_token || {}).token,
+          tableauKey: (configJson.access_token || []).token,
           isLoading: false,
           height: window.innerHeight,
           width: window.innerWidth,
