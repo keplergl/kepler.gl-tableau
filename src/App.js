@@ -29,7 +29,7 @@ import * as TableauSettings from './TableauSettings';
 import defaultSettings from './components/Configuration/defaultSettings';
 
 // utils and variables
-import {columnToKeplerField, dataToKeplerRow, log} from './utils';
+import {columnToKeplerField, dataToKeplerRow, dataTableToKepler, log} from './utils';
 
 //logos
 import dbLogo from './assets/dblogo.png';
@@ -529,7 +529,10 @@ class App extends Component {
   filterChanged(e) {
     const selectedSheet = tableauExt.settings.get('ConfigSheet');
     if (selectedSheet && selectedSheet === e.worksheet.name) {
-      log('%c ==============App filter has changed', 'background: #777; color: red')
+      log(
+        '%c ==============App filter has changed',
+        'background: #777; color: red'
+      );
       this.getConfigSheetSummaryData(selectedSheet);
     }
   }
@@ -537,14 +540,17 @@ class App extends Component {
   marksSelected(e) {
     const selectedSheet = tableauExt.settings.get('ConfigSheet');
     if (selectedSheet && selectedSheet === e.worksheet.name) {
-      log('%c ==============App Marker selected', 'background: #777; color: red')
+      log(
+        '%c ==============App Marker selected',
+        'background: #777; color: red'
+      );
       e.getMarksAsync().then(({data}) => {
         // TODO: don't know how to get marks data here
-      })
+      });
     }
   }
 
-  getConfigSheetSummaryData = (selectedSheet) => {
+  getConfigSheetSummaryData = selectedSheet => {
     // clean up event listeners (taken from tableau example)
     if (this.unregisterEventFn) {
       this.unregisterEventFn();
@@ -589,51 +595,13 @@ class App extends Component {
     sheetObject.getSummaryDataAsync(options).then(t => {
       log('in getData().getSummaryDataAsync', t, this.state);
 
-      let col_names = [];
-      let col_types = [];
-      let col_names_S = [];
-      let col_names_N = [];
-      let col_indexes = {};
-      let data = [];
-      let keplerFields = [];
-
-      //write column names to array
-      for (let k = 0; k < t.columns.length; k++) {
-        col_indexes[t.columns[k].fieldName] = k;
-
-        // write named array
-        col_names.push(t.columns[k].fieldName);
-
-        // write type array
-        col_types.push(t.columns[k].dataType);
-
-        // write typed arrays as well
-        if (t.columns[k].dataType === 'string') {
-          col_names_S.push(t.columns[k].fieldName);
-        } else if (t.columns[k].dataType === 'int') {
-          col_names_N.push(t.columns[k].fieldName);
-        } else if (t.columns[k].dataType === 'float') {
-          col_names_N.push(t.columns[k].fieldName);
-        }
-
-        keplerFields.push(columnToKeplerField(t.columns[k], k));
-      }
-
-      log('zzz do we see data', t.data.length, t.data);
-      const keplerData = dataToKeplerRow(t.data, keplerFields);
-
-      // log flat data for testing
-      log('flat data', data, col_names, 'ConfigSheet');
-      const newDataState = {
-        isLoading: false,
-        ConfigSheetColumns: col_names,
-        ConfigSheetStringColumns: col_names_S,
-        ConfigSheetNumberColumns: col_names_N,
-        ConfigSheetData: {fields: keplerFields, rows: keplerData} //data, we need something more like tableau for kepler
-      };
+      const newDataState = dataTableToKepler(t);
 
       if (TableauSettings.ShouldUse) {
-        log('%c getConfigSheetSummaryData TableauSettings.ShouldUse', 'color: blue')
+        log(
+          '%c getConfigSheetSummaryData TableauSettings.ShouldUse',
+          'color: blue'
+        );
         TableauSettings.updateAndSave(
           {
             isLoading: false
@@ -642,19 +610,24 @@ class App extends Component {
             this.setState({
               ...newDataState,
               tableauSettings: settings,
+              isLoading: false,
               isMissingData: false
             });
           },
           true
         );
       } else {
-        log('%c getConfigSheetSummaryData TableauSettings.ShouldUse false', 'color: purple')
+        log(
+          '%c getConfigSheetSummaryData TableauSettings.ShouldUse false',
+          'color: purple'
+        );
 
         this.setState({isLoading: false});
         tableauExt.settings.set('isLoading', false);
         tableauExt.settings.saveAsync().then(() => {
           this.setState({
             ...newDataState,
+            isLoading: false,
             tableauSettings: tableauExt.settings.getAll()
           });
         });
@@ -919,7 +892,6 @@ class App extends Component {
       log(this.state.stepIndex);
 
       if (this.state.stepIndex === 1) {
-
         // Placeholder sheet names. TODO: Bind to worksheet data
         return (
           <React.Fragment>
@@ -945,7 +917,6 @@ class App extends Component {
       }
 
       if (this.state.stepIndex === 2) {
-
         return (
           <React.Fragment>
             <Stepper stepIndex={this.state.stepIndex} steps={stepNames} />

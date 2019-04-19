@@ -21,9 +21,9 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
+import {log} from '../../utils';
 
 // Kepler.gl actions
-import {addDataToMap} from 'kepler.gl/actions';
 import {
   SidebarFactory,
   AddDataButtonFactory,
@@ -70,21 +70,25 @@ class App extends Component {
    * Listen on state change to update serialized map config
    */
   componentDidUpdate(prevProps) {
+    const {keplerGl} = this.props;
+
+    if (
+      !keplerGl ||
+      !keplerGl.map ||
+      !prevProps.keplerGl ||
+      !prevProps.keplerGl.map ||
+      !this.hasData()
+    ) {
+      // component hasn't mount yet
+      return;
+    }
+
     this.handleConfigChange();
     this.handleInteractionEvent(prevProps);
   }
 
   handleInteractionEvent(prevProps) {
     const {keplerGl} = this.props;
-    if (
-      !keplerGl ||
-      !keplerGl.map ||
-      !prevProps.keplerGl ||
-      !prevProps.keplerGl.map
-    ) {
-      // component hasn't mount yet
-      return;
-    }
 
     if (
       prevProps.keplerGl.map.visState.hoverInfo !==
@@ -113,15 +117,28 @@ class App extends Component {
     }
 
     const serializedState = JSON.stringify(currentState);
-    console.log('kepler handle config change', serializedState);
 
     if (this.preValue !== serializedState) {
       // keplerGl State has changed
+
+      log(
+        '%c KeplerGL.app config has changed',
+        'background: yellow; color:red',
+        serializedState
+      );
+
       this.props.configCallBack('keplerConfig', serializedState);
       this.preValue = serializedState;
     } else {
-      console.log('config looks the same');
+      console.log('%c config looks the same', 'background: teal');
     }
+  }
+
+  hasData() {
+    const {keplerGl} = this.props;
+    const {map} = keplerGl;
+
+    return Object.keys(map.visState.datasets).length;
   }
   // This method is used as reference to show how to export the current kepler.gl instance configuration
   // Once exported the configuration can be imported using parseSavedConfig or load method from KeplerGlSchema
