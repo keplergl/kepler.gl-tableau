@@ -236,20 +236,15 @@ class App extends Component {
             } else {
               worksheet
                 .applyFilterAsync(
-                  [
-                    {
-                      fieldName: this.state.tableauSettings.clickField,
-                      value:
-                        d[
-                          (this.state.ConfigSheetColumns || []).indexOf(
-                            this.state.tableauSettings.clickField
-                          )
-                        ]
-                    }
-                  ],
-                  window.tableau.FilterUpdateType.Replace
-                )
-                .then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
+                this.state.tableauSettings.clickField,
+                [d[
+                  (this.state.ConfigSheetColumns || []).indexOf(
+                    this.state.tableauSettings.clickField
+                  )
+                ]],
+                window.tableau.FilterUpdateType.Replace
+              )
+              .then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
             }
           }
         });
@@ -283,19 +278,13 @@ class App extends Component {
         // if clicked is a single object, d is an array of all column values of that object
         // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
         tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => {
-          if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
+          // if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
             log(
-              `hovered ${typeof d[0] === 'object'} and ${d.map(
-                childD =>
-                  childD[
-                    (this.state.ConfigSheetColumns || []).indexOf(
-                      this.state.tableauSettings.hoverField
-                    )
-                  ]
-              )}: in sheet loop`,
+              `hovered ${typeof d[0] === 'object'} and ${d[(this.state.ConfigSheetColumns || []).indexOf(this.state.tableauSettings.hoverField)]
+              }: in sheet loop`,
               worksheet.name,
               worksheet,
-              tableauExt.settings.get('ConfigChildField')
+              this.state.tableauSettings.hoverField
             );
 
             if (typeof d[0] === 'object') {
@@ -303,8 +292,8 @@ class App extends Component {
                 .selectMarksByValueAsync(
                   [
                     {
-                      fieldName: this.state.tableauSettings.hoverField,
-                      value: d.map(
+                      'fieldName': this.state.tableauSettings.hoverField,
+                      'value': d.map(
                         childD =>
                           childD[
                             (this.state.ConfigSheetColumns || []).indexOf(
@@ -322,8 +311,8 @@ class App extends Component {
                 .selectMarksByValueAsync(
                   [
                     {
-                      fieldName: this.state.tableauSettings.hoverField,
-                      value:
+                      'fieldName': this.state.tableauSettings.hoverField,
+                      'value':
                         d[
                           (this.state.ConfigSheetColumns || []).indexOf(
                             this.state.tableauSettings.hoverField
@@ -335,7 +324,7 @@ class App extends Component {
                 )
                 .then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
             }
-          }
+          // }
         });
       }
     } else if (
@@ -377,20 +366,14 @@ class App extends Component {
                 )
                 .then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
             } else {
-              worksheet
-                .applyFilterAsync(
-                  [
-                    {
-                      fieldName: this.state.tableauSettings.hoverField,
-                      value:
-                        d[
-                          (this.state.ConfigSheetColumns || []).indexOf(
-                            this.state.tableauSettings.hoverField
-                          )
-                        ]
-                    }
-                  ],
-                  window.tableau.FilterUpdateType.Replace
+              worksheet.applyFilterAsync(
+                this.state.tableauSettings.hoverField,
+                [d[
+                  (this.state.ConfigSheetColumns || []).indexOf(
+                    this.state.tableauSettings.hoverField
+                  )
+                ]],
+                window.tableau.FilterUpdateType.Replace
                 )
                 .then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
             }
