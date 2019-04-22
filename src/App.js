@@ -83,30 +83,68 @@ class App extends Component {
       demoType: 'Violin',
       stepIndex: 1,
       isMissingData: true,
-      highlightOn: undefined
+      highlightOn: undefined, 
+      unregisterHandlerFunctions: [], 
+      filterKeplerObject: []
     };
 
     TableauSettings.setEnvName(this.props.isConfig ? 'CONFIG' : 'EXTENSION');
     this.unregisterEventFn = undefined;
-
-    this.clickCallBack = this.clickCallBack.bind(this);
-    this.hoverCallBack = this.hoverCallBack.bind(this);
-    this.filterChanged = this.filterChanged.bind(this);
-    this.configCallBack = this.configCallBack.bind(this);
-    this.eraseCallBack = this.eraseCallBack.bind(this);
-    this.customCallBack = this.customCallBack.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.demoChange = this.demoChange.bind(this);
-    this.clearSheet = this.clearSheet.bind(this);
-    this.clearSplash = this.clearSplash.bind(this);
-    this.configure = this.configure.bind(this);
-    this.onNextStep = this.onNextStep.bind(this);
-    this.onPrevStep = this.onPrevStep.bind(this);
-    this.resize = this.resize.bind(this);
   }
 
-  onNextStep() {
-    if (this.state.stepIndex === 2) {
+  addEventListeners = () => {
+    // Whenever we restore the filters table, remove all save handling functions,
+    // since we add them back later in this function.
+    // provided by tableau extension samples
+    this.removeEventListeners();
+    // let localUnregisterHandlerFunctions = Object.assign([], ...this.state.unregisterHandlerFunctions);
+    // localUnregisterHandlerFunctions.forEach(unregisterHandlerFunction => {
+    //   console.log('removing exisiting listener', unregisterHandlerFunction);
+    //   unregisterHandlerFunction();
+    // });
+    let localUnregisterHandlerFunctions = [];
+
+    //add filter change event listener with callback to re-query data after change
+    // go through each worksheet and then add a filter change event listner
+    // need to check whether this is being applied more than once
+    tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
+
+      // add event listner
+      let unregisterHandlerFunction = worksheet.addEventListener(
+          window.tableau.TableauEventType.FilterChanged,
+          this.filterChanged
+      );
+      // provided by tableau extension samples, may need to push this to state for react
+      localUnregisterHandlerFunctions.push(unregisterHandlerFunction);
+
+      unregisterHandlerFunction = worksheet.addEventListener(
+        window.tableau.TableauEventType.MarkSelectionChanged,
+        this.marksSelected
+      );
+
+      // provided by tableau extension samples, may need to push this to state for react
+      localUnregisterHandlerFunctions.push(unregisterHandlerFunction);
+    });
+    this.setState({unregisterHandlerFunctions: localUnregisterHandlerFunctions }
+      , () => console.log('event listeners added', this.state)
+    );
+  }
+  
+  removeEventListeners = () => {
+    let localUnregisterHandlerFunctions = [ ...this.state.unregisterHandlerFunctions ];
+    console.log('removing event listener', localUnregisterHandlerFunctions);
+    localUnregisterHandlerFunctions.forEach(unregisterHandlerFunction => {
+      unregisterHandlerFunction();
+    });
+    localUnregisterHandlerFunctions = [];
+    this.setState({ unregisterHandlerFunctions: []}
+      , () => console.log('event listeners removed', this.state)
+    );
+  }
+
+
+  onNextStep = () => {
+    if ( this.state.stepIndex === 2 ) {
       this.customCallBack('configuration');
     } else {
       this.setState((previousState, currentProps) => {
@@ -115,7 +153,7 @@ class App extends Component {
     }
   }
 
-  onPrevStep() {
+  onPrevStep = () => {
     this.setState((previousState, currentProps) => {
       return {stepIndex: previousState.stepIndex - 1};
     });
@@ -395,7 +433,7 @@ class App extends Component {
     log('in demo change', event.target.value, this.state.demoType);
   };
 
-  handleChange(event) {
+  handleChange = event => {
     log('event', event);
     if (TableauSettings.ShouldUse) {
       // create a single k/v pair
@@ -417,7 +455,7 @@ class App extends Component {
     }
   }
 
-  configCallBack(field, columnName) {
+  configCallBack = (field, columnName) => {
     // field = ChoroSheet, sheet = Data
     console.log('configCallBack', field);
 
@@ -453,8 +491,8 @@ class App extends Component {
     }
   }
 
-  eraseCallBack(field) {
-    log('triggered erase', field);
+  eraseCallBack = field => {
+    log("triggered erase", field);
     if (TableauSettings.ShouldUse) {
       TableauSettings.eraseAndSave([field], settings => {
         this.setState({
@@ -475,7 +513,7 @@ class App extends Component {
     }
   }
 
-  customCallBack(confSetting) {
+  customCallBack = confSetting => {
     log('in custom call back', confSetting);
     if (TableauSettings.ShouldUse) {
       TableauSettings.updateAndSave(
@@ -509,7 +547,7 @@ class App extends Component {
 
   // needs to be updated to handle if more than one data set is selected
   // find all sheets in array and then call get summary, for now hardcoding
-  filterChanged(e) {
+  filterChanged = e => {
     const selectedSheet = tableauExt.settings.get('ConfigSheet');
     if (selectedSheet && selectedSheet === e.worksheet.name) {
       log(
@@ -520,24 +558,56 @@ class App extends Component {
     }
   }
 
-  marksSelected(e) {
-    const selectedSheet = tableauExt.settings.get('ConfigSheet');
-    if (selectedSheet && selectedSheet === e.worksheet.name) {
+  marksSelected = e => {
+    if ( this.state.tableauSettings.keplerFilterField ) {
       log(
         '%c ==============App Marker selected',
         'background: #777; color: red'
       );
-      e.getMarksAsync().then(({data}) => {
-        // TODO: don't know how to get marks data here
+
+      // remove event listeners
+      this.removeEventListeners();
+
+      // get selected marks and pass to kepler via state object
+      e.getMarksAsync().then(marks => {
+        
+        console.log('marks', marks);
+        // loop through marks table and adjust the class for opacity
+        let marksDataTable = marks.data[0];
+        let col_indexes = {};
+        let keplerFields = [];
+
+      
+        //write column names to array
+        for (let k = 0; k < marksDataTable.columns.length; k++) {
+            col_indexes[marksDataTable.columns[k].fieldName] = k;
+            keplerFields.push(columnToKeplerField(marksDataTable.columns[k], k));
+          }
+    
+        const keplerData = dataToKeplerRow(marksDataTable.data, keplerFields);
+        //console.log('zzz mark do we see data', marksDataTable.data.length, marksDataTable.data, keplerData, keplerFields, col_indexes);
+
+
+        const filterKeplerObject = {
+          field: this.state.tableauSettings.keplerFilterField,
+          values: keplerData.map(childD => childD[col_indexes[this.state.tableauSettings.keplerFilterField]])
+        }; 
+
+        // @shan you can remove this console once you are good with the object
+        console.log('mark object', filterKeplerObject);
+
+        this.setState({ filterKeplerObject }, () => this.addEventListeners());
+
+        //console the select marks table
+        //log('marks', marksDataTable, col_indexes, data, this.state.tableauSettings.hoverField, this.state.tableauSettings.clickField);
+
       });
     }
   }
 
   getConfigSheetSummaryData = selectedSheet => {
     // clean up event listeners (taken from tableau example)
-    if (this.unregisterEventFn) {
-      this.unregisterEventFn();
-    }
+    this.removeEventListeners();
 
     log(selectedSheet, 'ConfigSheet', 'in getData');
 
@@ -615,20 +685,10 @@ class App extends Component {
           });
         });
       }
+      this.addEventListeners();
       log('getData() state', this.state);
     });
-
-    this.unregisterEventFn = sheetObject.addEventListener(
-      window.tableau.TableauEventType.FilterChanged,
-      this.filterChanged
-    );
-
-    // Bug - Adding this event listener causes the viz to continuously re-render.
-    this.unregisterEventFn2 = sheetObject.addEventListener(
-      window.tableau.TableauEventType.MarkSelectionChanged,
-      this.marksSelected
-    );
-  };
+  }
 
   clearSheet() {
     log('triggered erase');
@@ -657,13 +717,13 @@ class App extends Component {
     }
   }
 
-  clearSplash() {
+  clearSplash = () => {
     this.setState({
       isSplash: false
     });
   }
 
-  configure() {
+  configure = () => {
     this.clearSheet();
     const popUpUrl = window.location.href + '#true';
     const popUpOptions = {
@@ -694,13 +754,13 @@ class App extends Component {
             console.error(error.message);
         }
       });
-  }
+    }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.resize, true);
   }
 
-  resize() {
+  resize = () => {
     this.setState({
       width: window.innerWidth,
       height: window.innerHeight
@@ -719,11 +779,8 @@ class App extends Component {
       })
       .then(response => {
         return response.json();
-      })
-      .then(configJson => {
-        let unregisterHandlerFunctions = [];
+      }).then((configJson) => {
         // console.log('tableau config', configJson);
-
         // default tableau settings on initial entry into the extension
         // we know if we haven't done anything yet when tableauSettings state = []
         log('did mount', tableauExt.settings.get('mapboxAPIKey'));
@@ -756,29 +813,10 @@ class App extends Component {
           worksheet => worksheet.name
         );
 
-        // Whenever we restore the filters table, remove all save handling functions,
-        // since we add them back later in this function.
-        // provided by tableau extension samples
-        unregisterHandlerFunctions.forEach(function(unregisterHandlerFunction) {
-          unregisterHandlerFunction();
-        });
-
-        //add filter change event listener with callback to re-query data after change
-        // go through each worksheet and then add a filter change event listner
-        // need to check whether this is being applied more than once
-        tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => {
-          log('in sheet loop', worksheet.name, worksheet);
-          // add event listner
-          let unregisterHandlerFunction = worksheet.addEventListener(
-            window.tableau.TableauEventType.FilterChanged,
-            this.filterChanged
-          );
-          // provided by tableau extension samples, may need to push this to state for react
-          unregisterHandlerFunctions.push(unregisterHandlerFunction);
-          log(unregisterHandlerFunctions);
-        });
-
         log('checking field in getAll()', tableauExt.settings.getAll());
+
+        // add event listeners (this includes an initial removal)
+        this.addEventListeners();
 
         // Initialize the current saved settings global
         TableauSettings.init();
@@ -960,6 +998,7 @@ class App extends Component {
         width={this.state.width}
         height={this.state.height}
         data={this.state.ConfigSheetData}
+        filterKeplerObject={this.state.filterKeplerObject}
         tableauSettings={tableauSettingsState}
         readOnly={tableauSettingsState.readOnly === 'true'}
         keplerConfig={tableauSettingsState.keplerConfig}

@@ -163,6 +163,24 @@ class CustomScreen extends React.Component {
                 };
               </Select>
             </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip 
+                    title="Tableau to Kepler Filter Field"
+                    tooltipText="Select which field to use when filtering Kepler"
+                  />
+              <Select
+                value={tableauSettings.keplerFilterField || "None"}
+                onChange={handleChange}
+                input={<Input name="keplerFilterField" id="keplerFilterField-helper" />}
+              >
+                 <MenuItem value={"None"}>None</MenuItem>
+                 {
+                  configSheetColumns.map(fieldName => (
+                    <MenuItem value={fieldName}>{fieldName}</MenuItem>
+                  ))
+                };
+              </Select>
+            </FormControl>
             {/* <FormControl className={classes.formControl}>
               <InputLabelWithTooltip 
                   title="Hover Configuration"
