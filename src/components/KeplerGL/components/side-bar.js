@@ -20,7 +20,7 @@
 
 import React from 'react';
 import {SidebarFactory, CollapseButtonFactory} from 'kepler.gl/components';
-import styled from 'kepler.gl/node_modules/styled-components';
+import styled from 'styled-components';
 
 const StyledSideBarContainer = styled.div`
   .side-panel--container {

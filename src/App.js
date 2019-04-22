@@ -29,7 +29,7 @@ import * as TableauSettings from './TableauSettings';
 import defaultSettings from './components/Configuration/defaultSettings';
 
 // utils and variables
-import {columnToKeplerField, dataToKeplerRow, log} from './utils';
+import {columnToKeplerField, dataToKeplerRow, dataTableToKepler, log} from './utils';
 
 //logos
 import dbLogo from './assets/dblogo.png';
@@ -96,9 +96,13 @@ class App extends Component {
     // Whenever we restore the filters table, remove all save handling functions,
     // since we add them back later in this function.
     // provided by tableau extension samples
-    let localUnregisterHandlerFunctions = Object.assign([], ...this.state.unregisterHandlerFunctions);
-    localUnregisterHandlerFunctions.forEach(unregisterHandlerFunction => unregisterHandlerFunction());
-    localUnregisterHandlerFunctions = [];
+    this.removeEventListeners();
+    // let localUnregisterHandlerFunctions = Object.assign([], ...this.state.unregisterHandlerFunctions);
+    // localUnregisterHandlerFunctions.forEach(unregisterHandlerFunction => {
+    //   console.log('removing exisiting listener', unregisterHandlerFunction);
+    //   unregisterHandlerFunction();
+    // });
+    let localUnregisterHandlerFunctions = [];
 
     //add filter change event listener with callback to re-query data after change
     // go through each worksheet and then add a filter change event listner
@@ -120,18 +124,22 @@ class App extends Component {
 
       // provided by tableau extension samples, may need to push this to state for react
       localUnregisterHandlerFunctions.push(unregisterHandlerFunction);
-      
-      this.setState({unregisterHandlerFunctions: localUnregisterHandlerFunctions }
-        , () => console.log('event listeners added', this.state)
-      );
     });
+    this.setState({unregisterHandlerFunctions: localUnregisterHandlerFunctions }
+      , () => console.log('event listeners added', this.state)
+    );
   }
   
   removeEventListeners = () => {
-    let localUnregisterHandlerFunctions = Object.assign([], ...this.state.unregisterHandlerFunctions);
-    localUnregisterHandlerFunctions.forEach(unregisterHandlerFunction => unregisterHandlerFunction());
+    let localUnregisterHandlerFunctions = [ ...this.state.unregisterHandlerFunctions ];
+    console.log('removing event listener', localUnregisterHandlerFunctions);
+    localUnregisterHandlerFunctions.forEach(unregisterHandlerFunction => {
+      unregisterHandlerFunction();
+    });
     localUnregisterHandlerFunctions = [];
-    this.setState({ unregisterHandlerFunctions: []})
+    this.setState({ unregisterHandlerFunctions: []}
+      , () => console.log('event listeners removed', this.state)
+    );
   }
 
 
@@ -266,20 +274,15 @@ class App extends Component {
             } else {
               worksheet
                 .applyFilterAsync(
-                  [
-                    {
-                      fieldName: this.state.tableauSettings.clickField,
-                      value:
-                        d[
-                          (this.state.ConfigSheetColumns || []).indexOf(
-                            this.state.tableauSettings.clickField
-                          )
-                        ]
-                    }
-                  ],
-                  window.tableau.FilterUpdateType.Replace
-                )
-                .then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
+                this.state.tableauSettings.clickField,
+                [d[
+                  (this.state.ConfigSheetColumns || []).indexOf(
+                    this.state.tableauSettings.clickField
+                  )
+                ]],
+                window.tableau.FilterUpdateType.Replace
+              )
+              .then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
             }
           }
         });
@@ -313,19 +316,13 @@ class App extends Component {
         // if clicked is a single object, d is an array of all column values of that object
         // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
         tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => {
-          if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
+          // if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
             log(
-              `hovered ${typeof d[0] === 'object'} and ${d.map(
-                childD =>
-                  childD[
-                    (this.state.ConfigSheetColumns || []).indexOf(
-                      this.state.tableauSettings.hoverField
-                    )
-                  ]
-              )}: in sheet loop`,
+              `hovered ${typeof d[0] === 'object'} and ${d[(this.state.ConfigSheetColumns || []).indexOf(this.state.tableauSettings.hoverField)]
+              }: in sheet loop`,
               worksheet.name,
               worksheet,
-              tableauExt.settings.get('ConfigChildField')
+              this.state.tableauSettings.hoverField
             );
 
             if (typeof d[0] === 'object') {
@@ -333,8 +330,8 @@ class App extends Component {
                 .selectMarksByValueAsync(
                   [
                     {
-                      fieldName: this.state.tableauSettings.hoverField,
-                      value: d.map(
+                      'fieldName': this.state.tableauSettings.hoverField,
+                      'value': d.map(
                         childD =>
                           childD[
                             (this.state.ConfigSheetColumns || []).indexOf(
@@ -352,8 +349,8 @@ class App extends Component {
                 .selectMarksByValueAsync(
                   [
                     {
-                      fieldName: this.state.tableauSettings.hoverField,
-                      value:
+                      'fieldName': this.state.tableauSettings.hoverField,
+                      'value':
                         d[
                           (this.state.ConfigSheetColumns || []).indexOf(
                             this.state.tableauSettings.hoverField
@@ -365,7 +362,7 @@ class App extends Component {
                 )
                 .then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
             }
-          }
+          // }
         });
       }
     } else if (
@@ -407,20 +404,14 @@ class App extends Component {
                 )
                 .then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
             } else {
-              worksheet
-                .applyFilterAsync(
-                  [
-                    {
-                      fieldName: this.state.tableauSettings.hoverField,
-                      value:
-                        d[
-                          (this.state.ConfigSheetColumns || []).indexOf(
-                            this.state.tableauSettings.hoverField
-                          )
-                        ]
-                    }
-                  ],
-                  window.tableau.FilterUpdateType.Replace
+              worksheet.applyFilterAsync(
+                this.state.tableauSettings.hoverField,
+                [d[
+                  (this.state.ConfigSheetColumns || []).indexOf(
+                    this.state.tableauSettings.hoverField
+                  )
+                ]],
+                window.tableau.FilterUpdateType.Replace
                 )
                 .then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
             }
@@ -559,14 +550,20 @@ class App extends Component {
   filterChanged = e => {
     const selectedSheet = tableauExt.settings.get('ConfigSheet');
     if (selectedSheet && selectedSheet === e.worksheet.name) {
-      console.log('%c ==============App filter has changed on target sheet', 'background: #777; color: red');
-      console.log(e);
+      log(
+        '%c ==============App filter has changed',
+        'background: #777; color: red'
+      );
       this.getConfigSheetSummaryData(selectedSheet);
     }
   }
 
   marksSelected = e => {
     if ( this.state.tableauSettings.keplerFilterField ) {
+      log(
+        '%c ==============App Marker selected',
+        'background: #777; color: red'
+      );
 
       // remove event listeners
       this.removeEventListeners();
@@ -608,11 +605,9 @@ class App extends Component {
     }
   }
 
-  getConfigSheetSummaryData = (selectedSheet) => {
+  getConfigSheetSummaryData = selectedSheet => {
     // clean up event listeners (taken from tableau example)
-    if (this.unregisterEventFn) {
-      this.unregisterEventFn();
-    }
+    this.removeEventListeners();
 
     log(selectedSheet, 'ConfigSheet', 'in getData');
 
@@ -653,51 +648,13 @@ class App extends Component {
     sheetObject.getSummaryDataAsync(options).then(t => {
       log('in getData().getSummaryDataAsync', t, this.state);
 
-      let col_names = [];
-      let col_types = [];
-      let col_names_S = [];
-      let col_names_N = [];
-      let col_indexes = {};
-      let data = [];
-      let keplerFields = [];
-
-      //write column names to array
-      for (let k = 0; k < t.columns.length; k++) {
-        col_indexes[t.columns[k].fieldName] = k;
-
-        // write named array
-        col_names.push(t.columns[k].fieldName);
-
-        // write type array
-        col_types.push(t.columns[k].dataType);
-
-        // write typed arrays as well
-        if (t.columns[k].dataType === 'string') {
-          col_names_S.push(t.columns[k].fieldName);
-        } else if (t.columns[k].dataType === 'int') {
-          col_names_N.push(t.columns[k].fieldName);
-        } else if (t.columns[k].dataType === 'float') {
-          col_names_N.push(t.columns[k].fieldName);
-        }
-
-        keplerFields.push(columnToKeplerField(t.columns[k], k));
-      }
-
-      log('zzz do we see data', t.data.length, t.data);
-      const keplerData = dataToKeplerRow(t.data, keplerFields);
-
-      // log flat data for testing
-      log('flat data', data, col_names, 'ConfigSheet');
-      const newDataState = {
-        isLoading: false,
-        ConfigSheetColumns: col_names,
-        ConfigSheetStringColumns: col_names_S,
-        ConfigSheetNumberColumns: col_names_N,
-        ConfigSheetData: {fields: keplerFields, rows: keplerData} //data, we need something more like tableau for kepler
-      };
+      const newDataState = dataTableToKepler(t);
 
       if (TableauSettings.ShouldUse) {
-        log('%c getConfigSheetSummaryData TableauSettings.ShouldUse', 'color: blue')
+        log(
+          '%c getConfigSheetSummaryData TableauSettings.ShouldUse',
+          'color: blue'
+        );
         TableauSettings.updateAndSave(
           {
             isLoading: false
@@ -706,23 +663,29 @@ class App extends Component {
             this.setState({
               ...newDataState,
               tableauSettings: settings,
+              isLoading: false,
               isMissingData: false
             });
           },
           true
         );
       } else {
-        log('%c getConfigSheetSummaryData TableauSettings.ShouldUse false', 'color: purple')
+        log(
+          '%c getConfigSheetSummaryData TableauSettings.ShouldUse false',
+          'color: purple'
+        );
 
         this.setState({isLoading: false});
         tableauExt.settings.set('isLoading', false);
         tableauExt.settings.saveAsync().then(() => {
           this.setState({
             ...newDataState,
+            isLoading: false,
             tableauSettings: tableauExt.settings.getAll()
           });
         });
       }
+      this.addEventListeners();
       log('getData() state', this.state);
     });
   }
@@ -950,7 +913,6 @@ class App extends Component {
       log(this.state.stepIndex);
 
       if (this.state.stepIndex === 1) {
-
         // Placeholder sheet names. TODO: Bind to worksheet data
         return (
           <React.Fragment>
@@ -976,7 +938,6 @@ class App extends Component {
       }
 
       if (this.state.stepIndex === 2) {
-
         return (
           <React.Fragment>
             <Stepper stepIndex={this.state.stepIndex} steps={stepNames} />

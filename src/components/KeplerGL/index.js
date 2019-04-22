@@ -32,14 +32,6 @@ class KeplerGlComponent extends React.Component {
         'background: Aqua; color:red',
         nextProps.data
       );
-      log(
-        `%c this.props.isLoading = ${this.props.isLoading}`,
-        `background: ${this.props.isLoading ? 'red' : 'green'}; color: black`
-      );
-      log(
-        `%c nextProps.isLoading = ${nextProps.isLoading}`,
-        `background: ${nextProps.isLoading ? 'red' : 'green'}; color: black`
-      );
 
       this.onDataChange(nextProps);
     }
@@ -48,7 +40,7 @@ class KeplerGlComponent extends React.Component {
   onDataChange({data, keplerConfig, readOnly}) {
     // Create dataset structure
     log('%c Calling addDataToMap', 'background: green; color:white');
-
+    // log('%c with config', 'background: grey', keplerConfig ? JSON.parse(keplerConfig) : undefined);
     const datasets = {
       data,
       info: {
@@ -61,7 +53,7 @@ class KeplerGlComponent extends React.Component {
     this.props.dispatch(
       addDataToMap({
         datasets,
-        options: {readOnly},
+        options: {readOnly, centerMap: true},
         config: keplerConfig ? JSON.parse(keplerConfig) : undefined
       })
     );
