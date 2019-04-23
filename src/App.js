@@ -671,6 +671,7 @@ class App extends Component {
           settings => {
             this.setState({
               ...newDataState,
+              selectedSheet: sheetName,
               tableauSettings: settings,
               isLoading: false,
               isMissingData: false
@@ -1007,6 +1008,7 @@ class App extends Component {
         width={this.state.width}
         height={this.state.height}
         data={this.state.ConfigSheetData}
+        selectedSheet={this.state.selectedSheet}
         tableauSettings={tableauSettingsState}
         theme={tableauSettingsState.theme}
         readOnly={tableauSettingsState.readOnly === 'true'}

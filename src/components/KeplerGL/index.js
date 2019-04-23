@@ -38,7 +38,7 @@ class KeplerGlComponent extends React.Component {
     }
   }
 
-  onDataChange({data, keplerConfig, readOnly}) {
+  onDataChange({data, keplerConfig, readOnly, selectedSheet}) {
     // Create dataset structure
     log('%c Calling addDataToMap', 'background: green; color:white');
     // log('%c with config', 'background: grey', keplerConfig ? JSON.parse(keplerConfig) : undefined);
@@ -47,7 +47,8 @@ class KeplerGlComponent extends React.Component {
       info: {
         // this is used to match the dataId defined in nyc-config.json. For more details see API documentation.
         // It is paramount that this id matches your configuration otherwise the configuration file will be ignored.
-        id: DATA_ID
+        id: DATA_ID,
+        label: selectedSheet
       }
     };
 
