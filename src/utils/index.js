@@ -106,32 +106,21 @@ export function getSampleForTypeAnalyze({fields, rows, sampleCount = 50}) {
 }
 
 export function dataTableToKepler(table) {
-  const col_names = [];
   const data = [];
-  let keplerFields = [];
-
-  //write column names to array
-  for (let k = 0; k < table.columns.length; k++) {
-
-    // write named array
-    col_names.push(table.columns[k].fieldName);
-
-    keplerFields.push(columnToKeplerField(table.columns[k], k));
-  }
+  let keplerFields = table.columns.map(columnToKeplerField);
 
   // for string fields, we have to detect their types, because they
   // may contain geometry info
   keplerFields = analyzeStringFields(keplerFields, table.data);
 
-
   log('zzz do we see data', table.data.length, table.data);
   const keplerData = dataToKeplerRow(table.data, keplerFields);
 
   // log flat data for testing
-  log('flat data', data, col_names, 'ConfigSheet');
+  // log('flat data', data, col_names, 'ConfigSheet');
   return {
     isLoading: false,
-    ConfigSheetColumns: col_names,
+    ConfigSheetColumns: table.columns,
     ConfigSheetData: {fields: keplerFields, rows: keplerData} //data, we need something more like tableau for kepler
   };
 }

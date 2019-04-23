@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import './App.css';
+
+// actions
+import {markerSelect} from './actions';
 
 // Custom config components
 import SplashScreen from './components/SplashScreen';
@@ -65,6 +69,10 @@ const options = {
   maxRows: 0
 };
 
+function findColumnIndex(state, fieldType) {
+  return (state.ConfigSheetColumns || [])
+    .findIndex(f => f.fieldName === state.tableauSettings[fieldType]);
+}
 // end constants to move to another file later
 
 class App extends Component {
@@ -83,8 +91,8 @@ class App extends Component {
       demoType: 'Violin',
       stepIndex: 1,
       isMissingData: true,
-      highlightOn: undefined, 
-      unregisterHandlerFunctions: [], 
+      highlightOn: undefined,
+      unregisterHandlerFunctions: [],
       filterKeplerObject: []
     };
 
@@ -129,7 +137,7 @@ class App extends Component {
       , () => console.log('event listeners added', this.state)
     );
   }
-  
+
   removeEventListeners = () => {
     let localUnregisterHandlerFunctions = [ ...this.state.unregisterHandlerFunctions ];
     console.log('removing event listener', localUnregisterHandlerFunctions);
@@ -163,9 +171,7 @@ class App extends Component {
     log(
       'in on click callback',
       d,
-      (this.state.ConfigSheetColumns || []).indexOf(
-        this.state.tableauSettings.clickField
-      ),
+      findColumnIndex(this.state, 'clickField'),
       this.state.tableauSettings.clickAction
     );
 
@@ -185,11 +191,7 @@ class App extends Component {
             log(
               `clicked ${typeof d[0] === 'object'} and ${d.map(
                 childD =>
-                  childD[
-                    (this.state.ConfigSheetColumns || []).indexOf(
-                      this.state.tableauSettings.clickField
-                    )
-                  ]
+                  childD[findColumnIndex(this.state, 'clickField')]
               )}: in sheet loop`,
               worksheet.name,
               worksheet,
@@ -204,11 +206,7 @@ class App extends Component {
                       fieldName: this.state.tableauSettings.clickField,
                       value: d.map(
                         childD =>
-                          childD[
-                            (this.state.ConfigSheetColumns || []).indexOf(
-                              this.state.tableauSettings.clickField
-                            )
-                          ]
+                          childD[findColumnIndex(this.state, 'clickField')]
                       )
                     }
                   ],
@@ -224,12 +222,7 @@ class App extends Component {
                   [
                     {
                       fieldName: this.state.tableauSettings.clickField,
-                      value:
-                        d[
-                          (this.state.ConfigSheetColumns || []).indexOf(
-                            this.state.tableauSettings.clickField
-                          )
-                        ]
+                      value: d[findColumnIndex(this.state, 'clickField')]
                     }
                   ],
                   window.tableau.SelectionUpdateType.Replace
@@ -253,12 +246,7 @@ class App extends Component {
           if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
             log(
               `clicked ${typeof d[0] === 'object'} and ${d.map(
-                childD =>
-                  childD[
-                    (this.state.ConfigSheetColumns || []).indexOf(
-                      this.state.tableauSettings.clickField
-                    )
-                  ]
+                childD => childD[findColumnIndex(this.state, 'clickField')]
               )}: in sheet loop`,
               worksheet.name,
               worksheet,
@@ -270,12 +258,7 @@ class App extends Component {
                 .applyFilterAsync(
                   this.state.tableauSettings.clickField,
                   d.map(
-                    childD =>
-                      childD[
-                        (this.state.ConfigSheetColumns || []).indexOf(
-                          this.state.tableauSettings.clickField
-                        )
-                      ]
+                    childD => childD[findColumnIndex(this.state, 'clickField')]
                   ),
                   window.tableau.FilterUpdateType.Replace
                 )
@@ -287,11 +270,7 @@ class App extends Component {
               worksheet
                 .applyFilterAsync(
                 this.state.tableauSettings.clickField,
-                [d[
-                  (this.state.ConfigSheetColumns || []).indexOf(
-                    this.state.tableauSettings.clickField
-                  )
-                ]],
+                [d[findColumnIndex(this.state, 'clickField')]],
                 window.tableau.FilterUpdateType.Replace
               )
               .then(e => {
@@ -320,9 +299,7 @@ class App extends Component {
     log(
       'in on hover callback',
       d,
-      (this.state.ConfigSheetColumns || []).indexOf(
-        this.state.tableauSettings.hoverField
-      ),
+      findColumnIndex(this.state, 'hoverField'),
       this.state.tableauSettings.hoverAction
     );
 
@@ -340,8 +317,7 @@ class App extends Component {
         tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => {
           // if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
             log(
-              `hovered ${typeof d[0] === 'object'} and ${d[(this.state.ConfigSheetColumns || []).indexOf(this.state.tableauSettings.hoverField)]
-              }: in sheet loop`,
+              `hovered ${typeof d[0] === 'object'} and ${d[findColumnIndex(this.state, 'hoverField')]}: in sheet loop`,
               worksheet.name,
               worksheet,
               this.state.tableauSettings.hoverField
@@ -354,12 +330,7 @@ class App extends Component {
                     {
                       'fieldName': this.state.tableauSettings.hoverField,
                       'value': d.map(
-                        childD =>
-                          childD[
-                            (this.state.ConfigSheetColumns || []).indexOf(
-                              this.state.tableauSettings.hoverField
-                            )
-                          ]
+                        childD => childD[findColumnIndex(this.state, 'hoverField')]
                       )
                     }
                   ],
@@ -374,13 +345,8 @@ class App extends Component {
                 .selectMarksByValueAsync(
                   [
                     {
-                      'fieldName': this.state.tableauSettings.hoverField,
-                      'value':
-                        d[
-                          (this.state.ConfigSheetColumns || []).indexOf(
-                            this.state.tableauSettings.hoverField
-                          )
-                        ]
+                      fieldName: this.state.tableauSettings.hoverField,
+                      value: d[findColumnIndex(this.state, 'hoverField')]
                     }
                   ],
                   window.tableau.SelectionUpdateType.Replace
@@ -404,12 +370,7 @@ class App extends Component {
           if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
             log(
               `hovered ${typeof d[0] === 'object'} and ${d.map(
-                childD =>
-                  childD[
-                    (this.state.ConfigSheetColumns || []).indexOf(
-                      this.state.tableauSettings.hoverField
-                    )
-                  ]
+                childD => childD[findColumnIndex(this.state, 'hoverField')]
               )}: in sheet loop`,
               worksheet.name,
               worksheet,
@@ -420,14 +381,7 @@ class App extends Component {
               worksheet
                 .applyFilterAsync(
                   this.state.tableauSettings.hoverField,
-                  d.map(
-                    childD =>
-                      childD[
-                        (this.state.ConfigSheetColumns || []).indexOf(
-                          this.state.tableauSettings.hoverField
-                        )
-                      ]
-                  ),
+                  d.map(childD => childD[findColumnIndex(this.state, 'hoverField')]),
                   window.tableau.FilterUpdateType.Replace
                 )
                 .then(e => {
@@ -437,11 +391,7 @@ class App extends Component {
             } else {
               worksheet.applyFilterAsync(
                 this.state.tableauSettings.hoverField,
-                [d[
-                  (this.state.ConfigSheetColumns || []).indexOf(
-                    this.state.tableauSettings.hoverField
-                  )
-                ]],
+                [d[findColumnIndex(this.state, 'hoverField')]],
                 window.tableau.FilterUpdateType.Replace
                 )
                 .then(e => {
@@ -608,20 +558,20 @@ class App extends Component {
 
       // get selected marks and pass to kepler via state object
       e.getMarksAsync().then(marks => {
-        
+
         console.log('marks', marks);
         // loop through marks table and adjust the class for opacity
         let marksDataTable = marks.data[0];
         let col_indexes = {};
         let keplerFields = [];
 
-      
+
         //write column names to array
         for (let k = 0; k < marksDataTable.columns.length; k++) {
             col_indexes[marksDataTable.columns[k].fieldName] = k;
             keplerFields.push(columnToKeplerField(marksDataTable.columns[k], k));
           }
-    
+
         const keplerData = dataToKeplerRow(marksDataTable.data, keplerFields);
         //console.log('zzz mark do we see data', marksDataTable.data.length, marksDataTable.data, keplerData, keplerFields, col_indexes);
 
@@ -629,13 +579,11 @@ class App extends Component {
         const filterKeplerObject = {
           field: this.state.tableauSettings.keplerFilterField,
           values: keplerData.map(childD => childD[col_indexes[this.state.tableauSettings.keplerFilterField]])
-        }; 
+        };
 
         // @shan you can remove this console once you are good with the object
-        console.log('mark object', filterKeplerObject);
-
+        this.props.dispatch(markerSelect(filterKeplerObject))
         this.setState({ filterKeplerObject }, () => this.addEventListeners());
-
         //console the select marks table
         //log('marks', marksDataTable, col_indexes, data, this.state.tableauSettings.hoverField, this.state.tableauSettings.clickField);
 
@@ -1036,7 +984,6 @@ class App extends Component {
         width={this.state.width}
         height={this.state.height}
         data={this.state.ConfigSheetData}
-        filterKeplerObject={this.state.filterKeplerObject}
         tableauSettings={tableauSettingsState}
         readOnly={tableauSettingsState.readOnly === 'true'}
         keplerConfig={tableauSettingsState.keplerConfig}
@@ -1058,4 +1005,12 @@ class App extends Component {
 
 App.propTypes = {};
 
-export default withStyles(styles)(App);
+const mapStateToProps = state => state;
+const dispatchToProps = dispatch => ({dispatch});
+
+const ConnectedApp = connect(
+  mapStateToProps,
+  dispatchToProps
+)(App);
+
+export default withStyles(styles)(ConnectedApp);

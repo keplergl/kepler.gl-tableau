@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {log} from '../../utils';
+import {DATA_ID} from '../../constants';
 
 // kepler example wrapper
 import App from './app';
@@ -46,7 +47,7 @@ class KeplerGlComponent extends React.Component {
       info: {
         // this is used to match the dataId defined in nyc-config.json. For more details see API documentation.
         // It is paramount that this id matches your configuration otherwise the configuration file will be ignored.
-        id: 'my_data'
+        id: DATA_ID
       }
     };
 

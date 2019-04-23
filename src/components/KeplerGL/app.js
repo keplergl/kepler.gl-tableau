@@ -22,6 +22,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import {log} from '../../utils';
+import {MAP_ID} from '../../constants';
 
 // Kepler.gl actions
 import {
@@ -164,7 +165,7 @@ class App extends Component {
       >
         <KeplerGl
           mapboxApiAccessToken={this.props.mapboxAPIKey}
-          id="map"
+          id={MAP_ID}
           appName="Kepler.gl in Tableau!"
           version="v0.1"
           width={this.props.width}
