@@ -169,6 +169,9 @@ class App extends Component {
       this.state.tableauSettings.clickAction
     );
 
+    // remove event listeners
+    this.removeEventListeners();
+
     // check which action we are supposed to take
     if (
       (this.state.tableauSettings.clickAction || 'No Action') === 'Highlight' &&
@@ -211,7 +214,10 @@ class App extends Component {
                   ],
                   window.tableau.SelectionUpdateType.Replace
                 )
-                .then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
+                .then(e => {
+                  this.addEventListeners();
+                  log('select marks response: ' + worksheet.name, e)
+                }); // response is void per tableau-extensions.js
             } else {
               worksheet
                 .selectMarksByValueAsync(
@@ -228,7 +234,10 @@ class App extends Component {
                   ],
                   window.tableau.SelectionUpdateType.Replace
                 )
-                .then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
+                .then(e => {
+                  this.addEventListeners();
+                  log('select marks response: ' + worksheet.name, e)
+                }); // response is void per tableau-extensions.js
             }
           }
         });
@@ -270,7 +279,10 @@ class App extends Component {
                   ),
                   window.tableau.FilterUpdateType.Replace
                 )
-                .then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
+                .then(e => {
+                  this.addEventListeners();
+                  log('filter applied response', e)
+                }); // response is void per tableau-extensions.js
             } else {
               worksheet
                 .applyFilterAsync(
@@ -282,14 +294,21 @@ class App extends Component {
                 ]],
                 window.tableau.FilterUpdateType.Replace
               )
-              .then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
+              .then(e => {
+                this.addEventListeners();
+                log('filter applied response', e)
+              }); // response is void per tableau-extensions.js
             }
           }
         });
       } else {
         tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => {
           if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
-            worksheet.clearFilterAsync(this.state.tableauSettings.clickField);
+            worksheet.clearFilterAsync(this.state.tableauSettings.clickField)
+            .then(e => {
+              this.addEventListeners();
+              log('clear filter response', e)
+            }); // response is void per tableau-extensions.js
           }
         });
       }
@@ -306,6 +325,9 @@ class App extends Component {
       ),
       this.state.tableauSettings.hoverAction
     );
+
+    // remove event listeners
+    this.removeEventListeners();
 
     // check which action we are supposed to take
     if (
@@ -343,7 +365,10 @@ class App extends Component {
                   ],
                   window.tableau.SelectionUpdateType.Replace
                 )
-                .then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
+                .then(e => {
+                  this.addEventListeners();
+                  log('select marks response: ' + worksheet.name, e)
+                }); // response is void per tableau-extensions.js
             } else {
               worksheet
                 .selectMarksByValueAsync(
@@ -360,7 +385,10 @@ class App extends Component {
                   ],
                   window.tableau.SelectionUpdateType.Replace
                 )
-                .then(e => log('select marks response: ' + worksheet.name, e)); // response is void per tableau-extensions.js
+                .then(e => {
+                  this.addEventListeners();
+                  log('select marks response: ' + worksheet.name, e)
+                }); // response is void per tableau-extensions.js
             }
           // }
         });
@@ -402,7 +430,10 @@ class App extends Component {
                   ),
                   window.tableau.FilterUpdateType.Replace
                 )
-                .then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
+                .then(e => {
+                  this.addEventListeners();
+                  log('filter applied response', e)
+                }); // response is void per tableau-extensions.js
             } else {
               worksheet.applyFilterAsync(
                 this.state.tableauSettings.hoverField,
@@ -413,14 +444,21 @@ class App extends Component {
                 ]],
                 window.tableau.FilterUpdateType.Replace
                 )
-                .then(e => log('filter applied response', e)); // response is void per tableau-extensions.js
+                .then(e => {
+                  this.addEventListeners();
+                  log('filter applied response', e)
+                }); // response is void per tableau-extensions.js
             }
           }
         });
       } else {
         tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => {
           if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
-            worksheet.clearFilterAsync(this.state.tableauSettings.clickField);
+            worksheet.clearFilterAsync(this.state.tableauSettings.clickField)
+            .then(e => {
+              this.addEventListeners();
+              log('clear filter response', e)
+            }); // response is void per tableau-extensions.js
           }
         });
       }
