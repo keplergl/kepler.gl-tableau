@@ -285,8 +285,19 @@ class App extends Component {
           if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
             worksheet.clearFilterAsync(this.state.tableauSettings.clickField)
             .then(e => {
-              this.addEventListeners();
-              log('clear filter response', e)
+              worksheet.selectMarksByValueAsync(
+                [
+                  {
+                    fieldName: this.state.tableauSettings.clickField,
+                    value: []
+                  }
+                ],
+                window.tableau.SelectionUpdateType.Replace
+              )
+              .then(e => {
+                this.addEventListeners();
+                log('clear filter response', worksheet.name, e)
+              }); // response is void per tableau-extensions.js
             }); // response is void per tableau-extensions.js
           }
         });
@@ -406,8 +417,19 @@ class App extends Component {
           if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
             worksheet.clearFilterAsync(this.state.tableauSettings.clickField)
             .then(e => {
-              this.addEventListeners();
-              log('clear filter response', e)
+              worksheet.selectMarksByValueAsync(
+                [
+                  {
+                    fieldName: this.state.tableauSettings.clickField,
+                    value: []
+                  }
+                ],
+                window.tableau.SelectionUpdateType.Replace
+              )
+              .then(e => {
+                this.addEventListeners();
+                log('clear filter response', worksheet.name, e)
+              }); // response is void per tableau-extensions.js
             }); // response is void per tableau-extensions.js
           }
         });
