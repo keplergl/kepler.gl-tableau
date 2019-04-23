@@ -67,7 +67,8 @@ class KeplerGlComponent extends React.Component {
       data,
       readOnly,
       keplerConfig,
-      mapboxAPIKey
+      mapboxAPIKey,
+      theme
     } = this.props;
 
     if (!data) {
@@ -82,6 +83,7 @@ class KeplerGlComponent extends React.Component {
         readOnly={readOnly}
         keplerConfig={keplerConfig}
         mapboxAPIKey={mapboxAPIKey}
+        theme={theme}
         configCallBack={this.props.configCallBack}
         customClickBehavior={this.props.clickCallBack}
         customHoverBehavior={this.props.hoverCallBack}

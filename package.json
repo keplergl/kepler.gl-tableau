@@ -11,7 +11,7 @@
     "core-js": "^2.6.0",
     "gh-pages": "^2.0.1",
     "jshint": "^2.10.2",
-    "kepler.gl": "^1.0.0-0",
+    "kepler.gl": "^1.0.0-1",
     "react": "^16.8.4",
     "react-beautiful-dnd": "^9.0.2",
     "react-bootstrap": "^0.32.1",

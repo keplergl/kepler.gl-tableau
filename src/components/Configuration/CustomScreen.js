@@ -97,6 +97,22 @@ class CustomScreen extends React.Component {
                  <MenuItem value={false}>False</MenuItem>
               </Select>
             </FormControl>
+
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip
+                    title="Color Theme"
+                    tooltipText="Select a dark or light kepler.gl UI theme"
+                  />
+              <Select
+                value={tableauSettings.theme || 'dark'}
+                onChange={handleChange}
+                input={<Input name="theme" id="theme-helper" />}
+              >
+                 <MenuItem value="light">Light</MenuItem>
+                 <MenuItem value="dark">Dark</MenuItem>
+              </Select>
+            </FormControl>
+
             <FormControl className={classes.formControl}>
               <InputLabelWithTooltip
                     title="Hover Action"

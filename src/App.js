@@ -87,13 +87,14 @@ class App extends Component {
       width: 300,
       dashboardName: '',
       sheetNames: [],
-      tableauSettings: [],
+      tableauSettings: {},
       demoType: 'Violin',
       stepIndex: 1,
       isMissingData: true,
       highlightOn: undefined,
       unregisterHandlerFunctions: [],
-      filterKeplerObject: []
+      filterKeplerObject: [],
+      theme: 'light'
     };
 
     TableauSettings.setEnvName(this.props.isConfig ? 'CONFIG' : 'EXTENSION');
@@ -107,7 +108,7 @@ class App extends Component {
     this.removeEventListeners();
     // let localUnregisterHandlerFunctions = Object.assign([], ...this.state.unregisterHandlerFunctions);
     // localUnregisterHandlerFunctions.forEach(unregisterHandlerFunction => {
-    //   console.log('removing exisiting listener', unregisterHandlerFunction);
+    //   console.log('removing existing listener', unregisterHandlerFunction);
     //   unregisterHandlerFunction();
     // });
     let localUnregisterHandlerFunctions = [];
@@ -1007,6 +1008,7 @@ class App extends Component {
         height={this.state.height}
         data={this.state.ConfigSheetData}
         tableauSettings={tableauSettingsState}
+        theme={tableauSettingsState.theme}
         readOnly={tableauSettingsState.readOnly === 'true'}
         keplerConfig={tableauSettingsState.keplerConfig}
         mapboxAPIKey={

@@ -168,8 +168,10 @@ class App extends Component {
           id={MAP_ID}
           appName="Kepler.gl in Tableau!"
           version="v0.1"
+          theme={this.props.theme === 'light' ? 'light' : undefined}
           width={this.props.width}
           height={this.props.height}
+          sidePanelWidth={260}
         />
       </div>
     );
