@@ -1,7 +1,8 @@
 /* eslint-disable complexity */
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import PropTypes from 'prop-types';
+import throttle from 'lodash.throttle';
+
 import './App.css';
 
 // actions
@@ -101,6 +102,9 @@ class App extends Component {
     TableauSettings.setEnvName(this.props.isConfig ? 'CONFIG' : 'EXTENSION');
 
     this.unregisterHandlerFunctions = [];
+    this.applyingMouseActions = false;
+    this.clickCallBack = throttle(this.clickCallBack, 200);
+    this.hoverCallBack = throttle(this.hoverCallBack, 200);
   }
 
   // eslint-disable-next-line react/sort-comp
@@ -109,7 +113,7 @@ class App extends Component {
     // since we add them back later in this function.
     // provided by tableau extension samples
 
-    log('%c addEventListeners', 'background: purple; color:yellow');
+    console.log('%c addEventListeners', 'background: purple; color:yellow');
     this.removeEventListeners();
 
     const localUnregisterHandlerFunctions = [];
@@ -137,27 +141,17 @@ class App extends Component {
     });
 
     this.unregisterHandlerFunctions = localUnregisterHandlerFunctions;
-    log(`%c added ${this.unregisterHandlerFunctions.length} EventListeners`, 'background: purple, color:yellow');
-
-    // this.setState({unregisterHandlerFunctions: localUnregisterHandlerFunctions }
-    //   , () => console.log('event listeners added', this.state)
-    // );
+    // log(`%c added ${this.unregisterHandlerFunctions.length} EventListeners`, 'background: purple, color:yellow');
   }
 
   removeEventListeners = () => {
-    // let localUnregisterHandlerFunctions = [ ...this.unregisterHandlerFunctions ];
-
-    log(`%c remove ${this.unregisterHandlerFunctions.length} EventListeners`, 'background: green; color:black');
+    console.log(`%c remove ${this.unregisterHandlerFunctions.length} EventListeners`, 'background: green; color:black');
 
     this.unregisterHandlerFunctions.forEach(unregisterHandlerFunction => {
       unregisterHandlerFunction();
     });
 
-    // localUnregisterHandlerFunctions = [];
     this.unregisterHandlerFunctions = [];
-    // this.setState({ unregisterHandlerFunctions: []}
-    //   , () => console.log('event listeners removed', this.state)
-    // );
   }
 
   onNextStep = () => {
@@ -179,12 +173,12 @@ class App extends Component {
   clickCallBack = d => {
     const {clickField, clickAction} = this.state.tableauSettings;
 
-    log(
+    console.log(
       '%c in on click callback',
       'background: brown',
-      d,
-      findColumnIndexByFieldName(this.state, clickField),
-      clickAction
+      // d,
+      // findColumnIndexByFieldName(this.state, clickField),
+      // clickAction
     );
 
     this.applyMouseActionsToSheets(d, clickAction, clickField);
@@ -193,12 +187,12 @@ class App extends Component {
   hoverCallBack = d => {
     const {hoverField, hoverAction} = this.state.tableauSettings;
 
-    log(
+    console.log(
       '%c in on hover callback',
       'background: OLIVE',
-      d,
-      findColumnIndexByFieldName(this.state, hoverField),
-      hoverAction
+      // d,
+      // findColumnIndexByFieldName(this.state, hoverField),
+      // hoverAction
     );
 
     this.applyMouseActionsToSheets(d, hoverAction, hoverField);
@@ -206,6 +200,9 @@ class App extends Component {
   };
 
   applyMouseActionsToSheets = (d, action, fieldName) => {
+    if (this.applyingMouseActions) {
+      return;
+    }
     const {ConfigSheet} = this.state.tableauSettings;
     const toHighlight = action === 'Highlight' && (fieldName || 'None') !== 'None';
     const toFilter = action === 'Filter' && (fieldName || 'None') !== 'None';
@@ -217,6 +214,8 @@ class App extends Component {
 
     // remove EventListeners before apply any async actions
     this.removeEventListeners();
+    this.applyingMouseActions = true;
+
     let tasks = [];
 
     if (d) {
@@ -235,8 +234,10 @@ class App extends Component {
     }
 
     Promise.all(tasks).then(() => {
+      // all selection should be completed
       // Add event listeners back
       this.addEventListeners();
+      this.applyingMouseActions = false;
     });
   }
 
@@ -372,7 +373,10 @@ class App extends Component {
 
   marksSelected = e => {
     if ( this.state.tableauSettings.keplerFilterField ) {
-      log(
+      if (this.applyingMouseActions) {
+        return;
+      }
+      console.log(
         '%c ==============App Marker selected',
         'background: red; color: white'
       );
@@ -395,7 +399,6 @@ class App extends Component {
           }
 
         const keplerData = dataToKeplerRow(marksDataTable.data, keplerFields);
-        // console.log('zzz mark do we see data', marksDataTable.data.length, marksDataTable.data, keplerData, keplerFields, col_indexes);
 
         const filterKeplerObject = {
           field: keplerFilterField,
@@ -405,9 +408,6 @@ class App extends Component {
         // @shan you can remove this console once you are good with the object
         this.props.dispatch(markerSelect(filterKeplerObject));
         this.setState({filterKeplerObject}, () => this.addEventListeners());
-        // console the select marks table
-        // log('marks', marksDataTable, col_indexes, data, this.state.tableauSettings.hoverField, this.state.tableauSettings.clickField);
-
       });
     }
   }
