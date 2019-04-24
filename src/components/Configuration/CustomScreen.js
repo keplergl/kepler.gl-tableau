@@ -104,7 +104,7 @@ class CustomScreen extends React.Component {
                     tooltipText="Select a dark or light kepler.gl UI theme"
                   />
               <Select
-                value={tableauSettings.theme || 'dark'}
+                value={tableauSettings.theme || 'light'}
                 onChange={handleChange}
                 input={<Input name="theme" id="theme-helper" />}
               >
