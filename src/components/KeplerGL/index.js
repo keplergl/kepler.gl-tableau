@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {log} from '../../utils';
 import {DATA_ID} from '../../constants';
@@ -8,32 +7,15 @@ import {DATA_ID} from '../../constants';
 import App from './app';
 import {addDataToMap} from 'kepler.gl/actions';
 
-//material ui
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-
 class KeplerGlComponent extends React.Component {
   componentDidMount() {
-    log(
-      '%c =======KeplerGL.componentDidMount',
-      'background: #222; color: #bada55'
-    );
-    log(this.props.data);
     if (this.props.data) {
       this.onDataChange(this.props);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.data === this.props.data) {
-      log('data is the same', nextProps.data);
-    } else if (!nextProps.isLoading && this.props.isLoading && nextProps.data) {
-      log(
-        '%c KeplerGL.componentWillReceiveProps data changed',
-        'background: Aqua; color:red',
-        nextProps.data
-      );
-
+   if (nextProps.data !== this.props.data && !nextProps.isLoading && this.props.isLoading && nextProps.data) {
       this.onDataChange(nextProps);
     }
   }
@@ -71,10 +53,6 @@ class KeplerGlComponent extends React.Component {
       mapboxAPIKey,
       theme
     } = this.props;
-
-    if (!data) {
-      log('%c data is missing', 'background: red; color: white');
-    }
 
     return (
       <App

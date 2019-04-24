@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
@@ -16,7 +17,6 @@ import {
 } from './components/Configuration';
 
 // Viz components
-import LoadingIndicatorComponent from './components/LoadingIndicatorComponent';
 import KeplerGlComponent from './components/KeplerGL';
 
 import {withStyles} from '@material-ui/core/styles';
@@ -34,6 +34,7 @@ import defaultSettings from './components/Configuration/defaultSettings';
 
 // utils and variables
 import {columnToKeplerField, dataToKeplerRow, dataTableToKepler, log} from './utils';
+import {selectMarksByField, applyFilterByField, clearMarksByField, clearFilterByField} from './utils/interaction-utils';
 
 //logos
 import dbLogo from './assets/dblogo.png';
@@ -69,9 +70,9 @@ const options = {
   maxRows: 0
 };
 
-function findColumnIndex(state, fieldType) {
+function findColumnIndexByFieldName(state, fieldName) {
   return (state.ConfigSheetColumns || [])
-    .findIndex(f => f.fieldName === state.tableauSettings[fieldType]);
+    .findIndex(f => f.fieldName === fieldName);
 }
 // end constants to move to another file later
 
@@ -98,59 +99,66 @@ class App extends Component {
     };
 
     TableauSettings.setEnvName(this.props.isConfig ? 'CONFIG' : 'EXTENSION');
-    this.unregisterEventFn = undefined;
+
+    this.unregisterHandlerFunctions = [];
   }
 
+  // eslint-disable-next-line react/sort-comp
   addEventListeners = () => {
     // Whenever we restore the filters table, remove all save handling functions,
     // since we add them back later in this function.
     // provided by tableau extension samples
-    this.removeEventListeners();
-    // let localUnregisterHandlerFunctions = Object.assign([], ...this.state.unregisterHandlerFunctions);
-    // localUnregisterHandlerFunctions.forEach(unregisterHandlerFunction => {
-    //   console.log('removing existing listener', unregisterHandlerFunction);
-    //   unregisterHandlerFunction();
-    // });
-    let localUnregisterHandlerFunctions = [];
 
-    //add filter change event listener with callback to re-query data after change
-    // go through each worksheet and then add a filter change event listner
+    log('%c addEventListeners', 'background: purple; color:yellow');
+    this.removeEventListeners();
+
+    const localUnregisterHandlerFunctions = [];
+
+    // add filter change event listener with callback to re-query data after change
+    // go through each worksheet and then add a filter change event listener
     // need to check whether this is being applied more than once
     tableauExt.dashboardContent.dashboard.worksheets.map((worksheet) => {
 
-      // add event listner
-      let unregisterHandlerFunction = worksheet.addEventListener(
+      // add event listener
+      const unregisterFilterHandlerFunction = worksheet.addEventListener(
           window.tableau.TableauEventType.FilterChanged,
           this.filterChanged
       );
       // provided by tableau extension samples, may need to push this to state for react
-      localUnregisterHandlerFunctions.push(unregisterHandlerFunction);
+      localUnregisterHandlerFunctions.push(unregisterFilterHandlerFunction);
 
-      unregisterHandlerFunction = worksheet.addEventListener(
+      const unregisterMarkerHandlerFunction = worksheet.addEventListener(
         window.tableau.TableauEventType.MarkSelectionChanged,
         this.marksSelected
       );
 
       // provided by tableau extension samples, may need to push this to state for react
-      localUnregisterHandlerFunctions.push(unregisterHandlerFunction);
+      localUnregisterHandlerFunctions.push(unregisterMarkerHandlerFunction);
     });
-    this.setState({unregisterHandlerFunctions: localUnregisterHandlerFunctions }
-      , () => console.log('event listeners added', this.state)
-    );
+
+    this.unregisterHandlerFunctions = localUnregisterHandlerFunctions;
+    log(`%c added ${this.unregisterHandlerFunctions.length} EventListeners`, 'background: purple, color:yellow');
+
+    // this.setState({unregisterHandlerFunctions: localUnregisterHandlerFunctions }
+    //   , () => console.log('event listeners added', this.state)
+    // );
   }
 
   removeEventListeners = () => {
-    let localUnregisterHandlerFunctions = [ ...this.state.unregisterHandlerFunctions ];
-    console.log('removing event listener', localUnregisterHandlerFunctions);
-    localUnregisterHandlerFunctions.forEach(unregisterHandlerFunction => {
+    // let localUnregisterHandlerFunctions = [ ...this.unregisterHandlerFunctions ];
+
+    log(`%c remove ${this.unregisterHandlerFunctions.length} EventListeners`, 'background: green; color:black');
+
+    this.unregisterHandlerFunctions.forEach(unregisterHandlerFunction => {
       unregisterHandlerFunction();
     });
-    localUnregisterHandlerFunctions = [];
-    this.setState({ unregisterHandlerFunctions: []}
-      , () => console.log('event listeners removed', this.state)
-    );
-  }
 
+    // localUnregisterHandlerFunctions = [];
+    this.unregisterHandlerFunctions = [];
+    // this.setState({ unregisterHandlerFunctions: []}
+    //   , () => console.log('event listeners removed', this.state)
+    // );
+  }
 
   onNextStep = () => {
     if ( this.state.stepIndex === 2 ) {
@@ -169,275 +177,68 @@ class App extends Component {
   }
 
   clickCallBack = d => {
+    const {clickField, clickAction} = this.state.tableauSettings;
+
     log(
-      'in on click callback',
+      '%c in on click callback',
+      'background: brown',
       d,
-      findColumnIndex(this.state, 'clickField'),
-      this.state.tableauSettings.clickAction
+      findColumnIndexByFieldName(this.state, clickField),
+      clickAction
     );
 
-    // remove event listeners
-    this.removeEventListeners();
-
-    // check which action we are supposed to take
-    if (
-      (this.state.tableauSettings.clickAction || 'No Action') === 'Highlight' &&
-      (this.state.tableauSettings.clickField || 'None') !== 'None'
-    ) {
-      if (d) {
-        // if clicked is a single object, d is an array of all column values of that object
-        // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
-        tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => {
-          if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
-            log(
-              `clicked ${typeof d[0] === 'object'} and ${d.map(
-                childD =>
-                  childD[findColumnIndex(this.state, 'clickField')]
-              )}: in sheet loop`,
-              worksheet.name,
-              worksheet,
-              tableauExt.settings.get('ConfigChildField')
-            );
-
-            if (typeof d[0] === 'object') {
-              worksheet
-                .selectMarksByValueAsync(
-                  [
-                    {
-                      fieldName: this.state.tableauSettings.clickField,
-                      value: d.map(
-                        childD =>
-                          childD[findColumnIndex(this.state, 'clickField')]
-                      )
-                    }
-                  ],
-                  window.tableau.SelectionUpdateType.Replace
-                )
-                .then(e => {
-                  this.addEventListeners();
-                  log('select marks response: ' + worksheet.name, e)
-                }); // response is void per tableau-extensions.js
-            } else {
-              worksheet
-                .selectMarksByValueAsync(
-                  [
-                    {
-                      fieldName: this.state.tableauSettings.clickField,
-                      value: d[findColumnIndex(this.state, 'clickField')]
-                    }
-                  ],
-                  window.tableau.SelectionUpdateType.Replace
-                )
-                .then(e => {
-                  this.addEventListeners();
-                  log('select marks response: ' + worksheet.name, e)
-                }); // response is void per tableau-extensions.js
-            }
-          }
-        });
-      }
-    } else if (
-      (this.state.tableauSettings.clickAction || 'No Action') === 'Filter' &&
-      (this.state.tableauSettings.clickField || 'None') !== 'None'
-    ) {
-      if (d) {
-        // if clicked is a single object, d is an array of all column values of that object
-        // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
-        tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => {
-          if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
-            log(
-              `clicked ${typeof d[0] === 'object'} and ${d.map(
-                childD => childD[findColumnIndex(this.state, 'clickField')]
-              )}: in sheet loop`,
-              worksheet.name,
-              worksheet,
-              tableauExt.settings.get('ConfigChildField')
-            );
-
-            if (typeof d[0] === 'object') {
-              worksheet
-                .applyFilterAsync(
-                  this.state.tableauSettings.clickField,
-                  d.map(
-                    childD => childD[findColumnIndex(this.state, 'clickField')]
-                  ),
-                  window.tableau.FilterUpdateType.Replace
-                )
-                .then(e => {
-                  this.addEventListeners();
-                  log('filter applied response', e)
-                }); // response is void per tableau-extensions.js
-            } else {
-              worksheet
-                .applyFilterAsync(
-                this.state.tableauSettings.clickField,
-                [d[findColumnIndex(this.state, 'clickField')]],
-                window.tableau.FilterUpdateType.Replace
-              )
-              .then(e => {
-                this.addEventListeners();
-                log('filter applied response', e)
-              }); // response is void per tableau-extensions.js
-            }
-          }
-        });
-      } else {
-        tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => {
-          if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
-            worksheet.clearFilterAsync(this.state.tableauSettings.clickField)
-            .then(e => {
-              worksheet.selectMarksByValueAsync(
-                [
-                  {
-                    fieldName: this.state.tableauSettings.clickField,
-                    value: []
-                  }
-                ],
-                window.tableau.SelectionUpdateType.Replace
-              )
-              .then(e => {
-                this.addEventListeners();
-                log('clear filter response', worksheet.name, e)
-              }); // response is void per tableau-extensions.js
-            }); // response is void per tableau-extensions.js
-          }
-        });
-      }
-    }
-    // go through each worksheet and select marks
+    this.applyMouseActionsToSheets(d, clickAction, clickField);
   };
 
   hoverCallBack = d => {
+    const {hoverField, hoverAction} = this.state.tableauSettings;
+
     log(
-      'in on hover callback',
+      '%c in on hover callback',
+      'background: OLIVE',
       d,
-      findColumnIndex(this.state, 'hoverField'),
-      this.state.tableauSettings.hoverAction
+      findColumnIndexByFieldName(this.state, hoverField),
+      hoverAction
     );
 
-    // remove event listeners
-    this.removeEventListeners();
-
-    // check which action we are supposed to take
-    if (
-      (this.state.tableauSettings.hoverAction || 'No Action') === 'Highlight' &&
-      (this.state.tableauSettings.hoverField || 'None') !== 'None'
-    ) {
-      if (d) {
-        // if clicked is a single object, d is an array of all column values of that object
-        // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
-        tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => {
-          // if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
-            log(
-              `hovered ${typeof d[0] === 'object'} and ${d[findColumnIndex(this.state, 'hoverField')]}: in sheet loop`,
-              worksheet.name,
-              worksheet,
-              this.state.tableauSettings.hoverField
-            );
-
-            if (typeof d[0] === 'object') {
-              worksheet
-                .selectMarksByValueAsync(
-                  [
-                    {
-                      'fieldName': this.state.tableauSettings.hoverField,
-                      'value': d.map(
-                        childD => childD[findColumnIndex(this.state, 'hoverField')]
-                      )
-                    }
-                  ],
-                  window.tableau.SelectionUpdateType.Replace
-                )
-                .then(e => {
-                  this.addEventListeners();
-                  log('select marks response: ' + worksheet.name, e)
-                }); // response is void per tableau-extensions.js
-            } else {
-              worksheet
-                .selectMarksByValueAsync(
-                  [
-                    {
-                      fieldName: this.state.tableauSettings.hoverField,
-                      value: d[findColumnIndex(this.state, 'hoverField')]
-                    }
-                  ],
-                  window.tableau.SelectionUpdateType.Replace
-                )
-                .then(e => {
-                  this.addEventListeners();
-                  log('select marks response: ' + worksheet.name, e)
-                }); // response is void per tableau-extensions.js
-            }
-          // }
-        });
-      }
-    } else if (
-      (this.state.tableauSettings.hoverAction || 'No Action') === 'Filter' &&
-      (this.state.tableauSettings.hoverField || 'None') !== 'None'
-    ) {
-      if (d) {
-        // if clicked is a single object, d is an array of all column values of that object
-        // if clicked is a hexbin or grid, d is an array of all object that falls into that hexbin
-        tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => {
-          if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
-            log(
-              `hovered ${typeof d[0] === 'object'} and ${d.map(
-                childD => childD[findColumnIndex(this.state, 'hoverField')]
-              )}: in sheet loop`,
-              worksheet.name,
-              worksheet,
-              tableauExt.settings.get('ConfigChildField')
-            );
-
-            if (typeof d[0] === 'object') {
-              worksheet
-                .applyFilterAsync(
-                  this.state.tableauSettings.hoverField,
-                  d.map(childD => childD[findColumnIndex(this.state, 'hoverField')]),
-                  window.tableau.FilterUpdateType.Replace
-                )
-                .then(e => {
-                  this.addEventListeners();
-                  log('filter applied response', e)
-                }); // response is void per tableau-extensions.js
-            } else {
-              worksheet.applyFilterAsync(
-                this.state.tableauSettings.hoverField,
-                [d[findColumnIndex(this.state, 'hoverField')]],
-                window.tableau.FilterUpdateType.Replace
-                )
-                .then(e => {
-                  this.addEventListeners();
-                  log('filter applied response', e)
-                }); // response is void per tableau-extensions.js
-            }
-          }
-        });
-      } else {
-        tableauExt.dashboardContent.dashboard.worksheets.map(worksheet => {
-          if (worksheet.name !== this.state.tableauSettings.ConfigSheet) {
-            worksheet.clearFilterAsync(this.state.tableauSettings.clickField)
-            .then(e => {
-              worksheet.selectMarksByValueAsync(
-                [
-                  {
-                    fieldName: this.state.tableauSettings.clickField,
-                    value: []
-                  }
-                ],
-                window.tableau.SelectionUpdateType.Replace
-              )
-              .then(e => {
-                this.addEventListeners();
-                log('clear filter response', worksheet.name, e)
-              }); // response is void per tableau-extensions.js
-            }); // response is void per tableau-extensions.js
-          }
-        });
-      }
-    }
+    this.applyMouseActionsToSheets(d, hoverAction, hoverField);
     // go through each worksheet and select marks
   };
+
+  applyMouseActionsToSheets = (d, action, fieldName) => {
+    const {ConfigSheet} = this.state.tableauSettings;
+    const toHighlight = action === 'Highlight' && (fieldName || 'None') !== 'None';
+    const toFilter = action === 'Filter' && (fieldName || 'None') !== 'None';
+
+    // if no action should be taken
+    if (!toHighlight && !toFilter) {
+      return;
+    }
+
+    // remove EventListeners before apply any async actions
+    this.removeEventListeners();
+    let tasks = [];
+
+    if (d) {
+      // select marks or filter
+      const fieldIdx = findColumnIndexByFieldName(this.state, fieldName);
+      const fieldValues = typeof d[0] === 'object' ?
+        d.map(childD => childD[fieldIdx]) : [d[fieldIdx]];
+
+      const actionToApply = toHighlight ? selectMarksByField : applyFilterByField;
+      tasks = actionToApply(fieldName, fieldValues, ConfigSheet);
+
+    } else {
+      // clear marks or filer
+      const actionToApply = toHighlight ? clearMarksByField : clearFilterByField;
+      tasks = actionToApply(fieldName, ConfigSheet);
+    }
+
+    Promise.all(tasks).then(() => {
+      // Add event listeners back
+      this.addEventListeners();
+    });
+  }
 
   demoChange = event => {
     this.setState({demoType: event.target.value});
@@ -563,7 +364,7 @@ class App extends Component {
     if (selectedSheet && selectedSheet === e.worksheet.name) {
       log(
         '%c ==============App filter has changed',
-        'background: #777; color: red'
+        'background: red; color: white'
       );
       this.getConfigSheetSummaryData(selectedSheet);
     }
@@ -573,7 +374,7 @@ class App extends Component {
     if ( this.state.tableauSettings.keplerFilterField ) {
       log(
         '%c ==============App Marker selected',
-        'background: #777; color: red'
+        'background: red; color: white'
       );
 
       // remove event listeners
@@ -581,45 +382,39 @@ class App extends Component {
 
       // get selected marks and pass to kepler via state object
       e.getMarksAsync().then(marks => {
-
-        console.log('marks', marks);
+        const {keplerFilterField} = this.state.tableauSettings;
         // loop through marks table and adjust the class for opacity
-        let marksDataTable = marks.data[0];
-        let col_indexes = {};
-        let keplerFields = [];
+        const marksDataTable = marks.data[0];
+        const col_indexes = {};
+        const keplerFields = [];
 
-
-        //write column names to array
+        // write column names to array
         for (let k = 0; k < marksDataTable.columns.length; k++) {
             col_indexes[marksDataTable.columns[k].fieldName] = k;
             keplerFields.push(columnToKeplerField(marksDataTable.columns[k], k));
           }
 
         const keplerData = dataToKeplerRow(marksDataTable.data, keplerFields);
-        //console.log('zzz mark do we see data', marksDataTable.data.length, marksDataTable.data, keplerData, keplerFields, col_indexes);
-
+        // console.log('zzz mark do we see data', marksDataTable.data.length, marksDataTable.data, keplerData, keplerFields, col_indexes);
 
         const filterKeplerObject = {
-          field: this.state.tableauSettings.keplerFilterField,
-          values: keplerData.map(childD => childD[col_indexes[this.state.tableauSettings.keplerFilterField]])
+          field: keplerFilterField,
+          values: keplerData.map(childD => childD[col_indexes[keplerFilterField]])
         };
 
         // @shan you can remove this console once you are good with the object
-        this.props.dispatch(markerSelect(filterKeplerObject))
-        this.setState({ filterKeplerObject }, () => this.addEventListeners());
-        //console the select marks table
-        //log('marks', marksDataTable, col_indexes, data, this.state.tableauSettings.hoverField, this.state.tableauSettings.clickField);
+        this.props.dispatch(markerSelect(filterKeplerObject));
+        this.setState({filterKeplerObject}, () => this.addEventListeners());
+        // console the select marks table
+        // log('marks', marksDataTable, col_indexes, data, this.state.tableauSettings.hoverField, this.state.tableauSettings.clickField);
 
       });
     }
   }
 
   getConfigSheetSummaryData = selectedSheet => {
-    // clean up event listeners (taken from tableau example)
-    this.removeEventListeners();
 
-    log(selectedSheet, 'ConfigSheet', 'in getData');
-
+    // log(selectedSheet, 'ConfigSheet', 'in getData');
     // get sheet information this.state.selectedSheet should be syncronized with settings
     // can possibly remove the || in the sheetName part
 
@@ -627,14 +422,16 @@ class App extends Component {
     const sheetObject = tableauExt.dashboardContent.dashboard.worksheets.find(
       worksheet => worksheet.name === sheetName
     );
+    if (!sheetObject) {
+      return;
+    }
 
-    log(sheetObject);
+    // clean up event listeners (taken from tableau example)
+    this.removeEventListeners();
 
     if (TableauSettings.ShouldUse) {
       TableauSettings.updateAndSave(
-        {
-          isLoading: true
-        },
+        {isLoading: true},
         settings => {
           this.setState({
             isLoading: true,
@@ -695,8 +492,9 @@ class App extends Component {
           });
         });
       }
+
       this.addEventListeners();
-      log('getData() state', this.state);
+      // log('getData() state', this.state);
     });
   }
 
@@ -836,8 +634,8 @@ class App extends Component {
           isLoading: false,
           height: window.innerHeight,
           width: window.innerWidth,
-          sheetNames: sheetNames,
-          dashboardName: dashboardName,
+          sheetNames,
+          dashboardName,
           demoType: tableauExt.settings.get('ConfigType') || 'violin',
           tableauSettings: tableauExt.settings.getAll()
         });
@@ -857,52 +655,41 @@ class App extends Component {
   componentWillUpdate(nextProps, nextState) {
     // console log settings to check current status
     if (tableauExt.settings) {
-      log('will update', this.state, nextState, tableauExt.settings.getAll());
+      // log('will update', this.state, nextState, tableauExt.settings.getAll());
 
       //get selectedSheet from Settings
       //hardcoding this for now because I know i have two possibilities
-      let selectedSheet = tableauExt.settings.get('ConfigSheet');
+      const selectedSheet = tableauExt.settings.get('ConfigSheet');
       if (
         selectedSheet &&
         this.state.tableauSettings.ConfigSheet !==
           nextState.tableauSettings.ConfigSheet
       ) {
-        log('%c ===========App ConfigSheet has changed', 'color: green');
+        // log('%c ===========App ConfigSheet has changed', 'color: green');
         this.getConfigSheetSummaryData(selectedSheet);
       } //get field3 from Settings
     } else {
-      log(
-        'will update',
-        this.state,
-        nextState,
-        'tableauExt.settings not ready yet'
-      );
+      // log(
+      //   'will update',
+      //   this.state,
+      //   nextState,
+      //   'tableauExt.settings not ready yet'
+      // );
     }
   }
 
   // just logging this for now, may be able to remove later
   componentDidUpdate() {
     if (tableauExt.settings) {
-      log('did update', this.state, tableauExt.settings.getAll());
+      // log('did update', this.state, tableauExt.settings.getAll());
     } else {
-      log('did update', this.state, 'tableauExt.settings not ready yet');
+      // log('did update', this.state, 'tableauExt.settings not ready yet');
     }
   }
 
   render() {
     //short cut this cause we use it ALOT
     const tableauSettingsState = this.state.tableauSettings;
-
-    // log some stuff to see what is going on
-    log(
-      'in render',
-      this.state.width,
-      this.state.height,
-      this.state.configuration,
-      tableauSettingsState,
-      this.state
-    );
-
     //loading screen jsx
     let isLoading = false;
     if (
@@ -912,15 +699,14 @@ class App extends Component {
         tableauSettingsState.isLoading === 'true' ||
         this.state.isMissingData)
     ) {
-      log('============APP.state isLoading');
       isLoading = true;
     }
 
     // config screen jsx
     if (this.state.isConfig) {
-      let stepNames = ['Select Sheet', 'Customize Kepler.gl'];
+      const stepNames = ['Select Sheet', 'Customize Kepler.gl'];
 
-      log(this.state.stepIndex);
+      // log(this.state.stepIndex);
 
       if (this.state.stepIndex === 1) {
         // Placeholder sheet names. TODO: Bind to worksheet data
@@ -956,7 +742,7 @@ class App extends Component {
               customCallBack={this.customCallBack}
               field={'configuration'}
               tableauSettings={tableauSettingsState}
-              configSheetColumns={this.state.ConfigSheetColumns}
+              configSheetColumns={this.state.ConfigSheetColumns || []}
             />
             <StepButtons
               onNextClick={this.onNextStep}

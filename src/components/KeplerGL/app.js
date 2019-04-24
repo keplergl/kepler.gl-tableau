@@ -21,8 +21,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import {log} from '../../utils';
-import {MAP_ID} from '../../constants';
+import {MAP_ID, DATA_ID} from '../../constants';
 
 // Kepler.gl actions
 import {
@@ -38,10 +37,6 @@ import CustomSidebarFactory from './components/side-bar';
 // Kepler.gl Schema APIs
 import KeplerGlSchema from 'kepler.gl/schemas';
 
-// Component and helpers
-import Button from './button';
-import downloadJsonFile from './file-download';
-
 const CustomAddDataButtonFactory = () => () => <div />;
 // CustomComponents
 const KeplerGl = injectComponents([
@@ -50,7 +45,7 @@ const KeplerGl = injectComponents([
   [PanelHeaderFactory, CustomPanelHeaderFactory]
 ]);
 
-function getHoverInfo(info) {
+function getHoverInfo(info, allData) {
   const objectHovered = info ? info.object : null;
   if (!objectHovered) {
     // if nothing hovered
@@ -61,7 +56,9 @@ function getHoverInfo(info) {
     ? // if hovered is a single object
       objectHovered.data
     : // if hovered is a hexbbin, or grid, kepler.gl can return all the points inside that hexagon / grid
-      objectHovered.points;
+    objectHovered.type === 'Feature'
+    ? allData[objectHovered.properties.index]
+    : objectHovered.points;
 }
 
 class App extends Component {
@@ -75,9 +72,9 @@ class App extends Component {
 
     if (
       !keplerGl ||
-      !keplerGl.map ||
+      !keplerGl[MAP_ID] ||
       !prevProps.keplerGl ||
-      !prevProps.keplerGl.map ||
+      !prevProps.keplerGl[MAP_ID] ||
       !this.hasData()
     ) {
       // component hasn't mount yet
@@ -90,24 +87,17 @@ class App extends Component {
 
   handleInteractionEvent(prevProps) {
     const {keplerGl} = this.props;
-
-    if (
-      prevProps.keplerGl.map.visState.hoverInfo !==
-      keplerGl.map.visState.hoverInfo
-    ) {
+    const {allData} = keplerGl[MAP_ID].visState.datasets[DATA_ID];
+    const hovered = getHoverInfo(keplerGl[MAP_ID].visState.hoverInfo, allData);
+    const clicked = getHoverInfo(keplerGl[MAP_ID].visState.clicked, allData);
+    if (getHoverInfo(prevProps.keplerGl[MAP_ID].visState.hoverInfo) !== hovered) {
       // hovered object has changed
-      this.props.customHoverBehavior(
-        getHoverInfo(keplerGl.map.visState.hoverInfo)
-      );
+      this.props.customHoverBehavior(hovered);
     }
 
-    if (
-      prevProps.keplerGl.map.visState.clicked !== keplerGl.map.visState.clicked
-    ) {
+    if (getHoverInfo(prevProps.keplerGl[MAP_ID].visState.clicked) !== clicked) {
       // clicked object has changed
-      this.props.customClickBehavior(
-        getHoverInfo(keplerGl.map.visState.clicked)
-      );
+      this.props.customClickBehavior(clicked);
     }
   }
 
@@ -121,36 +111,24 @@ class App extends Component {
 
     if (this.preValue !== serializedState) {
       // keplerGl State has changed
-
-      log(
-        '%c KeplerGL.app config has changed',
-        'background: yellow; color:red',
-        serializedState
-      );
-
       this.props.configCallBack('keplerConfig', serializedState);
       this.preValue = serializedState;
-    } else {
-      console.log('%c config looks the same', 'background: teal');
     }
   }
 
   hasData() {
     const {keplerGl} = this.props;
-    const {map} = keplerGl;
 
-    return Object.keys(map.visState.datasets).length;
+    return Object.keys(keplerGl[MAP_ID].visState.datasets).length;
   }
   // This method is used as reference to show how to export the current kepler.gl instance configuration
   // Once exported the configuration can be imported using parseSavedConfig or load method from KeplerGlSchema
   getMapConfig() {
     // retrieve kepler.gl store
     const {keplerGl} = this.props;
-    // retrieve current kepler.gl instance store
-    const {map} = keplerGl;
 
     // create the config object
-    return KeplerGlSchema.getConfigToSave(map);
+    return KeplerGlSchema.getConfigToSave(keplerGl[MAP_ID]);
   }
 
   render() {

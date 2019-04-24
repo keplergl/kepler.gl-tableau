@@ -27,6 +27,14 @@
     "typeface-roboto": "^0.0.54",
     "url-parse": "^1.4.3"
   },
+  "devDependencies": {
+    "eslint-config-prettier": "^3.6.0",
+    "eslint-config-uber-es2015": "^3.1.2",
+    "eslint-config-uber-jsx": "^3.3.3",
+    "eslint-plugin-babel": "^5.3.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-react": "~7.12.4"
+  },
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
