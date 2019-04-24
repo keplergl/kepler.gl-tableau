@@ -68,8 +68,6 @@ function markerSelectUpdater(state, action) {
     action.payload
   );
   const {field, values} = action.payload;
-  console.log(field)
-  console.log(values)
   const visState = visStateSelector(state);
   let currentFilterIdx = visState.filters.findIndex(f => f.name === field && f.dataId === DATA_ID && f.tableauMarkerFilter);
 

@@ -34,6 +34,11 @@ const StyledSideBarContainer = styled.div`
 
     .side-bar {
       height: 100%;
+      box-shadow: none;
+    }
+
+    .side-bar--inner {
+      box-shadow: ${props => props.theme.boxShadow}
     }
     .side-bar__close {
       right: -30px;

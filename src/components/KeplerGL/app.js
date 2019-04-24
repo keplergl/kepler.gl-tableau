@@ -89,12 +89,12 @@ class App extends Component {
     const {allData} = keplerGl[MAP_ID].visState.datasets[DATA_ID];
     const hovered = getHoverInfo(keplerGl[MAP_ID].visState.hoverInfo, allData);
     const clicked = getHoverInfo(keplerGl[MAP_ID].visState.clicked, allData);
-    if (getHoverInfo(prevProps.keplerGl[MAP_ID].visState.hoverInfo) !== hovered) {
+    if (getHoverInfo(prevProps.keplerGl[MAP_ID].visState.hoverInfo, allData) !== hovered) {
       // hovered object has changed
       this.props.customHoverBehavior(hovered);
     }
 
-    if (getHoverInfo(prevProps.keplerGl[MAP_ID].visState.clicked) !== clicked) {
+    if (getHoverInfo(prevProps.keplerGl[MAP_ID].visState.clicked, allData) !== clicked) {
       // clicked object has changed
       this.props.customClickBehavior(clicked);
     }
