@@ -20,7 +20,7 @@
 
 import React from 'react';
 import {SidebarFactory, CollapseButtonFactory} from 'kepler.gl/components';
-import styled from 'kepler.gl/node_modules/styled-components';
+import styled from 'styled-components';
 
 const StyledSideBarContainer = styled.div`
   .side-panel--container {
@@ -34,6 +34,11 @@ const StyledSideBarContainer = styled.div`
 
     .side-bar {
       height: 100%;
+      box-shadow: none;
+    }
+
+    .side-bar--inner {
+      box-shadow: ${props => props.theme.boxShadow}
     }
     .side-bar__close {
       right: -30px;

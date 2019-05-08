@@ -1,116 +1,80 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+import {log} from '../../utils';
+import {DATA_ID} from '../../constants';
 
 // kepler example wrapper
-import {Provider} from 'react-redux';
-import store from './store';
 import App from './app';
-// import './styles/superfine.css';
-
-//lodash
-import _ from 'lodash';
-
-//material ui
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-
-// hierarchyDataPreped
-// (the original code contained a bug which would result
-// in worldDataMissing always being an empty array)
-function buildKeplerData(keplerData) {
-    //now that we are in here we can rename fields as we need to in order avoid errors
-
-    return keplerData;
-}
-
-// Create a memoized version of each call which will (hopefully) cache the calls.
-// NOTE: passing the whole "props" to these functions will make them sub-optimal as
-// the memoize depends on passing an equal object to get the cached result.
-let memoized = {
-    buildKeplerData: _.memoize(buildKeplerData),
-};
+import {addDataToMap} from 'kepler.gl/actions';
 
 class KeplerGlComponent extends React.Component {
-    constructor (props) {
-      super(props);
-      this.state = {
-        keplerData: undefined,
+  componentDidMount() {
+    if (this.props.data) {
+      this.onDataChange(this.props);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+   if (nextProps.data !== this.props.data && !nextProps.isLoading && this.props.isLoading && nextProps.data) {
+      this.onDataChange(nextProps);
+    }
+  }
+
+  onDataChange({data, keplerConfig, readOnly, selectedSheet}) {
+    // Create dataset structure
+    log('%c Calling addDataToMap', 'background: green; color:white');
+    // log('%c with config', 'background: grey', keplerConfig ? JSON.parse(keplerConfig) : undefined);
+    const datasets = {
+      data,
+      info: {
+        // this is used to match the dataId defined in nyc-config.json. For more details see API documentation.
+        // It is paramount that this id matches your configuration otherwise the configuration file will be ignored.
+        id: DATA_ID,
+        label: selectedSheet
       }
-    }
-    preprocessData() {
-        const {
-            data,
-            tableauSettings,
-        } = this.props;
+    };
 
+    this.props.dispatch(
+      addDataToMap({
+        datasets,
+        options: {readOnly, centerMap: true},
+        config: keplerConfig ? JSON.parse(keplerConfig) : undefined
+      })
+    );
+  }
 
-        return {keplerData: memoized.buildKeplerData(data)};
-    }
+  render() {
+    const {
+      height,
+      width,
+      data,
+      readOnly,
+      keplerConfig,
+      mapboxAPIKey,
+      theme
+    } = this.props;
 
-    componentDidMount() {
-        console.log('in kepler component mount', this.props.data);
-    }
-
-    render() {
-        console.log('kepler component render', this.props);
-        const {
-            height,
-            width,
-            data,
-            tableauSettings,
-            readOnly,
-            keplerConfig,
-            mapboxAPIKey
-        } = this.props;
-
-        // pull in memoized stuff for use in render function
-        let {
-            keplerData,
-        } = this.preprocessData();
-
-        console.log('kepler Data in sub component', data, keplerData); //, JSON.stringify(data));
-
-        // need to see if we can enable both summary and point hover on this
-        // coding for summary only below
-        const popOver = (d) => {
-            console.log('in tooltip', d);
-            return (
-                <Paper style={{'padding': '5px'}}>
-                    <Typography> Placeholder tooltip </Typography>
-                </Paper>
-            );
-        }
-
-        console.log('kepler call', keplerData, data, tableauSettings);
-        if ( !keplerData ) {
-            return null;
-        } else {
-            return (
-                // <div className="kepler-gl" style={{ padding: '1%', height: height, width: width, float: 'none', margin: '0 auto' }}>
-                    <Provider store={store}>
-                        <App
-                            height={height}
-                            width={width}
-                            data={keplerData}
-                            readOnly={readOnly}
-                            keplerConfig={keplerConfig}
-                            mapboxAPIKey={mapboxAPIKey}
-
-                            configCallBack={this.props.configCallBack}
-
-                            tooltipContent={d => popOver(d)}
-                            customClickBehavior={(d) => this.props.clickCallBack(d)}
-                            customHoverBehavior={(d) => this.props.hoverCallBack(d)}
-                        />
-                    </Provider>
-                // </div>
-            );
-        }
-    }
+    return (
+      <App
+        height={height}
+        width={width}
+        data={data}
+        readOnly={readOnly}
+        keplerConfig={keplerConfig}
+        mapboxAPIKey={mapboxAPIKey}
+        theme={theme}
+        configCallBack={this.props.configCallBack}
+        customClickBehavior={this.props.clickCallBack}
+        customHoverBehavior={this.props.hoverCallBack}
+      />
+    );
+  }
 }
 
-// KeplerGlComponent.propTypes = {
-//     classes: PropTypes.object.isRequired,
-// };
+const mapStateToProps = state => state;
+const dispatchToProps = dispatch => ({dispatch});
 
-export default KeplerGlComponent;
+export default connect(
+  mapStateToProps,
+  dispatchToProps
+)(KeplerGlComponent);

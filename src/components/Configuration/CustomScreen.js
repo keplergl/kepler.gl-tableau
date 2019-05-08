@@ -37,7 +37,7 @@ class CustomScreen extends React.Component {
       this.props.customCallBack(this.props.field)
     // }
   }
-  
+
   render() {
     const {
       classes,
@@ -56,8 +56,9 @@ class CustomScreen extends React.Component {
       nodeRender,
       edgeColor,
       padAngle,
-      hoverAnnotation, 
-      tableauSettings } = this.props;
+      hoverAnnotation,
+      tableauSettings,
+      configSheetColumns } = this.props;
 
     console.log('we are in custom', this.props);
     return (
@@ -66,11 +67,11 @@ class CustomScreen extends React.Component {
           <div class="content-container">
             <OptionTitle style={{paddingLeft: "8px"}}>{this.props.configTitle}</OptionTitle>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
-                title="Mapbox API Key"
-                tooltipText="Your unique API key for utilizing mapbox"
+              <InputLabelWithTooltip
+                title="Optional: Mapbox API Key"
+                tooltipText="Optional: Your unique API key for utilizing mapbox"
               />
-              <TextField  
+              <TextField
                 // className={classes.textField}
                 id="mapboxAPIKey-helper"
                 kind="line"
@@ -83,7 +84,7 @@ class CustomScreen extends React.Component {
               />
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                     title="Read only mode?"
                     tooltipText="Toggle whether or not to hide the config panel on the side (e.g., read only)"
                   />
@@ -96,8 +97,110 @@ class CustomScreen extends React.Component {
                  <MenuItem value={false}>False</MenuItem>
               </Select>
             </FormControl>
+
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip
+                    title="Color Theme"
+                    tooltipText="Select a dark or light kepler.gl UI theme"
+                  />
+              <Select
+                value={tableauSettings.theme || 'light'}
+                onChange={handleChange}
+                input={<Input name="theme" id="theme-helper" />}
+              >
+                 <MenuItem value="light">Light</MenuItem>
+                 <MenuItem value="dark">Dark</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip
+                    title="Hover Action"
+                    tooltipText="Toggle and select which action to take on hover"
+                  />
+              <Select
+                value={tableauSettings.hoverAction || "No Action"}
+                onChange={handleChange}
+                input={<Input name="hoverAction" id="hoverAction-helper" />}
+              >
+                 <MenuItem value={"No Action"}>No Action</MenuItem>
+                 <MenuItem value={"Highlight"}>Highlight</MenuItem>
+                 <MenuItem value={"Filter"}>Filter</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip
+                    title="Hover Identifying Field"
+                    tooltipText="Select which STRING field to take action on (we require string for interaction)"
+                  />
+              <Select
+                value={tableauSettings.hoverField || "None"}
+                onChange={handleChange}
+                input={<Input name="hoverField" id="hoverField-helper" />}
+              >
+                 <MenuItem value={"None"}>None</MenuItem>
+                 {
+                  configSheetColumns.map(f => (
+                    <MenuItem value={f.fieldName} key={f.fieldName}>{f.fieldName}</MenuItem>
+                  ))
+                };
+              </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip
+                    title="Click Action"
+                    tooltipText="Toggle and select which action to take on click"
+                  />
+              <Select
+                value={tableauSettings.clickAction || "No Action"}
+                onChange={handleChange}
+                input={<Input name="clickAction" id="clickAction-helper" />}
+              >
+                 <MenuItem value={"No Action"}>No Action</MenuItem>
+                 <MenuItem value={"Highlight"}>Highlight</MenuItem>
+                 <MenuItem value={"Filter"}>Filter</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip
+                    title="Click Identifying Field"
+                    tooltipText="Select which STRING field to take action on (we require string for interaction)"
+                  />
+              <Select
+                value={tableauSettings.clickField || "None"}
+                onChange={handleChange}
+                input={<Input name="clickField" id="clickField-helper" />}
+              >
+                 <MenuItem value={"None"}>None</MenuItem>
+                 {
+                  configSheetColumns.map(f => (
+                    <MenuItem value={f.fieldName} key={f.fieldName}>{f.fieldName}</MenuItem>
+                  ))
+                };
+              </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabelWithTooltip
+                    title="Tableau to Kepler Filter Field"
+                    tooltipText="Select which STRING field to use when filtering Kepler (we require string for interaction)"
+                  />
+              <Select
+                value={tableauSettings.keplerFilterField || "None"}
+                onChange={handleChange}
+                input={<Input name="keplerFilterField" id="keplerFilterField-helper" />}
+              >
+                 <MenuItem value={"None"}>None</MenuItem>
+                 {
+                  configSheetColumns
+                  .filter(col => col.dataType !== 'date-time')
+                  .map(f => (
+                    <MenuItem value={f.fieldName} key={f.fieldName}>{f.fieldName}</MenuItem>
+                  ))
+                };
+              </Select>
+            </FormControl>
             {/* <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                   title="Hover Configuration"
                   tooltipText="Toggle whether to show the tooltip, and at which level"
               />
@@ -113,7 +216,7 @@ class CustomScreen extends React.Component {
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                   title="Show Highlight"
                   tooltipText="Toggle whether to highlight based on Tableau selections"
               />
@@ -127,7 +230,7 @@ class CustomScreen extends React.Component {
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                   title="Show Points?"
                   tooltipText="Toggle whether to show points/swarm"
               />
@@ -141,7 +244,7 @@ class CustomScreen extends React.Component {
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                     title="Color Config"
                     tooltipText="The way color will be applied to the chart"
               />
@@ -156,11 +259,11 @@ class CustomScreen extends React.Component {
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                 title="Color"
                 tooltipText="For single, enter 1 hex code for scale enter two, e.g., #ccc,#ddd"
               />
-              <TextField  
+              <TextField
                 id="nodeColor-helper"
                 name="nodeColor"
                 label="Node Fill Color(s)"
@@ -172,7 +275,7 @@ class CustomScreen extends React.Component {
               />
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                 title="Point Render Type"
                 tooltipText="Select from Semoitic's Render Modes"
               />
@@ -187,11 +290,11 @@ class CustomScreen extends React.Component {
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                 title="Point Fill Opacity"
                 tooltipText="A decimal from 0 to 1 that will control point opacity"
               />
-              <TextField  
+              <TextField
                 id="nodeFillOpacity-helper"
                 name="nodeFillOpacity"
                 label="Point Fill Opacity"
@@ -203,11 +306,11 @@ class CustomScreen extends React.Component {
               />
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                 title="Point Stroke Opacity"
                 tooltipText="A decimal from 0 to 1 that will control point stroke opacity"
               />
-              <TextField  
+              <TextField
                 id="nodeStrokeOpacity-helper"
                 name="nodeStrokeOpacity"
                 label="Point Stroke Opacity"
@@ -219,7 +322,7 @@ class CustomScreen extends React.Component {
               />
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                   title="Point Size"
                   tooltipText="Toggle point size from value field"
               />
@@ -233,11 +336,11 @@ class CustomScreen extends React.Component {
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                 title="Minimum Point Size"
                 tooltipText="Minimum radius for points (e.g., 1)"
               />
-              <TextField  
+              <TextField
                 id="markerMinRadius-helper"
                 name="markerMinRadius"
                 label="Minimum Radius for Markers"
@@ -249,11 +352,11 @@ class CustomScreen extends React.Component {
               />
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                 title="Maximum Point Size"
                 tooltipText="Maximum radius for points (e.g., 10)"
               />
-              <TextField  
+              <TextField
                 id="markerMaxRadius-helper"
                 name="markerMaxRadius"
                 label="Maximum Radius for Markers"
@@ -265,7 +368,7 @@ class CustomScreen extends React.Component {
               />
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                 title="Summary Render Type"
                 tooltipText="Select from Semoitic's Render Modes"
               />
@@ -280,7 +383,7 @@ class CustomScreen extends React.Component {
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                 title="Summary Curve Type"
                 tooltipText="Select from d3-shape curve types"
               />
@@ -300,11 +403,11 @@ class CustomScreen extends React.Component {
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                 title="Summary Fill Opacity"
                 tooltipText="A decimal from 0 to 1 that will control summary opacity"
               />
-              <TextField  
+              <TextField
                 id="sumFillOpacity-helper"
                 name="sumFillOpacity"
                 label="Summary Fill Opacity"
@@ -316,11 +419,11 @@ class CustomScreen extends React.Component {
               />
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip 
+              <InputLabelWithTooltip
                 title="Summary Stroke Opacity"
                 tooltipText="A decimal from 0 to 1 that will control summary stroke opacity"
               />
-              <TextField  
+              <TextField
                 id="sumStrokeOpacity-helper"
                 name="sumStrokeOpacity"
                 label="Summary Stroke Opacity"
