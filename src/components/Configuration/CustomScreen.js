@@ -68,8 +68,8 @@ class CustomScreen extends React.Component {
             <OptionTitle style={{paddingLeft: "8px"}}>{this.props.configTitle}</OptionTitle>
             <FormControl className={classes.formControl}>
               <InputLabelWithTooltip
-                title="Mapbox API Key"
-                tooltipText="Your unique API key for utilizing mapbox"
+                title="Optional: Mapbox API Key"
+                tooltipText="Optional: Your unique API key for utilizing mapbox"
               />
               <TextField
                 // className={classes.textField}
@@ -131,7 +131,7 @@ class CustomScreen extends React.Component {
             <FormControl className={classes.formControl}>
               <InputLabelWithTooltip
                     title="Hover Identifying Field"
-                    tooltipText="Select which field to take action on"
+                    tooltipText="Select which STRING field to take action on (we require string for interaction)"
                   />
               <Select
                 value={tableauSettings.hoverField || "None"}
@@ -164,7 +164,7 @@ class CustomScreen extends React.Component {
             <FormControl className={classes.formControl}>
               <InputLabelWithTooltip
                     title="Click Identifying Field"
-                    tooltipText="Select which field to take action on"
+                    tooltipText="Select which STRING field to take action on (we require string for interaction)"
                   />
               <Select
                 value={tableauSettings.clickField || "None"}
@@ -182,7 +182,7 @@ class CustomScreen extends React.Component {
             <FormControl className={classes.formControl}>
               <InputLabelWithTooltip
                     title="Tableau to Kepler Filter Field"
-                    tooltipText="Select which field to use when filtering Kepler"
+                    tooltipText="Select which STRING field to use when filtering Kepler (we require string for interaction)"
                   />
               <Select
                 value={tableauSettings.keplerFilterField || "None"}

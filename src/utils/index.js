@@ -106,8 +106,15 @@ export function getSampleForTypeAnalyze({fields, rows, sampleCount = 50}) {
 }
 
 export function dataTableToKepler(table) {
-  const data = [];
+  const col_names_s = [];
   let keplerFields = table.columns.map(columnToKeplerField);
+
+  table.columns.map(column => {
+    if (column.dataType === 'string') {
+      col_names_s.push(column);
+    }
+  });
+  // console.log('checking the string fields', table, keplerFields, table.columns, col_names_s);
 
   // for string fields, we have to detect their types, because they
   // may contain geometry info
@@ -121,6 +128,7 @@ export function dataTableToKepler(table) {
   return {
     isLoading: false,
     ConfigSheetColumns: table.columns,
+    ConfigSheetStringColumns: col_names_s,
     ConfigSheetData: {fields: keplerFields, rows: keplerData} //data, we need something more like tableau for kepler
   };
 }

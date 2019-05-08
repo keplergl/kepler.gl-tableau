@@ -576,18 +576,12 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const _this = this;
     window.addEventListener('resize', this.resize, true);
     this.resize();
 
     tableauExt
       .initializeAsync({configure: this.configure})
       .then(() => {
-        return fetch('https://mapsconfig.tableau.com/v1/config.json');
-      })
-      .then(response => {
-        return response.json();
-      }).then((configJson) => {
         // console.log('tableau config', configJson);
         // default tableau settings on initial entry into the extension
         // we know if we haven't done anything yet when tableauSettings state = []
@@ -629,8 +623,9 @@ class App extends Component {
         // Initialize the current saved settings global
         TableauSettings.init();
 
+        // default to uber's Kepler key that they requested if user does not enter
         this.setState({
-          tableauKey: (configJson.access_token || []).token,
+          tableauKey: 'pk.eyJ1IjoidWJlcmRhdGEiLCJhIjoiY2p2OGVvejQwMDJxZzRma2dvdWQ2OTQwcSJ9.VbuIamTa_JayuD2yr5tjaA',
           isLoading: false,
           height: window.innerHeight,
           width: window.innerWidth,
@@ -742,7 +737,7 @@ class App extends Component {
               customCallBack={this.customCallBack}
               field={'configuration'}
               tableauSettings={tableauSettingsState}
-              configSheetColumns={this.state.ConfigSheetColumns || []}
+              configSheetColumns={this.state.ConfigSheetStringColumns || []}
             />
             <StepButtons
               onNextClick={this.onNextStep}
