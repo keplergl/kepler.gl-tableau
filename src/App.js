@@ -765,15 +765,18 @@ class App extends Component {
             ctaText="Configure"
             poweredBy={
               <React.Fragment>
+                <p className="info">For information on how to use this extensions check out the
+                  {" "}<a href="https://github.com/uber/kepler.gl-tableau/tree/feat/docs/docs" target="_blank" rel="noopener noreferrer" >user guide</a>
+                </p>
                 <p className="info">Brought to you by: </p>
-                <a href="http://www.datablick.com/" target="_blank">
+                <a href="http://www.datablick.com/" target="_blank" rel="noopener noreferrer">
                   <img src={dbLogo} />
                 </a>{' '}
-                <a href="https://starschema.com/" target="_blank">
+                <a href="https://starschema.com/" target="_blank" rel="noopener noreferrer">
                   <img src={ssLogo} />
                 </a>
                 <p className="info">Powered by: </p>
-                <a href="https://github.com/uber/kepler.gl" target="_blank">
+                <a href="https://github.com/uber/kepler.gl" target="_blank" rel="noopener noreferrer">
                   <img src={kepLogo} />
                 </a>
               </React.Fragment>
