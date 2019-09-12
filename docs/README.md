@@ -34,16 +34,17 @@ The configuration capabilities of the extension will change over time, however, 
 At this point you can use [kepler.gl](https://kepler.gl/) as you normally would. If you need additional detail on how to use [kepler.gl](https://kepler.gl/) to begin with, please visit the kepler.gl demo and guidance documentation at https://kepler.gl/. 
 
 
-###### Step 7: Submit Feedback
+###### Step 7: Submit Feedback and Help us Test!
 
 For feedback/ feature requests, please let us know through this Kepler Tableau Slack Channel. We also encourage you to share your maps here to the rest of the map enthusiasts in the room too.
 
+![Testing Pic](Testing.png)
 
 Useful Links
-[Extension file](https://www.dropbox.com/s/ubvopxvjo2dencv/datablick-kepler-gl.trex.zip?dl=0)
 
-[Kepler.gl User Guide](https://github.com/keplergl/kepler.gl/blob/master/docs/user-guides/a-introduction.md)
-
-[Kepler.gl in Tableau Slack Channel](http://t.uber.com/kepler.gl-tableau)
+- [Extension file](https://www.dropbox.com/s/ubvopxvjo2dencv/datablick-kepler-gl.trex.zip?dl=0)
+- [Kepler.gl User Guide](https://github.com/keplergl/kepler.gl/blob/master/docs/user-guides/a-introduction.md)
+- [Kepler.gl in Tableau Slack Channel](http://t.uber.com/kepler.gl-tableau)
+- [Presentation by Shan and Chris at SFBATUG](https://vimeo.com/332524556/36fd0b2cbe) start at 58 minutes
 
 Happy Mapping :)
