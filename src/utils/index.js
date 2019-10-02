@@ -37,15 +37,6 @@ export const log = (...msgs) => {
   if (process.env.NODE_ENV === 'development') console.log(...msgs);
 };
 
-export const columnToKeplerField = (col, i) => ({
-  // TODO: generate time format here
-  format: '',
-  name: col.fieldName,
-  type: DataTypeMap[col.dataType],
-  tableauType: col.dataType,
-  tableauIdx: i
-});
-
 // https://tableau.github.io/extensions-api/docs/enums/datatype.html
 export const DataTypeMap = {
   // TODO: Shan: figure out how to parse boolean format
@@ -59,6 +50,15 @@ export const DataTypeMap = {
   spatial: KeplerFieldTypes.geojson,
   string: KeplerFieldTypes.string
 };
+
+export const columnToKeplerField = (col, i) => ({
+  // TODO: generate time format here
+  format: '',
+  name: col.fieldName,
+  type: DataTypeMap[col.dataType],
+  tableauType: col.dataType,
+  tableauIdx: i
+});
 
 export const StringToValueByType = {
   [KeplerFieldTypes.boolean]: d =>
@@ -144,7 +144,7 @@ export function analyzeStringFields(fields, data) {
   fieldMeta.forEach(({name, type}, i) => {
     if (type === KeplerFieldTypes.geojson) {
       // update current fieldType
-      const index = stringFields[i].tableauIdx;
+      const index = fields[i].tableauIdx;
       const geoField = {
         ...fields[index],
         type: KeplerFieldTypes.geojson
