@@ -2,6 +2,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import throttle from 'lodash.throttle';
+import debounce from 'lodash.debounce';
 
 import './App.css';
 
@@ -105,6 +106,7 @@ class App extends Component {
     this.applyingMouseActions = false;
     this.clickCallBack = throttle(this.clickCallBack, 200);
     this.hoverCallBack = throttle(this.hoverCallBack, 200);
+    this.configCallBack = debounce(this.configCallBack, 500);
   }
 
   // eslint-disable-next-line react/sort-comp
