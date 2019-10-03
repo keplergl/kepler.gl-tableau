@@ -2,7 +2,7 @@
 
 ## Instructions
 
-###### Env Requirements
+#### Env Requirements
 Tableau Desktop (Mac Only) 2018.3 or >= 2019.1.2 and Tableau Server
 
 *Tableau extensions are only supported in Tableau Desktop and Tableau Server, not supported in Tableau Public. WebGL is only supported in Tableau on Mac, version 2018.3 or >= 2019.1.2.*
@@ -36,15 +36,12 @@ At this point you can use [kepler.gl](https://kepler.gl/) as you normally would.
 
 ###### Step 7: Submit Feedback and Help us Test!
 
-For feedback/ feature requests, please let us know through this Kepler Tableau Slack Channel. We also encourage you to share your maps here to the rest of the map enthusiasts in the room too.
-
-![Testing Pic](Testing.png)
+For feedback/ feature requests, please let us know through the [kepler.gl Slack Channel](https://github.com/keplergl/kepler.gl/issues/643). We also encourage you to share your maps here to the rest of the map enthusiasts in the room too.
 
 Useful Links
 
-- [Extension file](https://www.dropbox.com/s/ubvopxvjo2dencv/datablick-kepler-gl.trex.zip?dl=0)
 - [Kepler.gl User Guide](https://github.com/keplergl/kepler.gl/blob/master/docs/user-guides/a-introduction.md)
-- [Kepler.gl in Tableau Slack Channel](http://t.uber.com/kepler.gl-tableau)
+- [Kepler.gl Slack Channel](https://github.com/keplergl/kepler.gl/issues/643)
 - [Presentation by Shan and Chris at SFBATUG](https://vimeo.com/332524556/36fd0b2cbe) start at 58 minutes
 
 Happy Mapping :)
