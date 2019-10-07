@@ -1,8 +1,31 @@
 {
   "name": "kepler.gl-tableau",
+  "authors": [
+    "Chris DeMartini <chris@datablick.com>",
+    "Shan He <heshan0131@uber.com>"
+  ],
   "version": "0.1.0",
-  "homepage": "https://uber.github.io/kepler.gl-tableau",
-  "private": true,
+  "description": "kepler.gl is a webgl based application to visualize large scale location data in the browser",
+  "homepage": "https://github.com/keplergl/kepler.gl-tableau",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=8.15.0",
+    "npm": ">=6.1.0",
+    "yarn": ">=1.6.0"
+  },
+  "keywords": [
+    "babel",
+    "es6",
+    "react",
+    "webgl",
+    "visualization",
+    "kepler.gl"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/keplergl/kepler.gl-tableau"
+  },
   "dependencies": {
     "@atlaskit/css-reset": "^3.0.2",
     "@material-ui/core": "^1.0.0",
@@ -33,13 +56,14 @@
     "eslint-config-uber-jsx": "^3.3.3",
     "eslint-plugin-babel": "^5.3.0",
     "eslint-plugin-prettier": "^3.0.1",
-    "eslint-plugin-react": "~7.12.4"
+    "eslint-plugin-react": "~7.12.4",
+    "uber-licence": "^3.1.1"
   },
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "uber-licence && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
