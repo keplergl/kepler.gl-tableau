@@ -87,6 +87,6 @@ npm run deploy
 ```
 
 ## Links
-[kepler.gl Support Policy](https://kepler.gl/policy)
-[Privacy Policy](https://lfprojects.org/policies/privacy-policy/)
-[Term of Use](https://lfprojects.org/policies/terms-of-use/)
+- [kepler.gl Support Policy](https://kepler.gl/policy)
+- [Privacy Policy](https://lfprojects.org/policies/privacy-policy/)
+- [Term of Use](https://lfprojects.org/policies/terms-of-use/)

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2019 Chris DeMartini
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -189,7 +189,7 @@ Components.utils.getBreakpoint = function () {
     '(min-width:' + Components.utils.breakpoints.tabletMin + 'px) and (max-width: ' +
     Components.utils.breakpoints.tabletMax + 'px)'
   ).matches;
-  
+
   isDesktop = matchMedia(
     '(min-width: ' + Components.utils.breakpoints.desktopMin + 'px)'
   ).matches;
@@ -2236,7 +2236,7 @@ Components.AccordionGrid = function (element, options) {
       duration: 500,
       easing: "easeInOutQuart"
     };
-    
+
     if ($triggers.length && $lists.length) {
       // Run setup
       setup();
@@ -2369,12 +2369,12 @@ Components.loadingOverlay = {};
           '</div>' +
           '</div>'),
         offsetY = Components.utils.getElementViewPortCenter($element);
-    
+
     // Allow custom modifier.
     if (modifier) {
       $overlay.addClass(modifier);
     }
-    
+
     $overlay.find('.loader').css('top', offsetY);
     $overlay.prependTo($element)
   };
@@ -2529,7 +2529,7 @@ Components.modalMessage = {};
   };
 }( jQuery ));
 ;
-/** 
+/**
  * Reveal content component interaction
  * See jquery.contentReveal.js for details
  */
@@ -3949,7 +3949,7 @@ Components.searchFacet = {
 // Attach our DOM-ready callback.
 jQuery(Components.searchFacet.ready);
 ;
-/** 
+/**
  * Search Highlight utility.
  *
  * Searches through a list of items and highlights items that match the term.
@@ -3957,7 +3957,7 @@ jQuery(Components.searchFacet.ready);
 (function($){
   $(document).ready(function(){
     var $searches = $('.search-highlight input[type="search"]');
-    
+
     if ($searches.length) {
       $searches.each(function(index, el) {
         var $search = $(el),

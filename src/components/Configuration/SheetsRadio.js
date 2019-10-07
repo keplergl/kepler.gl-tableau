@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2019 Chris DeMartini
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -95,7 +95,7 @@ class RadioButtonsGroup extends React.Component {
       })
     }
   }
-  
+
   render() {
     const { classes, sheets, title, helperText, customChange } = this.props;
 
@@ -107,7 +107,7 @@ class RadioButtonsGroup extends React.Component {
         <div>
           {sheets.map(sheetName => (
               <React.Fragment>
-                <Radio 
+                <Radio
                 key={sheetName}
                 value={sheetName}
                 checked={this.state.value === sheetName}

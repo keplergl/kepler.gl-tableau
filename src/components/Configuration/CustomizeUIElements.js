@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2019 Chris DeMartini
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ export const OptionTitle = styled.p`
 `;
 
 export const OptionWrapper = styled.div`
-  
+
 `;
 
 export const OptionColumn = styled.div`
@@ -60,10 +60,10 @@ export const OptionColumn = styled.div`
 
 export const SearchInput = styled.input`
   border: 1px solid rgba(0, 0, 0, 0.41);
-  border-radius: 20px; 
-  font-size: 11px; 
-  padding-bottom: 5px; 
-  padding-top: 5px; 
+  border-radius: 20px;
+  font-size: 11px;
+  padding-bottom: 5px;
+  padding-top: 5px;
   padding-left: 10px;
   padding-right: 10px;
   outline: none;

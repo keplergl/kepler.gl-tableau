@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2019 Chris DeMartini
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ const CustomizeViolin = (props) => (
       <h4 style={{color: "#BDBDBD"}}>{props.title}</h4>
       <div className="clearfix">
         <OptionColumn className="grid--6" style={{margin: "10px"}}>
-          <CustomScreen 
+          <CustomScreen
             configTitle={"Customize how to render kepler.gl in Tableau"}
             handleChange={props.handleChange}
             customCallBack={props.customCallBack}

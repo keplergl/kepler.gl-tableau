@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2019 Chris DeMartini
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -2157,16 +2157,16 @@ exports.ExternalIdentityVersionConverter = ExternalIdentityVersionConverter;
 
   function Guid(guid) {
     if (!guid) throw new TypeError("Invalid argument; `value` has no value.");
-      
+
     this.value = Guid.EMPTY;
-    
+
     if (guid && guid instanceof Guid) {
       this.value = guid.toString();
 
     } else if (guid && Object.prototype.toString.call(guid) === "[object String]" && Guid.isGuid(guid)) {
       this.value = guid;
     }
-    
+
     this.equals = function(other) {
       // Comparing string `value` against provided `guid` will auto-call
       // toString on `guid` for comparison
@@ -2176,11 +2176,11 @@ exports.ExternalIdentityVersionConverter = ExternalIdentityVersionConverter;
     this.isEmpty = function() {
       return this.value === Guid.EMPTY;
     };
-    
+
     this.toString = function() {
       return this.value;
     };
-    
+
     this.toJSON = function() {
       return this.value;
     };
@@ -8777,7 +8777,7 @@ var VersionedExternalApiDispatcher = /** @class */ (function () {
      * The Internal/CrossFrame dispatchers handle an updated platform with an older external library.
      * (The CrossFrameDispatcher sends messages across the frame, and it is handled by the PresLayerHandler.)
      * Meanwhile, the VersionedExternalApiDispatcher handles an updated external library with an older platform.
-  
+
      * @param _apiDelegateDispatcher The delegate that does the actual work.
      * @param platformVersionNumber The version of the internal contract which the platform module is using.
      * This number will be used to figure out how to downgrade incoming commands and upgrade the results
