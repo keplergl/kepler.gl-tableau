@@ -85,3 +85,8 @@ Deploy local app to uber.github.io, this will be the app that Tableau extension 
 ```sh
 npm run deploy
 ```
+
+## Links
+[kepler.gl Support Policy](https://kepler.gl/policy)
+[Privacy Policy](https://lfprojects.org/policies/privacy-policy/)
+[Term of Use](https://lfprojects.org/policies/terms-of-use/)

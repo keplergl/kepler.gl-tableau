@@ -63,6 +63,8 @@ import dbLogo from './assets/dblogo.png';
 import ssLogo from './assets/sslogo.jpg';
 import kepLogo from './assets/kepler.gl-logo.png';
 
+const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoidWJlcmRhdGEiLCJhIjoiY2p2OGVvejQwMDJxZzRma2dvdWQ2OTQwcSJ9.VbuIamTa_JayuD2yr5tjaA';
+
 // begin constants to move to another file later
 // material ui styles
 const styles = theme => ({
@@ -647,7 +649,7 @@ class App extends Component {
 
         // default to uber's Kepler key that they requested if user does not enter
         this.setState({
-          tableauKey: 'pk.eyJ1IjoidWJlcmRhdGEiLCJhIjoiY2p2OGVvejQwMDJxZzRma2dvdWQ2OTQwcSJ9.VbuIamTa_JayuD2yr5tjaA',
+          tableauKey: MAPBOX_ACCESS_TOKEN,
           isLoading: false,
           height: window.innerHeight,
           width: window.innerWidth,
