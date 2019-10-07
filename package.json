@@ -6,7 +6,7 @@
   ],
   "version": "0.1.0",
   "description": "kepler.gl is a webgl based application to visualize large scale location data in the browser",
-  "homepage": "https://github.com/keplergl/kepler.gl-tableau",
+  "homepage": "https://keplergl-tableau.netlify.com",
   "license": "MIT",
   "main": "dist/index.js",
   "engines": {
