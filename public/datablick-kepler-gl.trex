@@ -4,7 +4,7 @@
     <default-locale>en_US</default-locale>
     <name resource-id="name"/>
     <description>Kepler.gl</description>
-    <author name="Chris DeMartini, Shan He and several others" email="extensions@datablick.com" organization="DataBlick and Uber" website="https://kepler.gl/"/>
+    <author name="Multiple Contributors (See Git Repo)" email="keplergl-tableau@googlegroups.com" organization="DataBlick, Starschema and Uber" website="https://kepler.gl/"/>
     <min-api-version>1.1</min-api-version>
     <source-location>
       <url>https://keplergl.github.io/kepler.gl-tableau</url>

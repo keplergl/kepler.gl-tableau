@@ -61,7 +61,7 @@ import {selectMarksByField, applyFilterByField, clearMarksByField, clearFilterBy
 //logos
 import dbLogo from './assets/dblogo.png';
 import ssLogo from './assets/sslogo.jpg';
-import kepLogo from './assets/kepler.gl-logo.png';
+import kepLogo from './assets/kepler.gl-logo_2x.png';
 
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoidWJlcmRhdGEiLCJhIjoiY2p2OGVvejQwMDJxZzRma2dvdWQ2OTQwcSJ9.VbuIamTa_JayuD2yr5tjaA';
 
@@ -789,7 +789,7 @@ class App extends Component {
             ctaText="Configure"
             poweredBy={
               <React.Fragment>
-                <p className="info">For information on how to use this extensions check out the
+                <p className="info">For information on how to use this extension check out the
                   {" "}<a href="https://github.com/uber/kepler.gl-tableau/tree/feat/docs/docs" target="_blank" rel="noopener noreferrer" >user guide</a>
                 </p>
                 <p className="info">Brought to you by: </p>

@@ -39,11 +39,11 @@
 
 #Stepper.step-grid .step-item .step-count:after {
   position: absolute;
-  width: 16%;
+  width: 20%;
   height: 1px;
   background: rgb(187, 187, 187);
   content: '';
-  margin-left: 2%;
+  margin-left: 4%;
   margin-top: 12px;
 }
 
