@@ -64,7 +64,7 @@ open tableau workbook (get it from public folder of this repo)
 - NOTE: if you want to enable remote debugging, use this command in terminal to open tableau
 
 ```sh
-open /Applications/Tableau\ Desktop\ 2018\.3.app --args --remote-debugging-port=8696
+open /Applications/Tableau\ Desktop\ 2019\.1.app --args --remote-debugging-port=8696
 ```
 
 A debug session will be available in browser http://localhost:8696

@@ -70,10 +70,14 @@ function markerSelectUpdater(state, action) {
   const {field, values} = action.payload;
   const visState = visStateSelector(state);
   let currentFilterIdx = visState.filters.findIndex(f => f.name === field && f.dataId === DATA_ID && f.tableauMarkerFilter);
-
   let nextState = visState;
   if (values.length) {
     if (currentFilterIdx < 0) {
+      const filterField = getFilterField(visState, field);
+      if (!filterField) {
+        // field not in visState
+        return state;
+      }
       log('add filter based on marker')
       // add filter
       nextState = visStateUpdaters.addFilterUpdater(nextState, {dataId: DATA_ID});
@@ -85,7 +89,7 @@ function markerSelectUpdater(state, action) {
       nextState = visStateUpdaters.setFilterUpdater(nextState, {idx, prop: 'dataId', value: DATA_ID});
 
       // set filter name and props
-      const newFilter = getNewFilter(nextState, idx, field);
+      const newFilter = getNewFilter(nextState, idx, filterField);
       nextState = {
         ...nextState,
         filters: nextState.filters.map((f, i) => i === idx ? newFilter : f)
@@ -97,7 +101,7 @@ function markerSelectUpdater(state, action) {
     nextState = visStateUpdaters.setFilterUpdater(nextState, {idx: currentFilterIdx, prop: 'value', value: values});
   } else if (currentFilterIdx >= 0) {
     // remove filter
-    log('remove gilter based on marker')
+    log('remove filter based on marker')
     nextState = visStateUpdaters.removeFilterUpdater(nextState, {idx: currentFilterIdx});
   }
 
@@ -119,13 +123,12 @@ function updateKeplerGlState(state, newState) {
 }
 
 function getNewFilter(state, idx, field) {
-  const filterField = getFilterField(state, field);
-  const fieldIdx = filterField.tableFieldIndex - 1;
+  const fieldIdx = field.tableFieldIndex - 1;
   const values = state.datasets[DATA_ID].allData.map(row => row[fieldIdx]);
 
   const filterProp = {
     domain: unique(values).sort(),
-    fieldType: filterField.type,
+    fieldType: field.type,
     type: 'multiSelect',
     value: []
   };
@@ -133,10 +136,11 @@ function getNewFilter(state, idx, field) {
   const newFilter = {
     ...state.filters[idx],
     ...filterProp,
-    name: field,
+    name: field.name,
     // can't edit dataId once name is selected
     freeze: true,
     fieldIdx,
+    // add tableau identifier to filter
     tableauMarkerFilter: true
   };
 

@@ -53,12 +53,14 @@ class KeplerGlComponent extends React.Component {
         label: selectedSheet
       }
     };
+    const config = keplerConfig ? JSON.parse(keplerConfig) : undefined;
+    const hasMapStateConfig = Boolean(config && config.mapState);
 
     this.props.dispatch(
       addDataToMap({
         datasets,
-        options: {readOnly, centerMap: true},
-        config: keplerConfig ? JSON.parse(keplerConfig) : undefined
+        options: {readOnly, centerMap: !hasMapStateConfig},
+        config
       })
     );
   }
