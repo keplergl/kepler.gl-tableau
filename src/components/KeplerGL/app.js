@@ -144,7 +144,7 @@ class App extends Component {
           mapboxApiAccessToken={this.props.mapboxAPIKey}
           id={MAP_ID}
           appName="Kepler.gl in Tableau!"
-          version="v0.1"
+          version="0.1.0"
           theme={this.props.theme === 'light' ? 'light' : undefined}
           width={this.props.width}
           height={this.props.height}
