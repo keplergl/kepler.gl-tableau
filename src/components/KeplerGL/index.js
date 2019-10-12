@@ -54,8 +54,8 @@ class KeplerGlComponent extends React.Component {
       }
     };
     const config = keplerConfig ? JSON.parse(keplerConfig) : undefined;
-    const hasMapStateConfig = Boolean(config && config.mapState);
-
+    const hasMapStateConfig = Boolean(config && config.config && config.config.mapState);
+    
     this.props.dispatch(
       addDataToMap({
         datasets,
