@@ -790,7 +790,8 @@ class App extends Component {
             poweredBy={
               <React.Fragment>
                 <p className="info">For information on how to use this extension check out the
-                  {" "}<a href="https://github.com/uber/kepler.gl-tableau/tree/feat/docs/docs" target="_blank" rel="noopener noreferrer" >user guide</a>
+                  {" "}<a href="https://github.com/uber/kepler.gl-tableau/tree/feat/docs/docs" target="_blank" rel="noopener noreferrer" >user guide</a><br />
+                  {" "}Tableau Requirements: Tableau Desktop (Mac Only) 2018.3 or >= 2019.1.2 or Tableau Server >= 2018.3
                 </p>
                 <p className="info">Brought to you by: </p>
                 <a href="http://www.datablick.com/" target="_blank" rel="noopener noreferrer">
