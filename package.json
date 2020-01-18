@@ -33,7 +33,7 @@
     "@tableau/tableau-ui": "^2.1.0",
     "core-js": "^2.6.0",
     "gh-pages": "^2.0.1",
-    "kepler.gl": "^1.1.9",
+    "kepler.gl": "1.1.11",
     "lodash.throttle": "^4.1.1",
     "react": "^16.8.4",
     "react-beautiful-dnd": "^9.0.2",
