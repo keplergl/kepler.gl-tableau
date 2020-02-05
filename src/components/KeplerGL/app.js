@@ -101,6 +101,10 @@ class App extends Component {
   }
 
   handleConfigChange() {
+    if (typeof this.props.configCallBack !== 'function') {
+      return;
+    }
+
     const currentState = this.getMapConfig();
     if (!currentState) {
       return;

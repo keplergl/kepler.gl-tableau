@@ -22,7 +22,6 @@ import {combineReducers} from 'redux';
 import {handleActions} from 'redux-actions';
 import {routerReducer} from 'react-router-redux';
 import keplerGlReducer, {visStateUpdaters} from 'kepler.gl/reducers';
-import {FILTER_TYPES} from 'kepler.gl/constants';
 import {MAP_ID, DATA_ID} from './constants';
 import {MARKER_SELECT} from './actions';
 import {log} from './utils';

@@ -810,6 +810,7 @@ class App extends Component {
         </div>
       );
     }
+    const readOnly = tableauSettingsState.readOnly === 'true'
 
     return (
       <KeplerGlComponent
@@ -820,7 +821,7 @@ class App extends Component {
         selectedSheet={this.state.selectedSheet}
         tableauSettings={tableauSettingsState}
         theme={tableauSettingsState.theme}
-        readOnly={tableauSettingsState.readOnly === 'true'}
+        readOnly={readOnly}
         keplerConfig={tableauSettingsState.keplerConfig}
         mapboxAPIKey={
           tableauSettingsState.mapboxAPIKey
@@ -829,7 +830,7 @@ class App extends Component {
         }
         isLoading={isLoading}
         // persist state to tableau
-        configCallBack={this.configCallBack}
+        configCallBack={readOnly ? null : this.configCallBack}
         // interactivity
         clickCallBack={this.clickCallBack}
         hoverCallBack={this.hoverCallBack}
