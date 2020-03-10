@@ -22,7 +22,6 @@ import {combineReducers} from 'redux';
 import {handleActions} from 'redux-actions';
 import {routerReducer} from 'react-router-redux';
 import keplerGlReducer, {visStateUpdaters} from 'kepler.gl/reducers';
-import {FILTER_TYPES} from 'kepler.gl/constants';
 import {MAP_ID, DATA_ID} from './constants';
 import {MARKER_SELECT} from './actions';
 import {log} from './utils';
@@ -52,6 +51,8 @@ const composedReducer = (state, action) => {
   switch (action.type) {
     case MARKER_SELECT:
       return markerSelectUpdater(state, action);
+    default:
+      break;
   }
 
   return reducers(state, action);
@@ -69,7 +70,7 @@ function markerSelectUpdater(state, action) {
   );
   const {field, values} = action.payload;
   const visState = visStateSelector(state);
-  let currentFilterIdx = visState.filters.findIndex(f => f.name === field && f.dataId === DATA_ID && f.tableauMarkerFilter);
+  let currentFilterIdx = visState.filters.findIndex(f => f.name.includes(field) && f.dataId.includes(DATA_ID) && f.tableauMarkerFilter);
   let nextState = visState;
   if (values.length) {
     if (currentFilterIdx < 0) {
@@ -80,7 +81,7 @@ function markerSelectUpdater(state, action) {
       }
       log('add filter based on marker')
       // add filter
-      nextState = visStateUpdaters.addFilterUpdater(nextState, {dataId: DATA_ID});
+      nextState = visStateUpdaters.addFilterUpdater(nextState, {dataId: [DATA_ID]});
 
       // added filter should be the last one
       const idx = nextState.filters.length - 1;
@@ -136,10 +137,10 @@ function getNewFilter(state, idx, field) {
   const newFilter = {
     ...state.filters[idx],
     ...filterProp,
-    name: field.name,
+    name: [field.name],
     // can't edit dataId once name is selected
     freeze: true,
-    fieldIdx,
+    fieldIdx: [fieldIdx],
     // add tableau identifier to filter
     tableauMarkerFilter: true
   };
