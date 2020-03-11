@@ -39,7 +39,7 @@ import {
 } from './components/Configuration';
 
 // Viz components
-import KeplerGlComponent from './components/KeplerGL';
+import KeplerGlComponent from './components/KeplerGL/index';
 
 import {withStyles} from '@material-ui/core/styles';
 
@@ -855,6 +855,7 @@ class App extends Component {
         // interactivity
         clickCallBack={this.clickCallBack}
         hoverCallBack={this.hoverCallBack}
+        dispatch={this.props.dispatch}
       />
     );
   }
