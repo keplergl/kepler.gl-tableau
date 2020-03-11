@@ -137,7 +137,7 @@ class App extends Component {
     // since we add them back later in this function.
     // provided by tableau extension samples
 
-    console.log('%c addEventListeners', 'background: purple; color:yellow');
+    log('%c addEventListeners', 'background: purple; color:yellow');
     this.removeEventListeners();
 
     const localUnregisterHandlerFunctions = [];
@@ -169,7 +169,7 @@ class App extends Component {
   }
 
   removeEventListeners = () => {
-    console.log(`%c remove ${this.unregisterHandlerFunctions.length} EventListeners`, 'background: green; color:black');
+    log(`%c remove ${this.unregisterHandlerFunctions.length} EventListeners`, 'background: green; color:black');
 
     this.unregisterHandlerFunctions.forEach(unregisterHandlerFunction => {
       unregisterHandlerFunction();
@@ -197,7 +197,7 @@ class App extends Component {
   clickCallBack = d => {
     const {clickField, clickAction} = this.state.tableauSettings;
 
-    console.log(
+    log(
       '%c in on click callback',
       'background: brown',
       // d,
@@ -211,7 +211,7 @@ class App extends Component {
   hoverCallBack = d => {
     const {hoverField, hoverAction} = this.state.tableauSettings;
 
-    console.log(
+    log(
       '%c in on hover callback',
       'background: OLIVE',
       // d,
@@ -274,9 +274,14 @@ class App extends Component {
     log('event', event);
     if (TableauSettings.ShouldUse) {
       // create a single k/v pair
-      let kv = {};
+      const kv = {};
       kv[event.target.name] = event.target.value;
       // update the settings
+
+      log(
+        '%c handleChange=======TableauSettings.updateAndSave',
+        'background: red; color: white'
+      );
       TableauSettings.updateAndSave(kv, settings => {
         this.setState({
           tableauSettings: settings
@@ -293,17 +298,12 @@ class App extends Component {
   }
 
   configCallBack = (field, columnName) => {
-    // field = ChoroSheet, sheet = Data
-    console.log('configCallBack', field);
-
-    // if we are in config call back from a sheet selection, go get the data
-    // this only works in the #true instance, must use update lifecycle method to catch both
-    // if (field.indexOf("Sheet") >= 0) {
-    //   this.getSummaryData(columnName, field);
-    // }
 
     if (TableauSettings.ShouldUse) {
-      console.log('TableauSettings.ShouldUse: ', TableauSettings.ShouldUse);
+      log(
+        '%c configCallBack=======TableauSettings.updateAndSave',
+        'background: red; color: white'
+      );
       TableauSettings.updateAndSave(
         {
           // ['is' + field]: true,
@@ -317,11 +317,9 @@ class App extends Component {
         }
       );
     } else {
-      //tableauExt.settings.set('is' + field, true);
       tableauExt.settings.set(field, columnName);
       tableauExt.settings.saveAsync().then(() => {
         this.setState({
-          // ['is' + field]: true,
           tableauSettings: tableauExt.settings.getAll()
         });
       });
@@ -331,6 +329,11 @@ class App extends Component {
   eraseCallBack = field => {
     log("triggered erase", field);
     if (TableauSettings.ShouldUse) {
+
+      log(
+        '%c eraseCallBack=======TableauSettings.eraseAndSave',
+        'background: red; color: white'
+      );
       TableauSettings.eraseAndSave([field], settings => {
         this.setState({
           tableauSettings: settings
@@ -353,6 +356,10 @@ class App extends Component {
   customCallBack = confSetting => {
     log('in custom call back', confSetting);
     if (TableauSettings.ShouldUse) {
+      log(
+        '%c customCallBack=======TableauSettings.updateAndSave',
+        'background: red; color: white'
+      );
       TableauSettings.updateAndSave(
         {
           [confSetting]: true
@@ -454,15 +461,18 @@ class App extends Component {
     this.removeEventListeners();
 
     if (TableauSettings.ShouldUse) {
-      TableauSettings.updateAndSave(
-        {isLoading: true},
-        settings => {
-          this.setState({
-            isLoading: true,
-            tableauSettings: settings
-          });
-        }
-      );
+      this.setState({
+        isLoading: true
+      });
+      // TableauSettings.updateAndSave(
+      //   {isLoading: true},
+      //   settings => {
+      //     this.setState({
+      //       isLoading: true,
+      //       tableauSettings: settings
+      //     });
+      //   }
+      // );
     } else {
       this.setState({isLoading: true});
       tableauExt.settings.set('isLoading', true);
@@ -481,25 +491,20 @@ class App extends Component {
       const newDataState = dataTableToKepler(t);
 
       if (TableauSettings.ShouldUse) {
-        log(
-          '%c getConfigSheetSummaryData TableauSettings.ShouldUse',
-          'color: blue'
-        );
-        TableauSettings.updateAndSave(
-          {
-            isLoading: false
-          },
-          settings => {
+        // TableauSettings.updateAndSave(
+          // {
+          //   isLoading: false
+          // },
+          // settings => {
             this.setState({
               ...newDataState,
               selectedSheet: sheetName,
-              tableauSettings: settings,
               isLoading: false,
               isMissingData: false
             });
-          },
-          true
-        );
+          // },
+          // true
+        // );
       } else {
         log(
           '%c getConfigSheetSummaryData TableauSettings.ShouldUse false',
@@ -715,14 +720,23 @@ class App extends Component {
       !this.state.isSplash &&
       !this.state.isConfig &&
       (this.state.isLoading ||
-        tableauSettingsState.isLoading === 'true' ||
+        // tableauSettingsState.isLoading === 'true' ||
         this.state.isMissingData)
     ) {
+      log(
+        `%c this.state.isLoading=true}`,
+        'color: purple'
+      );
       isLoading = true;
     }
 
     // config screen jsx
     if (this.state.isConfig) {
+      log(
+        `%c this.state.isConfig=true}`,
+        'color: purple'
+      );
+
       const stepNames = ['Select Sheet', 'Customize Kepler.gl'];
 
       // log(this.state.stepIndex);
@@ -780,6 +794,11 @@ class App extends Component {
 
     // splash screen jsx
     if (this.state.isSplash) {
+      log(
+        `%c this.state.isSplash=true}`,
+        'color: purple'
+      );
+
       return (
         <div className="splashScreen" style={{padding: 5}}>
           <SplashScreen
@@ -810,7 +829,9 @@ class App extends Component {
         </div>
       );
     }
+
     const readOnly = tableauSettingsState.readOnly === 'true'
+    log(`readOnly============== ${readOnly}`);
 
     return (
       <KeplerGlComponent

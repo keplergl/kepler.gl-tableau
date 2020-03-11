@@ -20,7 +20,7 @@
 
 const tableauExt = window.tableau.extensions;
 
-let EnvName = "DEFAULT";
+let EnvName = 'DEFAULT';
 
 export function setEnvName(s) {
   EnvName = s;
@@ -47,38 +47,42 @@ export const StringifyValues = false;
  * Log errors for the Tableau log
  */
 function logError(...args) {
-  console.log(args.map(a => a.toString()).join('    '))
+  console.log(args.map(a => a.toString()).join('    '));
 }
 
 /**
  * Log some JSON-like data in the Tableau log
  */
-function logData(tag, data, formatData=false) {
-  let dataStr = formatData ? JSON.stringify(data, null, "\t") : JSON.stringify(data);
-  console.log(EnvName + " [ DATA: " + tag + " ] " + dataStr);
+function logData(tag, data, formatData = false) {
+  let dataStr = formatData
+    ? JSON.stringify(data, null, '\t')
+    : JSON.stringify(data);
+  console.log(EnvName + ' [ DATA: ' + tag + ' ] ' + dataStr);
 }
 
 /**
  * Does a very basic diffing by key for logging setting changes
  */
 function diffData(a, b) {
-  if (a === b)
-    return [];
-  if (typeof a !== typeof b)
-    return ['type mismatch'];
-  if (typeof a !== 'object')
-    return [{ key: "<VALUE>", before: a, after: b}];
+  if (a === b) return [];
+  if (typeof a !== typeof b) return ['type mismatch'];
+  if (typeof a !== 'object') return [{key: '<VALUE>', before: a, after: b}];
 
-  let keys = {}, keysA = Object.keys(a), keysB = Object.keys(b);
-  keysA.concat(keysB).forEach(k => { keys[k] = 1; });
+  let keys = {},
+    keysA = Object.keys(a),
+    keysB = Object.keys(b);
+  keysA.concat(keysB).forEach(k => {
+    keys[k] = 1;
+  });
 
   let changes = [];
 
   Object.keys(keys).forEach(k => {
-    let av = a[k], bv = b[k];
+    let av = a[k],
+      bv = b[k];
     if (av === bv) return;
 
-    changes.push({ key: k, before: av, after: bv });
+    changes.push({key: k, before: av, after: bv});
   });
 
   return changes;
@@ -95,7 +99,6 @@ let tableauSettingsSavePromise = Promise.resolve({});
  */
 let tableauCurrentSavedSettings = {};
 
-
 /**
  * Initialize the current settings stored in tableauCurrentSavedSettings
  */
@@ -103,37 +106,36 @@ export function init() {
   tableauCurrentSavedSettings = tableauExt.settings.getAll();
 }
 
-
 /**
  * Saves the Tableau settings as soon as previous save(s) has completed
  */
-export function save(opId="") {
-
-
+export function save(opId = '') {
   function onSaveSuccess(newSettings) {
-    logData(opId + " saveTableauSettings::onSaveSuccess::diff" , diffData(tableauCurrentSavedSettings, newSettings));
+    logData(
+      opId + ' saveTableauSettings::onSaveSuccess::diff',
+      diffData(tableauCurrentSavedSettings, newSettings)
+    );
     tableauCurrentSavedSettings = tableauExt.settings.getAll();
     return newSettings;
   }
 
   tableauSettingsSavePromise = tableauSettingsSavePromise
     .then(_ => {
-      let saveResult = tableauExt.settings.saveAsync();
+      const saveResult = tableauExt.settings.saveAsync();
       return saveResult.then(onSaveSuccess);
     })
     .catch(err => {
-      logError("Error while saving Extension Settings", err.message);
+      logError('Error while saving Extension Settings', err.message);
       return tableauCurrentSavedSettings;
     });
 
   return tableauSettingsSavePromise;
 }
 
-
 /**
  * Transforms the settings while updating the global state too
  */
-function transformSettings(callback, afterSaveCallback, opId="") {
+function transformSettings(callback, afterSaveCallback, opId = '') {
   // Update each new setting after any previous op completed
   function onPreviousOpComplete() {
     callback();
@@ -141,26 +143,24 @@ function transformSettings(callback, afterSaveCallback, opId="") {
     return tableauCurrentSavedSettings;
   }
 
-
   // wait for any previous save / update to complete
   // then update the settings
   // then save them
-  tableauSettingsSavePromise = Promise.resolve(tableauSettingsSavePromise)
-    .then(_ => onPreviousOpComplete());
+  tableauSettingsSavePromise = Promise.resolve(
+    tableauSettingsSavePromise
+  ).then(_ => onPreviousOpComplete());
 
   save(opId);
 
   if (afterSaveCallback) {
-    tableauSettingsSavePromise = tableauSettingsSavePromise
-      .then(settings => {
-        afterSaveCallback(settings);
-        return settings;
-      });
+    tableauSettingsSavePromise = tableauSettingsSavePromise.then(settings => {
+      afterSaveCallback(settings);
+      return settings;
+    });
   }
 
   return tableauSettingsSavePromise;
 }
-
 
 let currentOpId = 0;
 
@@ -169,17 +169,20 @@ let currentOpId = 0;
  * value and call `callback` either before or after the save completes depending
  * on `deferCallback`.
  */
-export function updateAndSave(newSettings, callback, deferCallback=DeferCallbacks) {
-  let opId = currentOpId;
+export function updateAndSave(
+  newSettings,
+  callback,
+  deferCallback = DeferCallbacks
+) {
+  const opId = currentOpId;
   currentOpId++;
-  logData(opId + " TableauSettings.updateAndSave", newSettings);
+  logData(opId + ' TableauSettings.updateAndSave', newSettings);
 
   // call back right away to allow changing a component state
   // from an event handler
   if (!deferCallback && callback) {
-
     // flatten every setting value to a string
-    let flatSettings = newSettings;
+    const flatSettings = newSettings;
     if (StringifyValues) {
       Object.keys(newSettings).forEach(key => {
         flatSettings[key] = newSettings[key].toString();
@@ -187,33 +190,39 @@ export function updateAndSave(newSettings, callback, deferCallback=DeferCallback
     }
 
     // merge the old and new so we can set
-    let mergedSettings = Object.assign({}, tableauCurrentSavedSettings, flatSettings);
+    const mergedSettings = Object.assign(
+      {},
+      tableauCurrentSavedSettings,
+      flatSettings
+    );
 
     // do the callback with the merged settings
     callback(mergedSettings);
   }
 
-  return transformSettings(() => {
-    Object.keys(newSettings).forEach(key => {
-      tableauExt.settings.set(key, newSettings[key]);
-    });
-  }, settings => {
-    if (deferCallback && callback) {
-      callback(settings);
-    }
-  }, opId);
+  return transformSettings(
+    () => {
+      Object.keys(newSettings).forEach(key => {
+        tableauExt.settings.set(key, newSettings[key]);
+      });
+    },
+    settings => {
+      if (deferCallback && callback) {
+        callback(settings);
+      }
+    },
+    opId
+  );
 }
-
 
 /**
  * Erase each key found in `keys` and call `callback` either before or after the
  * save completes depending on `deferCallback`.
  */
-export function eraseAndSave(keys, callback, deferCallback=DeferCallbacks) {
-  let opId = currentOpId;
+export function eraseAndSave(keys, callback, deferCallback = DeferCallbacks) {
+  const opId = currentOpId;
   currentOpId++;
-  logData(opId + " TableauSettings.eraseAndSave", keys);
-
+  logData(opId + ' TableauSettings.eraseAndSave', keys);
 
   // call back right away to allow changing a component state
   // from an event handler
@@ -226,15 +235,15 @@ export function eraseAndSave(keys, callback, deferCallback=DeferCallbacks) {
     callback(tableauCurrentSavedSettings);
   }
 
-  return transformSettings(() => {
-    keys.forEach(key => tableauExt.settings.erase(key));
-  }, settings => {
-    if (deferCallback && callback) {
-      callback(settings);
-    }
-  }, opId);
-
+  return transformSettings(
+    () => {
+      keys.forEach(key => tableauExt.settings.erase(key));
+    },
+    settings => {
+      if (deferCallback && callback) {
+        callback(settings);
+      }
+    },
+    opId
+  );
 }
-
-
-

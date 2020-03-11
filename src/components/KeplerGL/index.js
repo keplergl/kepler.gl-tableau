@@ -29,6 +29,8 @@ import {addDataToMap} from 'kepler.gl/actions';
 
 class KeplerGlComponent extends React.Component {
   componentDidMount() {
+    log('%c Calling KeplerGL componentDidMount', 'background: green; color:white');
+
     if (this.props.data) {
       this.onDataChange(this.props);
     }
