@@ -38,7 +38,10 @@ import CustomSidebarFactory from './components/side-bar';
 // Kepler.gl Schema APIs
 import KeplerGlSchema from 'kepler.gl/schemas';
 
-const CustomAddDataButtonFactory = () => () => <div />;
+const CustomAddDataButtonFactory = () => {
+  const NoButton = () => <div />;
+  return NoButton;
+}
 // CustomComponents
 const KeplerGl = injectComponents([
   [AddDataButtonFactory, CustomAddDataButtonFactory],
@@ -63,8 +66,6 @@ function getHoverInfo(info, allData) {
 }
 
 class KeplerGlComponent extends Component {
-  preValue = null;
-
   componentDidMount() {
     log('%c Calling KeplerGL componentDidMount', 'background: green; color:white');
 
@@ -72,14 +73,6 @@ class KeplerGlComponent extends Component {
       this.onDataChange(this.props);
     }
   }
-
-  // componentWillReceiveProps(nextProps) {
-  //   log('%c Calling KeplerGL componentWillReceiveProps', 'background: green; color:white');
-
-  //   if (nextProps.data !== this.props.data && !nextProps.isLoading && this.props.isLoading && nextProps.data) {
-  //     this.onDataChange(nextProps);
-  //   }
-  // }
 
   componentDidUpdate(prevProps) {
     const {keplerGl} = this.props;
@@ -103,6 +96,8 @@ class KeplerGlComponent extends Component {
     this.handleConfigChange();
     this.handleInteractionEvent(prevProps);
   }
+
+  preValue = null;
 
   handleInteractionEvent(prevProps) {
     const {keplerGl} = this.props;
@@ -185,15 +180,6 @@ class KeplerGlComponent extends Component {
   }
 
   render() {
-    // const {
-    //   height,
-    //   width,
-    //   data,
-    //   readOnly,
-    //   keplerConfig,
-    //   mapboxAPIKey,
-    //   theme
-    // } = this.props;
 
     return (
       <div
