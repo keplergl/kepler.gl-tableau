@@ -61,16 +61,19 @@ const composedReducer = (state, action) => {
 const keplerGlStateSelector = state => state.keplerGl[MAP_ID];
 const visStateSelector = state => keplerGlStateSelector(state).visState;
 
+// TODO: add tests
 function markerSelectUpdater(state, action) {
-
   log(
     '%c action markerSelect',
     'background: brown; color: white',
     action.payload
   );
+
   const {field, values} = action.payload;
   const visState = visStateSelector(state);
-  let currentFilterIdx = visState.filters.findIndex(f => f.name.includes(field) && f.dataId.includes(DATA_ID) && f.tableauMarkerFilter);
+  let currentFilterIdx = visState.filters.findIndex(
+    f => f.name.includes(field) && f.dataId.includes(DATA_ID) && f.tableauMarkerFilter);
+
   let nextState = visState;
   if (values.length) {
     if (currentFilterIdx < 0) {
@@ -86,9 +89,9 @@ function markerSelectUpdater(state, action) {
       // added filter should be the last one
       const idx = nextState.filters.length - 1;
       currentFilterIdx = idx;
-      // set filter dataId
-      nextState = visStateUpdaters.setFilterUpdater(nextState, {idx, prop: 'dataId', value: DATA_ID});
 
+      // set filter dataId
+      nextState = visStateUpdaters.setFilterUpdater(nextState, {idx, prop: 'dataId', value: [DATA_ID]});
       // set filter name and props
       const newFilter = getNewFilter(nextState, idx, filterField);
       nextState = {
@@ -100,6 +103,7 @@ function markerSelectUpdater(state, action) {
 
     // set filter value
     nextState = visStateUpdaters.setFilterUpdater(nextState, {idx: currentFilterIdx, prop: 'value', value: values});
+
   } else if (currentFilterIdx >= 0) {
     // remove filter
     log('remove filter based on marker')
@@ -123,6 +127,7 @@ function updateKeplerGlState(state, newState) {
   };
 }
 
+// TODO: export filter utils
 function getNewFilter(state, idx, field) {
   const fieldIdx = field.tableFieldIndex - 1;
   const values = state.datasets[DATA_ID].allData.map(row => row[fieldIdx]);

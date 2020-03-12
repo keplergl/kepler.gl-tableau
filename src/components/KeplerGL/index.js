@@ -193,9 +193,9 @@ class KeplerGlComponent extends Component {
         <KeplerGl
           mapboxApiAccessToken={this.props.mapboxAPIKey}
           id={MAP_ID}
-          appName="Kepler.gl in Tableau!"
+          appName="Kepler.gl in Tableau"
           version="0.1.0"
-          theme={this.props.theme === 'light' ? 'light' : undefined}
+          theme={this.props.theme === 'light' ? 'base' : undefined}
           width={this.props.width}
           height={this.props.height}
           sidePanelWidth={260}
