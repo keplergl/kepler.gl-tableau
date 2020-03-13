@@ -78,6 +78,8 @@ const MAPBOX_ACCESS_TOKEN =
 
 // begin constants to move to another file later
 // material ui styles
+const KEPLER_GL_VERSION = '__PACKAGE_VERSION__';
+
 const styles = theme => ({
   root: {
     display: 'flex'
@@ -807,6 +809,7 @@ class App extends Component {
                 >
                   <img src={kepLogo} />
                 </a>
+            <p className="info">Version: {KEPLER_GL_VERSION}</p>
               </React.Fragment>
             }
           />
