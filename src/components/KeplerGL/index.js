@@ -38,6 +38,9 @@ import CustomSidebarFactory from './components/side-bar';
 // Kepler.gl Schema APIs
 import KeplerGlSchema from 'kepler.gl/schemas';
 
+// READ version from package.json
+const KEPLER_GL_VERSION = '__PACKAGE_VERSION__';
+
 const CustomAddDataButtonFactory = () => {
   const NoButton = () => <div />;
   return NoButton;
@@ -194,7 +197,7 @@ class KeplerGlComponent extends Component {
           mapboxApiAccessToken={this.props.mapboxAPIKey}
           id={MAP_ID}
           appName="Kepler.gl in Tableau"
-          version="0.1.0"
+          version={KEPLER_GL_VERSION}
           theme={this.props.theme === 'light' ? 'base' : undefined}
           width={this.props.width}
           height={this.props.height}
