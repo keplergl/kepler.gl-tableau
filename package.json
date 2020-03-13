@@ -51,19 +51,22 @@
     "url-parse": "^1.4.3"
   },
   "devDependencies": {
+    "babel-plugin-search-and-replace": "^1.0.0",
+    "customize-cra": "^0.9.1",
     "eslint-config-prettier": "^3.6.0",
     "eslint-config-uber-es2015": "^3.1.2",
     "eslint-config-uber-jsx": "^3.3.3",
     "eslint-plugin-babel": "^5.3.0",
     "eslint-plugin-prettier": "^3.0.1",
-    "eslint-plugin-react": "~7.12.4"
+    "eslint-plugin-react": "~7.12.4",
+    "react-app-rewired": "^2.1.5"
   },
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired --max_old_space_size=4096 build",
+    "test": "react-app-rewired test --env=jsdom",
     "eject": "react-scripts eject"
   },
   "browserslist": [
