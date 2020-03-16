@@ -65,7 +65,10 @@ function getHoverInfo(info, allData) {
     : // if hovered is a hexbbin, or grid, kepler.gl can return all the points inside that hexagon / grid
     objectHovered.type === 'Feature'
     ? allData[objectHovered.properties.index]
-    : objectHovered.points;
+    // with upgrade to v2 we now need to the data sub-object for hex and grid layer
+    : objectHovered.points.map(pt => {
+      return pt.data;
+    });
 }
 
 class KeplerGlComponent extends Component {
