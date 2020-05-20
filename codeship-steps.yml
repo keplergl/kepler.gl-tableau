@@ -13,4 +13,4 @@
     - service: aws_deployment_prod
       tag: "master"
       command: deploy/ops/aws_deployment.sh
-  dockercfg_service: aws_dockercfg
+  dockercfg_service: aws_dockercfg_prod
