@@ -27,9 +27,11 @@ import './../styles/SplashScreen.css';
 const SplashScreen = props => (
   <div className="gallery-grid" id="splashScreen">
     <div className="gallery-grid__item">
-      <Typography variant={'display2'} style={{color: '#000'}}>
+      <Typography variant={'display1'} style={{color: '#333'}}>
         {props.title}
+        <span className="info">v{props.version}</span>
       </Typography>
+
     </div>
     <div className="gallery-grid__item">
       <Typography variant={'subheading'}>{props.desc}</Typography>
@@ -38,7 +40,8 @@ const SplashScreen = props => (
     <div className="gallery-grid__item">
       <div className="clearfix">
         <Button
-          kind={'filledGreen'}
+          className="cta"
+          kind={'outline'}
           key={'configButton'}
           onClick={props.configure}
         >
@@ -46,12 +49,13 @@ const SplashScreen = props => (
         </Button>
       </div>
     </div>
-    <br />
-    <div className="gallery-grid__item">
-      <p className="info">{props.infoText}</p>
-    </div>
-    <div className="gallery-grid__item">
-      <div className="padded-box padded-box--one">{props.poweredBy}</div>
+    <div className="gallery-footer">
+      <div className="gallery-grid__item">
+        <p className="info">{props.infoText}</p>
+      </div>
+      <div className="gallery-grid__item">
+        <div className="padded-box padded-box--one">{props.poweredBy}</div>
+      </div>
     </div>
   </div>
 );

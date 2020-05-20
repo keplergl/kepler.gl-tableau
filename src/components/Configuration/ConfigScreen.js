@@ -38,7 +38,6 @@ const styles = {
 
 function ConfigScreen(props) {
   const {
-    classes,
     selectSheet,
     sheetNames,
     configTitle,
@@ -46,10 +45,9 @@ function ConfigScreen(props) {
     field,
     selectedValue } = props;
 
-  console.log('configScreen', props);
   return (
     <React.Fragment>
-      <div className="sheetScreen" style={{padding : 10, paddingBottom: 100 }}>
+      <div className="sheetScreen">
         <Grid
           container
           alignItems="center"
