@@ -1,0 +1,24 @@
+kepler_prod:
+  build:
+    image: 084888172679.dkr.ecr.us-east-1.amazonaws.com/kepler
+    dockerfile_path: ./Dockerfile
+  encrypted_env_file: aws.env.encrypted
+  environment:
+    - AWS_DEFAULT_REGION=us-east-1
+  cache: true
+
+aws_dockercfg_prod:
+  image: codeship/aws-ecr-dockercfg-generator
+  add_docker: true
+  encrypted_env_file: aws.env.encrypted
+  cache: true
+
+aws_deployment_prod:
+  image: codeship/aws-deployment
+  add_docker: true
+  encrypted_env_file: aws.env.encrypted
+  environment:
+    - AWS_DEFAULT_REGION=us-east-1
+  volumes:
+    - ./:/deploy
+  cache: true

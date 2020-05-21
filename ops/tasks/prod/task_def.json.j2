@@ -1,0 +1,44 @@
+{
+  "containerDefinitions": [
+    {
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/apps/kepler-ecs-{{env}}",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "kepler"
+        }
+      },
+      "portMappings": [
+        {
+          "hostPort": 3000,
+          "protocol": "tcp",
+          "containerPort": 3000
+        }
+      ],
+      "cpu": 1024,
+      "environment": [
+        {
+            "name": "ENV",
+            "value": "{{env}}"
+        }
+      ],
+      "mountPoints": [],
+      "memory": 8192,
+      "volumesFrom": [],
+      "image": "084888172679.dkr.ecr.us-east-1.amazonaws.com/kepler:{{branch}}",
+      "essential": true,
+      "name": "kepler_{{env}}"
+    }
+  ],
+  "executionRoleArn": "arn:aws:iam::084888172679:role/7p-kepler-{{env}}-ecs",
+  "taskRoleArn": "arn:aws:iam::084888172679:role/7p-kepler-{{env}}-ecs",
+  "family": "kepler-{{env}}-td",
+  "networkMode": "awsvpc",
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "1024",
+  "memory": "8192"
+}

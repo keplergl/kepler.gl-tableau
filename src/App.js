@@ -771,7 +771,7 @@ class App extends Component {
     }
 
     // splash screen jsx
-    if (this.state.isSplash) {
+    if (!this.state.isSplash) {
       log(`%c this.state.isSplash=true}`, 'color: purple');
 
       return (
@@ -847,9 +847,7 @@ class App extends Component {
         readOnly={readOnly}
         keplerConfig={tableauSettingsState.keplerConfig}
         mapboxAPIKey={
-          tableauSettingsState.mapboxAPIKey
-            ? tableauSettingsState.mapboxAPIKey
-            : this.state.tableauKey
+          MAPBOX_ACCESS_TOKEN
         }
         isLoading={isLoading}
         // persist state to tableau
