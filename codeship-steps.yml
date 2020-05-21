@@ -1,0 +1,16 @@
+- name: Build Kepler and Publish to ECR
+  service: kepler_prod
+  type: push
+  tag: "master"
+  image_name: 084888172679.dkr.ecr.us-east-1.amazonaws.com/kepler
+  image_tag: "{{ .Branch }}"
+  registry: https://084888172679.dkr.ecr.us-east-1.amazonaws.com
+  dockercfg_service: aws_dockercfg_prod
+
+- name: Deploy to ECS
+  type: serial
+  steps:
+    - service: aws_deployment_prod
+      tag: "master"
+      command: deploy/ops/aws_deployment.sh
+  dockercfg_service: aws_dockercfg_prod

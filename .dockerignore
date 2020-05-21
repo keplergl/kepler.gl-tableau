@@ -1,0 +1,9 @@
+.gitignore
+.travis.yml
+.gitignore
+.github
+
+# Codeship config
+codeship-services.yml
+codeship-steps.yml
+*.aes
