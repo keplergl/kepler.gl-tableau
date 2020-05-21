@@ -15,7 +15,7 @@ python3 print_parameters.py --env="${ENV}" --app="${APP_NAME}" -d
 
 # Load variable:qs to environment
 # shellcheck disable=SC2046
-eval $(python print_parameters.py --env="${ENV}" --app="${APP_NAME}")
+eval $(python3 print_parameters.py --env="${ENV}" --app="${APP_NAME}")
 
 case "$1" in
 webserver)
