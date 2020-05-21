@@ -72,6 +72,7 @@ import {
 import dbLogo from './assets/dblogo.png';
 import ssLogo from './assets/sslogo.jpg';
 import kepLogo from './assets/kepler.gl-logo_2x.png';
+import { Typography } from '@material-ui/core';
 
 const MAPBOX_ACCESS_TOKEN =
   'pk.eyJ1IjoidWJlcmRhdGEiLCJhIjoiY2p2OGVvejQwMDJxZzRma2dvdWQ2OTQwcSJ9.VbuIamTa_JayuD2yr5tjaA';
@@ -714,13 +715,17 @@ class App extends Component {
         // Placeholder sheet names. TODO: Bind to worksheet data
         return (
           <React.Fragment>
-            <Stepper stepIndex={this.state.stepIndex} steps={stepNames} />
-            <PickSheets
-              sheetNames={this.state.sheetNames}
-              configCallBack={this.configCallBack}
-              field={'ConfigSheet'}
-              ConfigSheet={tableauSettingsState.ConfigSheet || ''}
-            />
+            <div style={{padding: '24px'}}>
+              <Typography variant={'display1'} style={{color: '#333'}}>
+                Kepler.gl within Tableau Configuration
+              </Typography>
+              <PickSheets
+                sheetNames={this.state.sheetNames}
+                configCallBack={this.configCallBack}
+                field={'ConfigSheet'}
+                ConfigSheet={tableauSettingsState.ConfigSheet || ''}
+              />
+            </div>
             <StepButtons
               onNextClick={this.onNextStep}
               onPrevClick={this.onPrevStep}
@@ -738,14 +743,18 @@ class App extends Component {
       if (this.state.stepIndex === 2) {
         return (
           <React.Fragment>
-            <Stepper stepIndex={this.state.stepIndex} steps={stepNames} />
-            <CustomizeViolin
-              handleChange={this.handleChange}
-              customCallBack={this.customCallBack}
-              field={'configuration'}
-              tableauSettings={tableauSettingsState}
-              configSheetColumns={this.state.ConfigSheetStringColumns || []}
-            />
+            <div style={{padding: '24px'}}>
+              <Typography variant={'display1'} style={{color: '#333'}}>
+                Kepler.gl within Tableau Configuration
+              </Typography>
+              <CustomizeViolin
+                handleChange={this.handleChange}
+                customCallBack={this.customCallBack}
+                field={'configuration'}
+                tableauSettings={tableauSettingsState}
+                configSheetColumns={this.state.ConfigSheetStringColumns || []}
+              />
+            </div>
             <StepButtons
               onNextClick={this.onNextStep}
               onPrevClick={this.onPrevStep}
@@ -770,6 +779,7 @@ class App extends Component {
           <SplashScreen
             configure={this.configure}
             title="Kepler.gl within Tableau"
+            version={KEPLER_GL_VERSION}
             desc="Leverage the brilliance of Kepler.gl functionality, directly within Tableau!"
             ctaText="Configure"
             poweredBy={
@@ -786,30 +796,35 @@ class App extends Component {
                   <br /> Tableau Requirements: Tableau Desktop (Mac Only) 2018.3
                   or >= 2019.1.2 or Tableau Server >= 2018.3
                 </p>
-                <p className="info">Brought to you by: </p>
-                <a
-                  href="http://www.datablick.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img src={dbLogo} />
-                </a>{' '}
-                <a
-                  href="https://starschema.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img src={ssLogo} />
-                </a>
-                <p className="info">Powered by: </p>
-                <a
-                  href="https://github.com/uber/kepler.gl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img src={kepLogo} />
-                </a>
-            <p className="info">Version: {KEPLER_GL_VERSION}</p>
+                <div className="inline">
+                  <div>
+                    <p className="info">Brought to you by: </p>
+                    <a
+                      href="http://www.datablick.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img src={dbLogo} />
+                    </a>{' '}
+                    <a
+                      href="https://starschema.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img src={ssLogo} />
+                    </a>
+                  </div>
+                  <div>
+                    <p className="info">Powered by: </p>
+                    <a
+                      href="https://github.com/uber/kepler.gl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img src={kepLogo} />
+                    </a>
+                  </div>
+                </div>
               </React.Fragment>
             }
           />

@@ -26,13 +26,13 @@ import { OptionColumn } from './CustomizeUIElements';
 const PickSheets = (props) => (
   <React.Fragment>
     <div className="content-container">
-      <h4 style={{color: "#BDBDBD"}}>{props.title}</h4>
+      <h4 style={{color: "#333"}}>{props.title}</h4>
       <div className="clearfix">
-        <OptionColumn className="grid--6" style={{margin: "10px"}}>
+        <OptionColumn className="grid--6" style={{border: 0}}>
           <ConfigScreen
                 sheetNames = {props.sheetNames}
                 selectSheet = {props.configCallBack}
-                configTitle = "Select a Data Sheet"
+                configTitle = "Select a Data Sheet:"
                 listTitle = "Available Sheets"
                 field={props.field}
                 selectedValue={props.ConfigSheet || ""}

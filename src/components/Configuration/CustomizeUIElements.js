@@ -23,21 +23,27 @@ import styled from 'styled-components';
 
 import '../../styles/Tooltip.css';
 
-const InputTitle = styled.span`
-  font-size: 11px;
+const InputTitle = styled.div`
+  font-size: 12px;
+  margin-bottom: 4px;
+  display: inline-block;
 `;
 
 const Tooltip = styled.a`
   display: inline !important;
   cursor: pointer;
   color: rgb(45, 204, 151);
-  font-weight: 700;
   margin-left: 8px;
+  font-size: 12px;
 `;
 
 export const OptionTitle = styled.p`
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 12px;
+`;
+
+export const SectionTitle = styled.p`
+  font-size: 12px;
+  font-weight: 600;
 `;
 
 export const OptionWrapper = styled.div`
@@ -45,10 +51,7 @@ export const OptionWrapper = styled.div`
 `;
 
 export const OptionColumn = styled.div`
-  height: 375px;
   overflow: auto;
-  border: 1px solid lightgrey;
-  border-radius: 2px;
 `;
 
 // export const TextField = styled.input`
@@ -61,7 +64,7 @@ export const OptionColumn = styled.div`
 export const SearchInput = styled.input`
   border: 1px solid rgba(0, 0, 0, 0.41);
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 12px;
   padding-bottom: 5px;
   padding-top: 5px;
   padding-left: 10px;
@@ -70,11 +73,25 @@ export const SearchInput = styled.input`
   margin-bottom: 10px;
 `;
 
+const InfoIcon = styled.div`
+  font-size: 10px;
+  background-color: #ccc;
+  color: #fff;
+  border-radius: 100px;
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  text-align: center;
+  ::after {
+    content: "i";
+  }
+`;
+
 export const InputLabelWithTooltip = (props) => (
   <div>
     <InputTitle htmlFor="markerShow-helper">{props.title}</InputTitle>
     <Tooltip className="tooltip">
-      ?
+      <InfoIcon></InfoIcon>
       <div class="tooltip__text">{props.tooltipText}</div>
     </Tooltip>
   </div>

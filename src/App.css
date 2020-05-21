@@ -5,7 +5,9 @@ html {
 html, body {
   max-width: 100%;
   overflow-x: hidden;
-  font-family: "Avenir";
+  font-family: "Roboto", "Helvetica", "Arial";
+  background-color: #F5F5F5;
+  font-size: 12px;
 }
 ::-webkit-scrollbar {
   width: 0px;  /* remove scrollbar space */

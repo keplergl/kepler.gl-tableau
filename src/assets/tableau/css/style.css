@@ -3160,7 +3160,7 @@ Style guide: buttons-links.cta
   cursor: pointer;
   letter-spacing: 1px;
   line-height: 1;
-  font-size: 11px;
+  font-size: 12px;
   font-family: "Benton Sans Medium", Helvetica, sans-serif;
   color: #fff;
   text-transform: uppercase;
@@ -3510,7 +3510,7 @@ Style guide: buttons-links.toggle-links
     cursor: pointer;
     letter-spacing: 1px;
     line-height: 1;
-    font-size: 11px;
+    font-size: 12px;
     text-transform: uppercase;
     font-family: "Benton Sans Book", Helvetica, sans-serif;
     color: #e8762c;
@@ -14119,3 +14119,4 @@ Style guide: typography.text-stat
   @media (max-width: 960px) {
     .text-stat {
       font-size: 4em; } }
+

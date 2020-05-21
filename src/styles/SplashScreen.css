@@ -1,3 +1,8 @@
+#splashScreen {
+  padding: 24px;
+  background-color: #F5F5F5;
+}
+
 #splashScreen img {
   max-height: 30px;
 }
@@ -5,10 +10,28 @@
 #splashScreen button.cta {
   max-width: 230px;
   margin-left: auto;
-  margin-right: auto;
-}
+  margin-right: auto; }
+  #splashScreen button.cta:active,
+  #splashScreen button.cta:hover,
+  #splashScreen button.cta:focus {
+    outline-style: none;
+  }
+  #splashScreen button.cta:active {
+    opacity: .6;
+  }
 
 #splashScreen .info {
-  font-style: italic;
-  font-size: 11px;
+  font-size: 12px;
 }
+
+#splashScreen .gallery-footer {
+  display: flex;
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+}
+
+#splashScreen  .inline {
+  display: inline-flex; }
+  .inline > div {
+    margin-right: 16px; }
