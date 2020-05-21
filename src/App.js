@@ -74,7 +74,7 @@ import ssLogo from './assets/sslogo.jpg';
 import kepLogo from './assets/kepler.gl-logo_2x.png';
 
 const MAPBOX_ACCESS_TOKEN =
-  'pk.eyJ1IjoidWJlcmRhdGEiLCJhIjoiY2p2OGVvejQwMDJxZzRma2dvdWQ2OTQwcSJ9.VbuIamTa_JayuD2yr5tjaA';
+  'pk.eyJ1IjoidG9taHVudGVyIiwiYSI6ImNrYWd5Zzl4ejBjZGQzNG5yOWoyZHpubnkifQ.NKZIr3KZP6a9pbbeNgOmmg';
 
 // begin constants to move to another file later
 // material ui styles
@@ -762,7 +762,7 @@ class App extends Component {
     }
 
     // splash screen jsx
-    if (!this.state.isSplash) {
+    if (this.state.isSplash) {
       log(`%c this.state.isSplash=true}`, 'color: purple');
 
       return (
@@ -832,7 +832,9 @@ class App extends Component {
         readOnly={readOnly}
         keplerConfig={tableauSettingsState.keplerConfig}
         mapboxAPIKey={
-          MAPBOX_ACCESS_TOKEN
+          tableauSettingsState.mapboxAPIKey
+            ? tableauSettingsState.mapboxAPIKey
+            : this.state.tableauKey
         }
         isLoading={isLoading}
         // persist state to tableau
