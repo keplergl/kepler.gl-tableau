@@ -10,12 +10,12 @@ aws --version
 
 #for COMMAND in "api" "rq" "unicorn"
 
-jinja2 /deploy/ops/tasks/${ENV}/task_def.json.j2 -D branch=${CI_BRANCH} -D env=${ENV} -D command=${COMMAND} >/task_def_${COMMAND}.json
+jinja2 /deploy/ops/tasks/${ENV}/task_def.json.j2 -D branch=${CI_BRANCH} -D env=${ENV} >/task_def_kepler.json
 
-cat task_def_${COMMAND}.json
+cat task_def_kepler.json
 
 # Register a new version of the task defined in json and update
 # the currently running instances
-aws ecs register-task-definition --cli-input-json file:///task_def_${COMMAND}.json
+aws ecs register-task-definition --cli-input-json file:///task_def_kepler.json
 
-aws ecs update-service --cluster seven-park-${ENV} --service distro-${COMMAND}-${ENV}-service --task-definition distro-${COMMAND}-${ENV}-td
+aws ecs update-service --cluster seven-park-${ENV} --service kepler-${ENV}-service --task-definition kepler-${ENV}-td
