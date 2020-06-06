@@ -26,12 +26,25 @@
 
 #splashScreen .gallery-footer {
   display: flex;
-  position: absolute;
-  bottom: 24px;
-  left: 24px;
 }
 
 #splashScreen  .inline {
   display: inline-flex; }
   .inline > div {
     margin-right: 16px; }
+
+@media screen and (min-height: 0) {
+  #splashScreen .gallery-footer {
+    position: unset;
+    bottom: auto;
+    left: auto;
+  }
+}
+
+@media screen and (min-height: 400px) {
+  #splashScreen .gallery-footer {
+    position: absolute;
+    bottom: 24px;
+    left: 30px;
+  }
+}
