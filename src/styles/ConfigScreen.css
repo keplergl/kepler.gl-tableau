@@ -1,0 +1,5 @@
+.bordered  input {
+  border: 1px solid #ccc; }
+  .bordered  input:focus {
+    border: 1px solid #333;
+  }

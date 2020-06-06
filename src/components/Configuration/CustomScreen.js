@@ -33,15 +33,47 @@ import Select from '@material-ui/core/Select';
 //tableau ui
 import { TextField } from '@tableau/tableau-ui';
 
-import { InputLabelWithTooltip, OptionWrapper, OptionTitle } from './CustomizeUIElements';
+import { InputLabelWithTooltip, OptionWrapper, OptionTitle, SectionTitle } from './CustomizeUIElements';
+import styled from 'styled-components';
+import '../../styles/ConfigScreen.css';
 
 const styles = theme => ({
   formControl: {
-    margin: theme.spacing.unit,
+    fontSize: '12px',
     minWidth: 120,
-    display: 'inherit',
-  },
+    display: 'inherit'
+  }
 });
+
+const Grid6 = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-bottom:16px;
+
+  & > div {
+    width: 200px;
+    margin-right: 16px;
+  }
+
+  & > div > div:nth-child(2) {
+    border: 1px solid #ccc;
+
+    & > div {
+      padding-left: 8px;
+    }
+  }
+`;
+
+const Grid12 = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-bottom:8px;
+
+  & > div {
+    width: 416px;
+    margin-right: 16px;
+  }
+`;
 
 // the example on material ui has this function statement
 class CustomScreen extends React.Component {
@@ -85,140 +117,151 @@ class CustomScreen extends React.Component {
       <div className="sheetScreen">
         <OptionWrapper>
           <div class="content-container">
-            <OptionTitle style={{paddingLeft: "8px"}}>{this.props.configTitle}</OptionTitle>
-            <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip
-                title="Optional: Mapbox API Key"
-                tooltipText="Optional: Your unique API key for utilizing mapbox"
-              />
-              <TextField
-                // className={classes.textField}
-                id="mapboxAPIKey-helper"
-                kind="line"
-                name="mapboxAPIKey"
-                // label="Mapbox API Key"
-                placeholder="pk.12345..."
-                value={tableauSettings.mapboxAPIKey}
-                onChange={handleChange}
-                // margin="normal"
-              />
-            </FormControl>
-            <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip
-                    title="Read only mode?"
-                    tooltipText="Toggle whether or not to hide the config panel on the side (e.g., read only)"
-                  />
-              <Select
-                value={tableauSettings.readOnly === "true"}
-                onChange={handleChange}
-                input={<Input name="readOnly" id="readOnly-helper" />}
-              >
-                 <MenuItem value={true}>True</MenuItem>
-                 <MenuItem value={false}>False</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip
-                    title="Color Theme"
-                    tooltipText="Select a dark or light kepler.gl UI theme"
-                  />
-              <Select
-                value={tableauSettings.theme || 'dark'}
-                onChange={handleChange}
-                input={<Input name="theme" id="theme-helper" />}
-              >
-                 <MenuItem value="light">Light</MenuItem>
-                 <MenuItem value="dark">Dark</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip
-                    title="Hover Action"
-                    tooltipText="Toggle and select which action to take on hover"
-                  />
-              <Select
-                value={tableauSettings.hoverAction || "No Action"}
-                onChange={handleChange}
-                input={<Input name="hoverAction" id="hoverAction-helper" />}
-              >
-                 <MenuItem value={"No Action"}>No Action</MenuItem>
-                 <MenuItem value={"Highlight"}>Highlight</MenuItem>
-                 <MenuItem value={"Filter"}>Filter</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip
-                    title="Hover Identifying Field"
-                    tooltipText="Select which STRING field to take action on (we require string for interaction)"
-                  />
-              <Select
-                value={tableauSettings.hoverField || "None"}
-                onChange={handleChange}
-                input={<Input name="hoverField" id="hoverField-helper" />}
-              >
-                 <MenuItem value={"None"}>None</MenuItem>
-                 {
-                  configSheetColumns.map(f => (
-                    <MenuItem value={f.fieldName} key={f.fieldName}>{f.fieldName}</MenuItem>
-                  ))
-                };
-              </Select>
-            </FormControl>
-            <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip
-                    title="Click Action"
-                    tooltipText="Toggle and select which action to take on click"
-                  />
-              <Select
-                value={tableauSettings.clickAction || "No Action"}
-                onChange={handleChange}
-                input={<Input name="clickAction" id="clickAction-helper" />}
-              >
-                 <MenuItem value={"No Action"}>No Action</MenuItem>
-                 <MenuItem value={"Highlight"}>Highlight</MenuItem>
-                 <MenuItem value={"Filter"}>Filter</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip
-                    title="Click Identifying Field"
-                    tooltipText="Select which STRING field to take action on (we require string for interaction)"
-                  />
-              <Select
-                value={tableauSettings.clickField || "None"}
-                onChange={handleChange}
-                input={<Input name="clickField" id="clickField-helper" />}
-              >
-                 <MenuItem value={"None"}>None</MenuItem>
-                 {
-                  configSheetColumns.map(f => (
-                    <MenuItem value={f.fieldName} key={f.fieldName}>{f.fieldName}</MenuItem>
-                  ))
-                };
-              </Select>
-            </FormControl>
-            <FormControl className={classes.formControl}>
-              <InputLabelWithTooltip
-                    title="Tableau to Kepler Filter Field"
-                    tooltipText="Select which STRING field to use when filtering Kepler (we require string for interaction)"
-                  />
-              <Select
-                value={tableauSettings.keplerFilterField || "None"}
-                onChange={handleChange}
-                input={<Input name="keplerFilterField" id="keplerFilterField-helper" />}
-              >
-                 <MenuItem value={"None"}>None</MenuItem>
-                 {
-                  configSheetColumns
-                  .filter(col => col.dataType !== 'date-time')
-                  .map(f => (
-                    <MenuItem value={f.fieldName} key={f.fieldName}>{f.fieldName}</MenuItem>
-                  ))
-                };
-              </Select>
-            </FormControl>
+            <OptionTitle>{this.props.configTitle}</OptionTitle>
+            <SectionTitle>Visual</SectionTitle>
+            <Grid6>
+              <FormControl variant="outlined" className={classes.formControl}>
+                <InputLabelWithTooltip
+                      title="Read only mode?"
+                      tooltipText="Toggle whether or not to hide the config panel on the side (e.g., read only)"
+                    />
+                <Select
+                  value={tableauSettings.readOnly === "true"}
+                  onChange={handleChange}
+                  input={<Input name="readOnly" id="readOnly-helper" />}
+                >
+                  <MenuItem value={true}>True</MenuItem>
+                  <MenuItem value={false}>False</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl className={classes.formControl}>
+                <InputLabelWithTooltip
+                      title="Color Theme"
+                      tooltipText="Select a dark or light kepler.gl UI theme"
+                    />
+                <Select
+                  value={tableauSettings.theme || 'dark'}
+                  onChange={handleChange}
+                  input={<Input name="theme" id="theme-helper" />}
+                >
+                  <MenuItem value="light">Light</MenuItem>
+                  <MenuItem value="dark">Dark</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid6>
+            <SectionTitle>Events</SectionTitle>
+            <Grid6>
+              <FormControl className={classes.formControl}>
+                <InputLabelWithTooltip
+                      title="Hover Action"
+                      tooltipText="Toggle and select which action to take on hover"
+                    />
+                <Select
+                  value={tableauSettings.hoverAction || "No Action"}
+                  onChange={handleChange}
+                  input={<Input name="hoverAction" id="hoverAction-helper" />}
+                >
+                  <MenuItem value={"No Action"}>No Action</MenuItem>
+                  <MenuItem value={"Highlight"}>Highlight</MenuItem>
+                  <MenuItem value={"Filter"}>Filter</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl className={classes.formControl}>
+                <InputLabelWithTooltip
+                      title="Hover Identifying Field"
+                      tooltipText="Select which STRING field to take action on (we require string for interaction)"
+                    />
+                <Select
+                  value={tableauSettings.hoverField || "None"}
+                  onChange={handleChange}
+                  input={<Input name="hoverField" id="hoverField-helper" />}
+                >
+                  <MenuItem value={"None"}>None</MenuItem>
+                  {
+                    configSheetColumns.map(f => (
+                      <MenuItem value={f.fieldName} key={f.fieldName}>{f.fieldName}</MenuItem>
+                    ))
+                  };
+                </Select>
+              </FormControl>
+            </Grid6>
+            <Grid6>
+              <FormControl className={classes.formControl}>
+                <InputLabelWithTooltip
+                      title="Click Action"
+                      tooltipText="Toggle and select which action to take on click"
+                    />
+                <Select
+                  value={tableauSettings.clickAction || "No Action"}
+                  onChange={handleChange}
+                  input={<Input name="clickAction" id="clickAction-helper" />}
+                >
+                  <MenuItem value={"No Action"}>No Action</MenuItem>
+                  <MenuItem value={"Highlight"}>Highlight</MenuItem>
+                  <MenuItem value={"Filter"}>Filter</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl className={classes.formControl}>
+                <InputLabelWithTooltip
+                      title="Click Identifying Field"
+                      tooltipText="Select which STRING field to take action on (we require string for interaction)"
+                    />
+                <Select
+                  value={tableauSettings.clickField || "None"}
+                  onChange={handleChange}
+                  input={<Input name="clickField" id="clickField-helper" />}
+                >
+                  <MenuItem value={"None"}>None</MenuItem>
+                  {
+                    configSheetColumns.map(f => (
+                      <MenuItem value={f.fieldName} key={f.fieldName}>{f.fieldName}</MenuItem>
+                    ))
+                  };
+                </Select>
+              </FormControl>
+            </Grid6>
+            <Grid6>
+              <FormControl className={classes.formControl}>
+                <InputLabelWithTooltip
+                      title="Tableau to Kepler Filter Field"
+                      tooltipText="Select which STRING field to use when filtering Kepler (we require string for interaction)"
+                    />
+                <Select
+                  value={tableauSettings.keplerFilterField || "None"}
+                  onChange={handleChange}
+                  input={<Input name="keplerFilterField" id="keplerFilterField-helper" />}
+                >
+                  <MenuItem value={"None"}>None</MenuItem>
+                  {
+                    configSheetColumns
+                    .filter(col => col.dataType !== 'date-time')
+                    .map(f => (
+                      <MenuItem value={f.fieldName} key={f.fieldName}>{f.fieldName}</MenuItem>
+                    ))
+                  };
+                </Select>
+              </FormControl>
+            </Grid6>
+            <SectionTitle>Optional</SectionTitle>
+            <Grid12>
+              <FormControl className={classes.formControl}>
+                <InputLabelWithTooltip
+                  title="Mapbox API Key"
+                  tooltipText="Optional: Your unique API key for utilizing mapbox"
+                />
+                <TextField
+                  className="bordered"
+                  id="mapboxAPIKey-helper"
+                  kind="line"
+                  name="mapboxAPIKey"
+                  // label="Mapbox API Key"
+                  placeholder="pk.12345..."
+                  value={tableauSettings.mapboxAPIKey}
+                  onChange={handleChange}
+                  // margin="normal"
+                />
+              </FormControl>
+            </Grid12>
             {/* <FormControl className={classes.formControl}>
               <InputLabelWithTooltip
                   title="Hover Configuration"

@@ -22,16 +22,37 @@ import React from 'react';
 import { Button } from '@tableau/tableau-ui';
 
 import './../../styles/StepButtons.css';
+import styled from 'styled-components';
+
+const NUMBER_OF_STEPS = 2;
+const StepDots = styled.span`
+  margin-top: 12px;
+`;
+
+const Dot = styled.div`
+  display: inline-block;
+  background-color: #ccc;
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+
+  &:not(:first-child) {
+    margin-left: 4px;
+  }
+
+  &.selected {
+    background-color: #333;
+  }
+`;
 
 const StepButtons = (props) => {
   return (
-    <div class="StepButtons">
-      {
-        props.stepIndex !== 1
-        &&
-        <Button className={"newCta"} kind={"outline"} onClick={ props.onPrevClick }>{ props.backText }</Button>
-      }
-      <Button className={"newCta next"} kind={"filledGreen"} onClick={props.onNextClick}> { props.nextText } </Button>
+    <div className="StepButtons">
+      <Button className={"newCta"} kind={"outline"} onClick={ props.onPrevClick } disabled={ props.stepIndex === 1 }> { props.backText } </Button>
+      <StepDots>
+        { new Array(NUMBER_OF_STEPS).fill(0).map((value, index) => <Dot className={props.stepIndex === index + 1 && 'selected'} />)}
+      </StepDots>
+      <Button className={"newCta next"} kind={"outline"} onClick={props.onNextClick}> { props.nextText } </Button>
     </div>
   );
 }
