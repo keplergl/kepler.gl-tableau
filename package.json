@@ -4,7 +4,7 @@
     "Chris DeMartini <chris@datablick.com>",
     "Shan He <heshan0131@uber.com>"
   ],
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "kepler.gl is a webgl based application to visualize large scale location data in the browser",
   "homepage": "https://keplergl-tableau.netlify.com",
   "license": "MIT",
@@ -33,7 +33,7 @@
     "@tableau/tableau-ui": "^2.1.0",
     "core-js": "^2.6.0",
     "gh-pages": "^2.0.1",
-    "kepler.gl": "2.1.0-alpha.3",
+    "kepler.gl": "2.4",
     "lodash.throttle": "^4.1.1",
     "react": "^16.8.4",
     "react-beautiful-dnd": "^9.0.2",

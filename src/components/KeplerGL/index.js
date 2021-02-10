@@ -67,7 +67,9 @@ function getHoverInfo(info, allData) {
     ? allData[objectHovered.properties.index]
     // with upgrade to v2 we now need to the data sub-object for hex and grid layer
     : objectHovered.points.map(pt => {
-      return pt.data;
+      return pt.data
+      ? pt.data 
+      : pt.source.data;
     });
 }
 
